@@ -1,9 +1,5 @@
-resource "time_sleep" "wait_10_seconds" {
-  destroy_duration = "30s"
-}
-
 locals {
-  short_openshift_version = format("%s.%s", split(".", var.openshift_version)[0], split(".", var.openshift_version)[1])
+  path                    = coalesce(var.path, "/")
   account_roles_properties = [
     {
       role_name            = "HCP-ROSA-Installer"
@@ -27,7 +23,18 @@ locals {
       principal_identifier = "ec2.amazonaws.com"
     },
   ]
-  account_roles_count = null_resource.validate_openshift_version != null ? length(local.account_roles_properties) : 0
+  account_roles_count = length(local.account_roles_properties)
+  patch_version_list        = [for s in data.rhcs_versions.all_versions.items : s.name]
+  minor_version_list        = length(local.patch_version_list) > 0 ? (
+    distinct([for s in local.patch_version_list : format("%s.%s", split(".", s)[0], split(".", s)[1])])
+    ) : (
+    []
+  )
+  account_role_prefix_valid = var.account_role_prefix != null ? (
+    var.account_role_prefix
+   ) : (
+    "account-role-${random_string.default_random[0].result}"
+   )
 }
 
 data "aws_iam_policy_document" "custom_trust_policy" {
@@ -43,15 +50,16 @@ data "aws_iam_policy_document" "custom_trust_policy" {
   }
 }
 
-module "hcp_account_iam_role" {
+module "account_iam_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+  version = ">=5.34.0"
   count  = local.account_roles_count
 
   create_role = true
 
   role_name = "${local.account_role_prefix_valid}-${local.account_roles_properties[count.index].role_name}-Role"
 
-  role_path                     = var.path
+  role_path                     = local.path
   role_permissions_boundary_arn = var.permissions_boundary
 
   create_custom_role_trust_policy = true
@@ -64,7 +72,6 @@ module "hcp_account_iam_role" {
   tags = merge(var.tags, {
     rosa_hcp_policies      = true
     red-hat-managed        = true
-    rosa_openshift_version = local.short_openshift_version
     rosa_role_prefix       = "${local.account_role_prefix_valid}"
     rosa_role_type         = "${local.account_roles_properties[count.index].role_type}"
     rosa_managed_policies  = true
@@ -83,19 +90,15 @@ resource "random_string" "default_random" {
   upper   = false
 }
 
-locals {
-  patch_version_list        = [for s in data.rhcs_versions.all_versions.items : s.name]
-  minor_version_list        = local.patch_version_list != [] ? distinct([for s in local.patch_version_list : format("%s.%s", split(".", s)[0], split(".", s)[1])]) : []
-  account_role_prefix_valid = var.account_role_prefix != null ? var.account_role_prefix : "account-role-${random_string.default_random[0].result}"
-}
-
 data "rhcs_info" "current" {}
 
-resource "null_resource" "validate_openshift_version" {
-  lifecycle {
-    precondition {
-      condition     = contains(local.minor_version_list, local.short_openshift_version)
-      error_message = "ERROR: Expected a valid OpenShift version. Valid versions: ${join(", ", local.minor_version_list)}"
-    }
+resource "time_sleep" "account_iam_resources_wait" {
+  destroy_duration = "10s"
+  create_duration = "10s"
+  triggers = {
+    account_iam_role_name = jsonencode([for value in module.account_iam_role : value.iam_role_name])
+    account_roles_arn     = jsonencode({ for idx, value in module.account_iam_role : local.account_roles_properties[idx].role_name => value.iam_role_arn })
+    account_role_prefix   = local.account_role_prefix_valid
+    path                  = var.path
   }
 }

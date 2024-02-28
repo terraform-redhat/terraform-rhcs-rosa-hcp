@@ -1,7 +1,3 @@
-resource "time_sleep" "wait_10_seconds" {
-  destroy_duration = "30s"
-}
-
 locals {
   operator_roles_properties = [
     {
@@ -62,6 +58,8 @@ locals {
     },
   ]
   operator_roles_count = length(local.operator_roles_properties)
+  operator_role_prefix = var.operator_role_prefix != null ? var.operator_role_prefix : var.account_role_prefix
+  path                 = coalesce(var.path, "/")
 }
 
 data "aws_iam_policy_document" "custom_trust_policy" {
@@ -82,13 +80,14 @@ data "aws_iam_policy_document" "custom_trust_policy" {
   }
 }
 
-module "hcp_operator_iam_role" {
+module "operator_iam_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+  version = ">=5.34.0"
   count  = local.operator_roles_count
 
   create_role = true
 
-  role_name = substr("${local.operator_role_prefix_valid}-${local.operator_roles_properties[count.index].operator_namespace}-${local.operator_roles_properties[count.index].operator_name}", 0, 64)
+  role_name = substr("${local.operator_role_prefix}-${local.operator_roles_properties[count.index].operator_namespace}-${local.operator_roles_properties[count.index].operator_name}", 0, 64)
 
   role_path                     = var.path
   role_permissions_boundary_arn = var.permissions_boundary
@@ -110,19 +109,14 @@ module "hcp_operator_iam_role" {
 }
 
 data "rhcs_hcp_policies" "all_policies" {}
+data "rhcs_info" "current" {}
 
 data "aws_caller_identity" "current" {}
 
-resource "random_string" "default_random" {
-  count = var.operator_role_prefix != null ? 0 : 1
-
-  length  = 4
-  special = false
-  upper   = false
+resource "time_sleep" "role_resources_propagation" {
+  create_duration = "20s"
+  triggers = {
+    operator_role_prefix = local.operator_role_prefix
+    operator_role_arns   = jsonencode([for value in module.operator_iam_role : value.iam_role_arn])
+  }
 }
-
-locals {
-  operator_role_prefix_valid = var.operator_role_prefix != null ? var.operator_role_prefix : "operator-role-${random_string.default_random[0].result}"
-}
-
-data "rhcs_info" "current" {}

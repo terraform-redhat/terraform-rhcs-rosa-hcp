@@ -44,6 +44,10 @@ variable "autoscaling" {
     min_replicas = number
     max_replicas = number
   })
+  default = {
+    enabled = false
+  }
+  description = "Configures autoscaling for the pool."
 }
 
 variable "aws_node_pool" {
@@ -51,4 +55,6 @@ variable "aws_node_pool" {
     instance_type = string
     tags = map(string)
   })
+  default = null
+  description = "Configures aws settings for the pool."
 }

@@ -1,7 +1,9 @@
 output "operator_role_prefix" {
-  value = local.operator_role_prefix_valid
+  value       = time_sleep.role_resources_propagation.triggers["operator_role_prefix"]
+  description = "Prefix used for generated AWS operator policies."
 }
 
 output "operator_roles_arn" {
-  value = { for idx, value in module.hcp_operator_iam_role : local.operator_roles_properties[idx].role_name => value.iam_role_arn }
+  value       = jsondecode(time_sleep.role_resources_propagation.triggers["operator_role_arns"])
+  description = "List of Amazon Resource Names (ARNs) for all operator roles created."
 }
