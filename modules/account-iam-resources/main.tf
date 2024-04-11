@@ -80,9 +80,10 @@ resource "time_sleep" "account_iam_resources_wait" {
   destroy_duration = "10s"
   create_duration  = "10s"
   triggers = {
-    account_iam_role_name = jsonencode([for value in aws_iam_role.account_role : value.name])
+    account_iam_role_name = jsonencode([ for value in aws_iam_role.account_role : value.name])
     account_roles_arn     = jsonencode({ for idx, value in aws_iam_role.account_role : local.account_roles_properties[idx].role_name => value.arn })
+    account_policy_arns   = jsonencode([ for value in aws_iam_role_policy_attachment.account_role_policy_attachment : value.policy_arn])
     account_role_prefix   = local.account_role_prefix_valid
-    path                  = var.path
+    path                  = local.path
   }
 }

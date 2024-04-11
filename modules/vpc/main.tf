@@ -201,7 +201,8 @@ resource "aws_route_table_association" "private_route_table_association" {
 # This resource is used in order to add dependencies on all resources 
 # Any resource uses this VPC ID, must wait to all resources creation completion
 resource "time_sleep" "vpc_resources_wait" {
-  create_duration = "10s"
+  create_duration = "20s"
+  destroy_duration = "20s"
   triggers = {
     vpc_id                                           = aws_vpc.vpc.id
     cidr_block                                       = aws_vpc.vpc.cidr_block

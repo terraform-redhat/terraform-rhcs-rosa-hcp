@@ -30,18 +30,17 @@ For more information, see [About IAM resources for ROSA clusters that use STS](h
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_account_iam_role"></a> [account\_iam\_role](#module\_account\_iam\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role | >=5.34.0 |
+No modules.
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_iam_role.account_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.account_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [random_string.default_random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [time_sleep.account_iam_resources_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_iam_policy_document.custom_trust_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| rhcs_hcp_policies.all_policies | data source |
 | rhcs_info.current | data source |
 
 ## Inputs

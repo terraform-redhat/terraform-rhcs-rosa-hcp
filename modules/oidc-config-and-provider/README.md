@@ -28,18 +28,20 @@ For more information, see [OpenID Connect Overview](https://docs.openshift.com/r
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aws_s3_bucket"></a> [aws\_s3\_bucket](#module\_aws\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | >=4.1.0 |
-| <a name="module_aws_secrets_manager"></a> [aws\_secrets\_manager](#module\_aws\_secrets\_manager) | terraform-aws-modules/secrets-manager/aws | >=1.1.1 |
+No modules.
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
+| [aws_s3_bucket.s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_policy.allow_access_from_another_account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_public_access_block.public_access_block](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_object.discover_doc_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
-| [aws_s3_object.s3_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_s3_object.jwks_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_secretsmanager_secret.secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_version.store_in_secret](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [null_resource.unmanaged_vars_validation](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [rhcs_rosa_oidc_config.oidc_config](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/rosa_oidc_config) | resource |
 | [rhcs_rosa_oidc_config_input.oidc_input](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/rosa_oidc_config_input) | resource |

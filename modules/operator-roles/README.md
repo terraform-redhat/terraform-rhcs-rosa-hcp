@@ -31,23 +31,21 @@ For more information, see the [About IAM resources for ROSA clusters that use ST
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_operator_iam_role"></a> [operator\_iam\_role](#module\_operator\_iam\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role | >=5.34.0 |
+No modules.
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_iam_role.operator_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.operator_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [time_sleep.role_resources_propagation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.custom_trust_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [rhcs_hcp_policies.all_policies](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/data-sources/hcp_policies) | data source |
 
 ## Inputs
 

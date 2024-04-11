@@ -109,5 +109,6 @@ resource "time_sleep" "role_resources_propagation" {
   triggers = {
     operator_role_prefix = local.operator_role_prefix
     operator_role_arns   = jsonencode([for value in aws_iam_role.operator_role : value.arn])
+    operator_policy_arns = jsonencode([for value in aws_iam_role_policy_attachment.operator_role_policy_attachment : value.policy_arn])
   }
 }

@@ -60,3 +60,9 @@ variable "aws_node_pool" {
   default = null
   description = "Configures aws settings for the pool."
 }
+
+variable "auto_repair" {
+  type = bool
+  default = true
+  description = "Configures auto repair option for the pool."
+}

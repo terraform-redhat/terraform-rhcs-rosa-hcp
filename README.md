@@ -83,7 +83,6 @@ We recommend you install the following CLI tools:
 | <a name="input_create_account_roles"></a> [create\_account\_roles](#input\_create\_account\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
 | <a name="input_create_oidc"></a> [create\_oidc](#input\_create\_oidc) | Create the oidc resources. | `bool` | `false` | no |
 | <a name="input_create_operator_roles"></a> [create\_operator\_roles](#input\_create\_operator\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
-| <a name="input_default_ingress_id"></a> [default\_ingress\_id](#input\_default\_ingress\_id) | Unique identifier of the ingress. | `string` | `null` | no |
 | <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". | `string` | `""` | no |
 | <a name="input_destroy_timeout"></a> [destroy\_timeout](#input\_destroy\_timeout) | Maximum duration in minutes to allow for destroying resources. (Default: 60 minutes) | `number` | `null` | no |
 | <a name="input_disable_waiting_in_destroy"></a> [disable\_waiting\_in\_destroy](#input\_disable\_waiting\_in\_destroy) | Disable addressing cluster state in the destroy resource. Default value is false, and so a `destroy` will wait for the cluster to be deleted. | `bool` | `null` | no |
@@ -113,5 +112,7 @@ We recommend you install the following CLI tools:
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | Unique identifier of the cluster. |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->
