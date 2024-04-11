@@ -80,32 +80,26 @@ data "aws_iam_policy_document" "custom_trust_policy" {
   }
 }
 
-module "operator_iam_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = ">=5.34.0"
-  count  = local.operator_roles_count
-
-  create_role = true
-
-  role_name = substr("${local.operator_role_prefix}-${local.operator_roles_properties[count.index].operator_namespace}-${local.operator_roles_properties[count.index].operator_name}", 0, 64)
-
-  role_path                     = local.path
-  role_permissions_boundary_arn = var.permissions_boundary
-
-  create_custom_role_trust_policy = true
-  custom_role_trust_policy        = data.aws_iam_policy_document.custom_trust_policy[count.index].json
-
-  custom_role_policy_arns = [
-    local.operator_roles_properties[count.index].policy_details
-  ]
+resource "aws_iam_role" "operator_role" {
+  count                = local.operator_roles_count
+  name                 = substr("${local.operator_role_prefix}-${local.operator_roles_properties[count.index].operator_namespace}-${local.operator_roles_properties[count.index].operator_name}", 0, 64)
+  permissions_boundary = var.permissions_boundary
+  path                 = local.path
+  assume_role_policy   = data.aws_iam_policy_document.custom_trust_policy[count.index].json
 
   tags = merge(var.tags, {
-    rosa_managed_policies  = true
-    rosa_hcp_policies      = true
-    red-hat-managed        = true
-    operator_namespace = local.operator_roles_properties[count.index].operator_namespace
-    operator_name      = local.operator_roles_properties[count.index].operator_name
+    rosa_managed_policies = true
+    rosa_hcp_policies     = true
+    red-hat-managed       = true
+    operator_namespace    = local.operator_roles_properties[count.index].operator_namespace
+    operator_name         = local.operator_roles_properties[count.index].operator_name
   })
+}
+
+resource "aws_iam_role_policy_attachment" "operator_role_policy_attachment" {
+  count      = local.operator_roles_count
+  role       = aws_iam_role.operator_role[count.index].name
+  policy_arn = local.operator_roles_properties[count.index].policy_details
 }
 
 data "aws_caller_identity" "current" {}
@@ -114,6 +108,6 @@ resource "time_sleep" "role_resources_propagation" {
   create_duration = "20s"
   triggers = {
     operator_role_prefix = local.operator_role_prefix
-    operator_role_arns   = jsonencode([for value in module.operator_iam_role : value.iam_role_arn])
+    operator_role_arns   = jsonencode([for value in aws_iam_role.operator_role : value.arn])
   }
 }

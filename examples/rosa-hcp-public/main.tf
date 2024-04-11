@@ -14,7 +14,7 @@ module "hcp" {
   machine_cidr         = module.vpc.cidr_block
   account_role_prefix  = module.account_iam_resources.account_role_prefix
   operator_role_prefix = module.operator_roles.operator_role_prefix
-  oidc_config_id       = module.oidc_config_and_provider.oidc_config_id # replace with variable once split out properly
+  oidc_config_id       = module.oidc_config_and_provider.oidc_config_id
   aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
   aws_availability_zones = module.vpc.availability_zones
   path                   = module.account_iam_resources.path
