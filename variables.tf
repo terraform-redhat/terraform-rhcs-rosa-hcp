@@ -113,7 +113,13 @@ variable "tags" {
 variable "wait_for_create_complete" {
   type        = bool
   default     = true
-  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 60 minutes. (default: true)"
+  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true)"
+}
+
+variable "wait_for_std_compute_nodes_complete" {
+  type        = bool
+  default     = true
+  description = "Wait until the initial set of machine pools to be available. The waiter has a timeout of 60 minutes. (default: true)"
 }
 
 variable "etcd_encryption" {

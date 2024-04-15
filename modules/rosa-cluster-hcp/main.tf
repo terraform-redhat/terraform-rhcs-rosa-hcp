@@ -26,10 +26,10 @@ locals {
 }
 
 resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
-  name           = var.cluster_name
-  version        = var.openshift_version
+  name                         = var.cluster_name
+  version                      = var.openshift_version
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
-  private          = var.private
+  private                      = var.private
   properties = merge(
     {
       rosa_creator_arn = local.aws_account_arn
@@ -41,7 +41,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   aws_billing_account_id = var.aws_billing_account_id == null || var.aws_billing_account_id == "" ? (
     data.aws_caller_identity.current[0].account_id
   ) : (var.aws_billing_account_id)
-  sts            = local.sts_roles
+  sts  = local.sts_roles
   tags = var.tags
   availability_zones = length(var.aws_availability_zones) > 0 ? (
     var.aws_availability_zones
@@ -52,14 +52,14 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
       slice(data.aws_availability_zones.available[0].names, 0, 1)
     )
   )
-  replicas       = var.replicas
-  aws_subnet_ids = var.aws_subnet_ids
+  replicas             = var.replicas
+  aws_subnet_ids       = var.aws_subnet_ids
   compute_machine_type = var.compute_machine_type
 
-  machine_cidr         = var.machine_cidr
-  service_cidr         = var.service_cidr
-  pod_cidr             = var.pod_cidr
-  host_prefix          = var.host_prefix
+  machine_cidr = var.machine_cidr
+  service_cidr = var.service_cidr
+  pod_cidr     = var.pod_cidr
+  host_prefix  = var.host_prefix
   proxy = var.http_proxy != null || var.https_proxy != null || var.no_proxy != null || var.additional_trust_bundle != null ? (
     {
       http_proxy              = var.http_proxy
@@ -70,14 +70,14 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
     ) : (
     null
   )
-  etcd_encryption = var.etcd_encryption
+  etcd_encryption  = var.etcd_encryption
   etcd_kms_key_arn = var.etcd_kms_key_arn
-  kms_key_arn = var.kms_key_arn
+  kms_key_arn      = var.kms_key_arn
 
-  wait_for_create_complete = var.wait_for_create_complete
+  wait_for_create_complete            = var.wait_for_create_complete
   wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
-  disable_waiting_in_destroy   = var.disable_waiting_in_destroy
-  destroy_timeout              = var.destroy_timeout
+  disable_waiting_in_destroy          = var.disable_waiting_in_destroy
+  destroy_timeout                     = var.destroy_timeout
 
   lifecycle {
     precondition {
@@ -95,11 +95,11 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
       ) == false
       error_message = "The \"account_role_prefix\" shouldn't be provided when all ARNs for account roles are specified (\"installer_role_arn\", \"support_role_arn\", \"worker_role_arn\")."
     }
-       precondition {
+    precondition {
       condition = (
         (
-         var.autoscaler_max_pod_grace_period != null ||
-          var.autoscaler_pod_priority_threshold != null || 
+          var.autoscaler_max_pod_grace_period != null ||
+          var.autoscaler_pod_priority_threshold != null ||
           var.autoscaler_max_node_provision_time != null ||
           var.autoscaler_max_nodes_total != null
         )
@@ -113,10 +113,10 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
 resource "rhcs_hcp_cluster_autoscaler" "cluster_autoscaler" {
   count = var.cluster_autoscaler_enabled == true ? 1 : 0
 
-  cluster                       = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
-  max_pod_grace_period          = var.autoscaler_max_pod_grace_period
-  pod_priority_threshold        = var.autoscaler_pod_priority_threshold
-  max_node_provision_time       = var.autoscaler_max_node_provision_time
+  cluster                 = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
+  max_pod_grace_period    = var.autoscaler_max_pod_grace_period
+  pod_priority_threshold  = var.autoscaler_pod_priority_threshold
+  max_node_provision_time = var.autoscaler_max_node_provision_time
 
   resource_limits = {
     max_nodes_total = var.autoscaler_max_nodes_total
