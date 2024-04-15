@@ -7,7 +7,7 @@ terraform {
       version = ">= 5.35.0"
     }
     rhcs = {
-      version = ">= 1.5.0"
+      version = ">= 1.6.0"
       source  = "terraform-redhat/rhcs"
     }
   }
