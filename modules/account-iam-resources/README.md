@@ -41,7 +41,7 @@ No modules.
 | [random_string.default_random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [time_sleep.account_iam_resources_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_iam_policy_document.custom_trust_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| rhcs_info.current | data source |
+| [rhcs_info.current](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/data-sources/info) | data source |
 
 ## Inputs
 
