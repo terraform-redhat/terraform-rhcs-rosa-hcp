@@ -19,7 +19,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
-  count = var.managed ? 0 : 1
+  count  = var.managed ? 0 : 1
   bucket = rhcs_rosa_oidc_config_input.oidc_input[count.index].bucket_name
 
   tags = merge(var.tags, {
@@ -28,19 +28,13 @@ resource "aws_s3_bucket" "s3_bucket" {
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  count = var.managed ? 0 : 1
+  count  = var.managed ? 0 : 1
   bucket = aws_s3_bucket.s3_bucket[count.index].id
 
   block_public_acls       = true
   ignore_public_acls      = true
   block_public_policy     = false
   restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
-  count = var.managed ? 0 : 1
-  bucket = aws_s3_bucket.s3_bucket[count.index].id
-  policy = data.aws_iam_policy_document.allow_access_from_another_account[count.index].json
 }
 
 data "aws_iam_policy_document" "allow_access_from_another_account" {
@@ -63,6 +57,12 @@ data "aws_iam_policy_document" "allow_access_from_another_account" {
   }
 }
 
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  count  = var.managed ? 0 : 1
+  bucket = aws_s3_bucket.s3_bucket[count.index].id
+  policy = data.aws_iam_policy_document.allow_access_from_another_account[count.index].json
+}
+
 resource "rhcs_rosa_oidc_config_input" "oidc_input" {
   count = var.managed ? 0 : 1
 
@@ -70,7 +70,7 @@ resource "rhcs_rosa_oidc_config_input" "oidc_input" {
 }
 
 resource "aws_secretsmanager_secret" "secret" {
-  count = var.managed ? 0 : 1
+  count       = var.managed ? 0 : 1
   name        = rhcs_rosa_oidc_config_input.oidc_input[count.index].private_key_secret_name
   description = format("Secret for %s", rhcs_rosa_oidc_config_input.oidc_input[count.index].private_key_secret_name)
 
@@ -80,7 +80,7 @@ resource "aws_secretsmanager_secret" "secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "store_in_secret" {
-  count = var.managed ? 0 : 1
+  count         = var.managed ? 0 : 1
   secret_id     = aws_secretsmanager_secret.secret[count.index].id
   secret_string = rhcs_rosa_oidc_config_input.oidc_input[count.index].private_key
 }
@@ -117,11 +117,14 @@ resource "time_sleep" "wait_10_seconds" {
   create_duration  = "10s"
   destroy_duration = "10s"
   triggers = {
-    oidc_config_id       = rhcs_rosa_oidc_config.oidc_config.id
-    oidc_endpoint_url    = rhcs_rosa_oidc_config.oidc_config.oidc_endpoint_url
-    oidc_provider_url    = aws_iam_openid_connect_provider.oidc_provider.url
-    discover_doc_object = var.managed ? null : aws_s3_object.discover_doc_object[0].checksum_sha1
-    s3_object            = var.managed ? null : aws_s3_object.jwks_object[0].checksum_sha1
+    oidc_config_id                         = rhcs_rosa_oidc_config.oidc_config.id
+    oidc_endpoint_url                      = rhcs_rosa_oidc_config.oidc_config.oidc_endpoint_url
+    oidc_provider_url                      = aws_iam_openid_connect_provider.oidc_provider.url
+    discover_doc_object                    = var.managed ? null : aws_s3_object.discover_doc_object[0].checksum_sha1
+    s3_object                              = var.managed ? null : aws_s3_object.jwks_object[0].checksum_sha1
+    policy_attached_to_bucket              = var.managed ? null : aws_s3_bucket_policy.allow_access_from_another_account[0].bucket
+    public_access_block_attached_to_bucket = var.managed ? null : aws_s3_bucket_public_access_block.public_access_block[0].bucket
+    secret_arn                             = var.managed ? null : aws_secretsmanager_secret.secret[0].arn
   }
 }
 
