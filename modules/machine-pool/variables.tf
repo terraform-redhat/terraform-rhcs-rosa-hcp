@@ -66,3 +66,15 @@ variable "auto_repair" {
   default = true
   description = "Configures auto repair option for the pool."
 }
+
+variable "openshift_version" {
+  type        = string
+  description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
+}
+
+variable "upgrade_acknowledgements_for" {
+  type        = bool
+  default     = null
+  description = "Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of \"4.12\" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before)."
+}
+

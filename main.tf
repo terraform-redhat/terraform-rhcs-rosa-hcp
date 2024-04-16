@@ -85,10 +85,11 @@ module "rosa_cluster_hcp" {
   ########
   # Flags
   ########
-  wait_for_create_complete     = var.wait_for_create_complete
-  disable_waiting_in_destroy   = var.disable_waiting_in_destroy
-  destroy_timeout              = var.destroy_timeout
-  upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
+  wait_for_create_complete            = var.wait_for_create_complete
+  wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
+  disable_waiting_in_destroy          = var.disable_waiting_in_destroy
+  destroy_timeout                     = var.destroy_timeout
+  upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
 
   #######################
   # Default Machine Pool
