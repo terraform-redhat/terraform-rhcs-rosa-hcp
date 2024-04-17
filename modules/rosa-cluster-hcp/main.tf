@@ -5,18 +5,18 @@ locals {
     role_arn = var.installer_role_arn != null ? (
       var.installer_role_arn
       ) : (
-      "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-Installer-Role"
+      "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-HCP-ROSA-Installer-Role"
     ),
     support_role_arn = var.support_role_arn != null ? (
       var.support_role_arn
       ) : (
-      "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-Support-Role"
+      "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-HCP-ROSA-Support-Role"
     ),
     instance_iam_roles = {
       worker_role_arn = var.worker_role_arn != null ? (
         var.worker_role_arn
         ) : (
-        "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-Worker-Role"
+        "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-HCP-ROSA-Worker-Role"
       ),
     },
     operator_role_prefix = var.operator_role_prefix,
@@ -125,7 +125,10 @@ resource "rhcs_hcp_cluster_autoscaler" "cluster_autoscaler" {
 
 resource "rhcs_hcp_default_ingress" "default_ingress" {
   cluster          = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
-  listening_method = var.default_ingress_listening_method
+  listening_method = var.default_ingress_listening_method != "" ? (
+    var.default_ingress_listening_method) : (
+    var.private ? "internal" : "external"
+  )
 }
 
 data "aws_caller_identity" "current" {
