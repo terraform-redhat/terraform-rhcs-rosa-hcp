@@ -73,8 +73,8 @@ variable "operator_role_prefix" {
 
 variable "aws_subnet_ids" {
   type        = list(string)
-  default     = []
-  description = "The Subnet IDs to use when installing the cluster. Leave empty for installer provisioned subnet IDs."
+  default     = null
+  description = "The Subnet IDs to use when installing the cluster."
 }
 
 variable "kms_key_arn" {
@@ -266,6 +266,6 @@ variable "autoscaler_max_nodes_total" {
 ##############################################################
 variable "default_ingress_listening_method" {
   type        = string
-  default     = null
+  default     = ""
   description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\"."
 }
