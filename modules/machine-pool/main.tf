@@ -10,6 +10,7 @@ resource "rhcs_hcp_machine_pool" "machine_pool" {
   auto_repair                  = var.auto_repair
   version                      = var.openshift_version
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
+  tuning_configs               = var.tuning_configs
 
   lifecycle {
     ignore_changes = [
