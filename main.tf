@@ -83,6 +83,13 @@ module "rosa_cluster_hcp" {
   kms_key_arn          = var.kms_key_arn
 
   ########
+  # Cluster Admin User
+  ########  
+  create_admin_user          = var.create_admin_user
+  admin_credentials_username = var.admin_credentials_username
+  admin_credentials_password = var.admin_credentials_password
+
+  ########
   # Flags
   ########
   wait_for_create_complete            = var.wait_for_create_complete
