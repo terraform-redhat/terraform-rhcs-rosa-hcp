@@ -10,13 +10,13 @@ This Terraform sub-module assists with the configuration of identity providers (
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.0 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.6.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.0 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.6.2 |
 
 ## Modules
 
@@ -26,12 +26,12 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [rhcs_identity_provider.github_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
-| [rhcs_identity_provider.gitlab_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
-| [rhcs_identity_provider.google_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
-| [rhcs_identity_provider.htpasswd_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
-| [rhcs_identity_provider.ldap_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
-| [rhcs_identity_provider.openid_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.github_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.gitlab_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.google_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.htpasswd_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.ldap_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
+| [rhcs_identity_provider.openid_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/identity_provider) | resource |
 
 ## Inputs
 
