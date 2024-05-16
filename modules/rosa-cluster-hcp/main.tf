@@ -39,7 +39,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   cloud_region   = var.aws_region == null ? data.aws_region.current[0].name : var.aws_region
   aws_account_id = local.aws_account_id
   aws_billing_account_id = var.aws_billing_account_id == null || var.aws_billing_account_id == "" ? (
-    data.aws_caller_identity.current[0].account_id
+    local.aws_account_id
   ) : (var.aws_billing_account_id)
   sts  = local.sts_roles
   tags = var.tags

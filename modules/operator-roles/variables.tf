@@ -5,7 +5,7 @@ variable "operator_role_prefix" {
 }
 
 variable "path" {
-  description = "(Optional) The arn path for the account/operator roles as well as their policies."
+  description = "(Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'."
   type        = string
   default     = "/"
 }
