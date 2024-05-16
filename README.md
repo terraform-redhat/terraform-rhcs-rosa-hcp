@@ -5,6 +5,28 @@ Terraform module which creates ROSA HCP cluster
 
 This module serves as a comprehensive solution for deploying, configuring and managing Red Hat OpenShift on AWS (ROSA) Hosted Control Plane (HCP) clusters within your AWS environment. With a focus on simplicity and efficiency, this module streamlines the process of setting up and maintaining ROSA HCP clusters, enabling users to use the power of OpenShift on AWS infrastructure effortlessly.
 
+## Example Usage
+
+```
+module "hcp" {
+  source = "terraform-redhat/rosa-hcp/rhcs"
+
+  cluster_name           = var.cluster_name
+  openshift_version      = var.openshift_version
+  machine_cidr           = module.vpc.cidr_block
+  aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
+  aws_availability_zones = module.vpc.availability_zones
+  replicas               = length(module.vpc.availability_zones)
+
+  // STS configuration
+  create_account_roles  = true
+  account_role_prefix   = local.account_role_prefix
+  create_oidc           = true
+  create_operator_roles = true
+  operator_role_prefix  = local.operator_role_prefix
+}
+```
+
 ## Sub-modules
 
 Sub-modules included in this module:
@@ -53,10 +75,10 @@ We recommend you install the following CLI tools:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | ./modules/account-iam-resources | n/a |
-| <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ./modules/oidc-config-and-provider | n/a |
-| <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
-| <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ./modules/rosa-cluster-hcp | n/a |
+| <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources | 1.6.2-prerelease.1 |
+| <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider | 1.6.2-prerelease.1 |
+| <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | terraform-redhat/rosa-hcp/rhcs//modules/operator-roles | 1.6.2-prerelease.1 |
+| <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp | 1.6.2-prerelease.1 |
 
 ## Resources
 

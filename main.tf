@@ -14,7 +14,8 @@ locals {
 ##############################################################
 
 module "account_iam_resources" {
-  source = "./modules/account-iam-resources"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources"
+  version = "1.6.2-prerelease.1"
   count  = var.create_account_roles ? 1 : 0
 
   account_role_prefix  = local.account_role_prefix
@@ -27,7 +28,8 @@ module "account_iam_resources" {
 # OIDC config and provider
 ############################
 module "oidc_config_and_provider" {
-  source = "./modules/oidc-config-and-provider"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider"
+  version = "1.6.2-prerelease.1"
   count  = var.create_oidc ? 1 : 0
 
   managed = var.managed_oidc
@@ -47,7 +49,8 @@ module "oidc_config_and_provider" {
 # operator roles
 ############################
 module "operator_roles" {
-  source = "./modules/operator-roles"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/operator-roles"
+  version = "1.6.2-prerelease.1"
   count  = var.create_operator_roles ? 1 : 0
 
   operator_role_prefix = local.operator_role_prefix
@@ -61,7 +64,8 @@ module "operator_roles" {
 # ROSA STS cluster
 ############################
 module "rosa_cluster_hcp" {
-  source = "./modules/rosa-cluster-hcp"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp"
+  version = "1.6.2-prerelease.1"
 
   cluster_name           = var.cluster_name
   operator_role_prefix   = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix

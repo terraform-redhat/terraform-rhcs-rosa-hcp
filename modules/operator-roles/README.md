@@ -16,6 +16,17 @@ The following permissions are included in this sub-module:
 
 For more information, see the [About IAM resources for ROSA clusters that use STS](https://docs.openshift.com/rosa/rosa_architecture/rosa-sts-about-iam-resources.html#rosa-sts-about-iam-resources) in the ROSA documentation.
 
+## Example Usage
+
+```
+module "operator_roles" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/operator-roles"
+
+  operator_role_prefix = "role-prefix"
+  oidc_endpoint_url    = "my-url"
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 

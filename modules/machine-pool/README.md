@@ -4,6 +4,31 @@
 
 This Terraform sub-module manages the machine pool for ROSA HCP clusters. It enables you to efficiently configure and scale machine pools after cluster deployment, ensuring optimal resource allocation and performance for workloads within the ROSA HCP cluster environment. With this module, you can easily adjust the size and specifications of machine pools, facilitating seamless adaptation to changing workload demands and operational requirements in ROSA HCP clusters.
 
+## Example Usage
+
+```
+module "mp" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/machine-pool"
+
+  cluster_id = "cluster-id-123"
+  name = "my-pool"
+  openshift_version = "my-version"
+
+  aws_node_pool = {
+    instance_type = "my-instance"
+    tags = {}
+  }
+
+  subnet_id = "subnet-123"
+  autoscaling = {
+    enabled = false
+    min_replicas = null
+    max_replicas = null
+  }
+  replicas = 2
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 

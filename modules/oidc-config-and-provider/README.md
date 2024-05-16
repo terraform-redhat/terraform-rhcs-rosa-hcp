@@ -6,6 +6,16 @@ This Terraform sub-module manages the OpenID Connect (OIDC) provider and configu
 
 For more information, see [OpenID Connect Overview](https://docs.openshift.com/rosa/rosa_architecture/rosa-oidc-overview.html) in the ROSA documentation.
 
+## Example Usage
+
+```
+module "oidc_config_and_provider" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider"
+
+  managed = true
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 

@@ -7,6 +7,76 @@ This Terraform sub-module helps the provisioning and management of ROSA HCP clus
 This sub-module also includes the following resources:
 - Default Ingress: enables the setup and management of the default ingress configuration, allowing seamless routing of external traffic to services deployed within the cluster.
 
+## Example Usage
+
+```
+module "rosa_cluster_hcp" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp"
+
+  cluster_name           = var.cluster_name
+  operator_role_prefix   = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
+  openshift_version      = var.openshift_version
+  installer_role_arn     = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
+  support_role_arn       = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
+  worker_role_arn        = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
+  oidc_config_id         = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
+  aws_subnet_ids         = var.aws_subnet_ids
+  machine_cidr           = var.machine_cidr
+  service_cidr           = var.service_cidr
+  pod_cidr               = var.pod_cidr
+  host_prefix            = var.host_prefix
+  private                = var.private
+  tags                   = var.tags
+  properties             = var.properties
+  etcd_encryption        = var.etcd_encryption
+  etcd_kms_key_arn       = var.etcd_kms_key_arn
+  kms_key_arn            = var.kms_key_arn
+  aws_billing_account_id = var.aws_billing_account_id
+
+  ########
+  # Flags
+  ########
+  wait_for_create_complete            = var.wait_for_create_complete
+  wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
+  disable_waiting_in_destroy          = var.disable_waiting_in_destroy
+  destroy_timeout                     = var.destroy_timeout
+  upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
+
+  #######################
+  # Default Machine Pool
+  #######################
+
+  replicas               = var.replicas
+  compute_machine_type   = var.compute_machine_type
+  aws_availability_zones = var.aws_availability_zones
+
+  ########
+  # Proxy 
+  ########
+  http_proxy              = var.http_proxy
+  https_proxy             = var.https_proxy
+  no_proxy                = var.no_proxy
+  additional_trust_bundle = var.additional_trust_bundle
+
+  #############
+  # Autoscaler 
+  #############
+  cluster_autoscaler_enabled         = var.cluster_autoscaler_enabled
+  autoscaler_max_pod_grace_period    = var.autoscaler_max_pod_grace_period
+  autoscaler_pod_priority_threshold  = var.autoscaler_pod_priority_threshold
+  autoscaler_max_node_provision_time = var.autoscaler_max_node_provision_time
+  autoscaler_max_nodes_total         = var.autoscaler_max_nodes_total
+
+  ##################
+  # default_ingress 
+  ##################
+  default_ingress_listening_method = var.default_ingress_listening_method != "" ? (
+    var.default_ingress_listening_method) : (
+    var.private ? "internal" : "external"
+  )
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -75,7 +145,7 @@ No modules.
 | <a name="input_operator_role_prefix"></a> [operator\_role\_prefix](#input\_operator\_role\_prefix) | A designated prefix used for the creation of AWS IAM roles asso:willciated with operators within the ROSA environment. | `string` | n/a | yes |
 | <a name="input_path"></a> [path](#input\_path) | The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_pod_cidr"></a> [pod\_cidr](#input\_pod\_cidr) | Block of IP addresses from which Pod IP addresses are allocated, for example "10.128.0.0/14". | `string` | `null` | no |
-| <a name="input_private"></a> [private](#input\_private) | Restrict master API endpoint and application routes to direct, private connectivity. (default: false) | `bool` | `null` | no |
+| <a name="input_private"></a> [private](#input\_private) | Restrict master API endpoint and application routes to direct, private connectivity. (default: false) | `bool` | `false` | no |
 | <a name="input_properties"></a> [properties](#input\_properties) | User defined properties. | `map(string)` | `null` | no |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of worker nodes to provision. This attribute is applicable solely when autoscaling is disabled. Single zone clusters need at least 2 nodes, multizone clusters need at least 3 nodes. Hosted clusters require that the number of worker nodes be a multiple of the number of private subnets. (default: 2) | `number` | `null` | no |
 | <a name="input_service_cidr"></a> [service\_cidr](#input\_service\_cidr) | Block of IP addresses for services, for example "172.30.0.0/16". | `string` | `null` | no |

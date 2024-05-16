@@ -91,7 +91,8 @@ variable "etcd_kms_key_arn" {
 
 variable "private" {
   type        = bool
-  default     = null
+  default     = false
+  nullable    = false
   description = "Restrict master API endpoint and application routes to direct, private connectivity. (default: false)"
 }
 

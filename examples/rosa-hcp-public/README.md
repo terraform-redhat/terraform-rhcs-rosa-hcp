@@ -8,6 +8,63 @@ This example includes:
 - A ROSA cluster with public access.
 - All AWS resources (IAM and networking) that are created as part of the ROSA cluster module execution.
 
+## Example Usage
+
+```
+locals {
+  account_role_prefix  = "${var.cluster_name}-account"
+  operator_role_prefix = "${var.cluster_name}-operator"
+}
+
+# ############################
+# Cluster
+############################
+module "hcp" {
+  source = "terraform-redhat/rosa-hcp/rhcs"
+
+  cluster_name           = var.cluster_name
+  openshift_version      = var.openshift_version
+  machine_cidr           = module.vpc.cidr_block
+  aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
+  aws_availability_zones = module.vpc.availability_zones
+  replicas               = length(module.vpc.availability_zones)
+
+  // STS configuration
+  create_account_roles  = true
+  account_role_prefix   = local.account_role_prefix
+  create_oidc           = true
+  create_operator_roles = true
+  operator_role_prefix  = local.operator_role_prefix
+}
+
+############################
+# HTPASSWD IDP
+############################
+module "htpasswd_idp" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/idp"
+
+  cluster_id         = module.hcp.cluster_id
+  name               = "htpasswd-idp"
+  idp_type           = "htpasswd"
+  htpasswd_idp_users = [{ username = "test-user", password = random_password.password.result }]
+}
+
+resource "random_password" "password" {
+  length  = 14
+  special = true
+}
+
+############################
+# VPC
+############################
+module "vpc" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/vpc"
+
+  name_prefix              = var.cluster_name
+  availability_zones_count = 3
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -27,9 +84,9 @@ This example includes:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_hcp"></a> [hcp](#module\_hcp) | ../../ | n/a |
-| <a name="module_htpasswd_idp"></a> [htpasswd\_idp](#module\_htpasswd\_idp) | ../../modules/idp | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
+| <a name="module_hcp"></a> [hcp](#module\_hcp) | terraform-redhat/rosa-hcp/rhcs | 1.6.2-prerelease.1 |
+| <a name="module_htpasswd_idp"></a> [htpasswd\_idp](#module\_htpasswd\_idp) | terraform-redhat/rosa-hcp/rhcs//modules/idp | 1.6.2-prerelease.1 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-redhat/rosa-hcp/rhcs//modules/vpc | 1.6.2-prerelease.1 |
 
 ## Resources
 
