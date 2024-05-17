@@ -11,18 +11,11 @@ For more information, see [About IAM resources for ROSA clusters that use STS](h
 ## Example Usage
 
 ```
-locals {
-  account_role_prefix  = "${var.cluster_name}-account"
-  operator_role_prefix = "${var.cluster_name}-operator"
-}
-
 module "account_iam_resources" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources"
+  version = "1.6.2"
 
-  account_role_prefix  = local.account_role_prefix
-  path                 = local.path
-  permissions_boundary = var.permissions_boundary
-  tags                 = var.tags
+  account_role_prefix  = "my-cluster-account"
 }
 ```
 

@@ -9,6 +9,7 @@ This Terraform sub-module manages the machine pool for ROSA HCP clusters. It ena
 ```
 module "mp" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/machine-pool"
+  version = "1.6.2"
 
   cluster_id = "cluster-id-123"
   name = "my-pool"

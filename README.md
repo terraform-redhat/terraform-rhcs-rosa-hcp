@@ -8,15 +8,21 @@ This module serves as a comprehensive solution for deploying, configuring and ma
 ## Example Usage
 
 ```
+locals {
+  account_role_prefix  = "${var.cluster_name}-account"
+  operator_role_prefix = "${var.cluster_name}-operator"
+}
+
 module "hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs"
+  version = "1.6.2"
 
   cluster_name           = var.cluster_name
   openshift_version      = var.openshift_version
-  machine_cidr           = module.vpc.cidr_block
-  aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
-  aws_availability_zones = module.vpc.availability_zones
-  replicas               = length(module.vpc.availability_zones)
+  machine_cidr           = "10.0.0.0/16"
+  aws_subnet_ids         = ["subnet-1", "subnet-2"]
+  aws_availability_zones = ["us-west-2a"]
+  replicas               = 2
 
   // STS configuration
   create_account_roles  = true
@@ -24,6 +30,16 @@ module "hcp" {
   create_oidc           = true
   create_operator_roles = true
   operator_role_prefix  = local.operator_role_prefix
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "Name of the cluster. After the creation of the resource, it is not possible to update the attribute value."
+}
+
+variable "openshift_version" {
+  type        = string
+  description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 ```
 
