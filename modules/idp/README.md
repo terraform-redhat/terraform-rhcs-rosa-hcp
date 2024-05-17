@@ -9,6 +9,7 @@ This Terraform sub-module assists with the configuration of identity providers (
 ```
 module "htpasswd_idp" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/idp"
+  version = "1.6.2"
 
   cluster_id         = "cluster-id-123"
   name               = "htpasswd-idp"

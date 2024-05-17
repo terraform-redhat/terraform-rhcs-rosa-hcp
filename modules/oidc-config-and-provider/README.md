@@ -11,6 +11,7 @@ For more information, see [OpenID Connect Overview](https://docs.openshift.com/r
 ```
 module "oidc_config_and_provider" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider"
+  version = "1.6.2"
 
   managed = true
 }

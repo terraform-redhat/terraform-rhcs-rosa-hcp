@@ -12,68 +12,23 @@ This sub-module also includes the following resources:
 ```
 module "rosa_cluster_hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp"
+  version = "1.6.2"
 
-  cluster_name           = var.cluster_name
-  operator_role_prefix   = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
-  openshift_version      = var.openshift_version
-  installer_role_arn     = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
-  support_role_arn       = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
-  worker_role_arn        = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
-  oidc_config_id         = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
-  aws_subnet_ids         = var.aws_subnet_ids
-  machine_cidr           = var.machine_cidr
-  service_cidr           = var.service_cidr
-  pod_cidr               = var.pod_cidr
-  host_prefix            = var.host_prefix
-  private                = var.private
-  tags                   = var.tags
-  properties             = var.properties
-  etcd_encryption        = var.etcd_encryption
-  etcd_kms_key_arn       = var.etcd_kms_key_arn
-  kms_key_arn            = var.kms_key_arn
-  aws_billing_account_id = var.aws_billing_account_id
-
-  ########
-  # Flags
-  ########
-  wait_for_create_complete            = var.wait_for_create_complete
-  wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
-  disable_waiting_in_destroy          = var.disable_waiting_in_destroy
-  destroy_timeout                     = var.destroy_timeout
-  upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
-
-  #######################
-  # Default Machine Pool
-  #######################
-
-  replicas               = var.replicas
-  compute_machine_type   = var.compute_machine_type
-  aws_availability_zones = var.aws_availability_zones
-
-  ########
-  # Proxy 
-  ########
-  http_proxy              = var.http_proxy
-  https_proxy             = var.https_proxy
-  no_proxy                = var.no_proxy
-  additional_trust_bundle = var.additional_trust_bundle
-
-  #############
-  # Autoscaler 
-  #############
-  cluster_autoscaler_enabled         = var.cluster_autoscaler_enabled
-  autoscaler_max_pod_grace_period    = var.autoscaler_max_pod_grace_period
-  autoscaler_pod_priority_threshold  = var.autoscaler_pod_priority_threshold
-  autoscaler_max_node_provision_time = var.autoscaler_max_node_provision_time
-  autoscaler_max_nodes_total         = var.autoscaler_max_nodes_total
-
-  ##################
-  # default_ingress 
-  ##################
-  default_ingress_listening_method = var.default_ingress_listening_method != "" ? (
-    var.default_ingress_listening_method) : (
-    var.private ? "internal" : "external"
-  )
+  cluster_name           = "my-cluster"
+  operator_role_prefix   = "my-operators"
+  openshift_version      = "4.14.24"
+  installer_role_arn     = "arn:aws:iam::012345678912:role/ManagedOpenShift-HCP-ROSA-Installer-Role"
+  support_role_arn       = "arn:aws:iam::012345678912:role/ManagedOpenShift-HCP-ROSA-Support-Role"
+  worker_role_arn        = "arn:aws:iam::012345678912:role/ManagedOpenShift-HCP-ROSA-Worker-Role"
+  oidc_config_id         = "oidc-config-123"
+  aws_subnet_ids         = ["subnet-1","subnet-2"]
+  machine_cidr           = "10.0.0.0/16"
+  service_cidr           = "172.30.0.0/16"
+  pod_cidr               = "10.128.0.0/14"
+  host_prefix            = "23"
+  replicas               = 2
+  compute_machine_type   = "m5.xlarge"
+  aws_availability_zones = ["us-west-2a"]
 }
 ```
 
@@ -124,11 +79,11 @@ No modules.
 | <a name="input_aws_availability_zones"></a> [aws\_availability\_zones](#input\_aws\_availability\_zones) | The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones | `list(string)` | `[]` | no |
 | <a name="input_aws_billing_account_id"></a> [aws\_billing\_account\_id](#input\_aws\_billing\_account\_id) | The AWS billing account identifier where all resources are billed. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The full name of the AWS region used for the ROSA cluster installation, for example 'us-east-1'. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
-| <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The Subnet IDs to use when installing the cluster. | `list(string)` | `null` | no |
+| <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The Subnet IDs to use when installing the cluster. | `list(string)` | n/a | yes |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Enable Autoscaler for this cluster. | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
 | <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
-| <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". | `string` | `""` | no |
+| <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". When empty is set based on private variable. | `string` | `""` | no |
 | <a name="input_destroy_timeout"></a> [destroy\_timeout](#input\_destroy\_timeout) | Maximum duration in minutes to allow for destroying resources. (Default: 60 minutes) | `number` | `null` | no |
 | <a name="input_disable_waiting_in_destroy"></a> [disable\_waiting\_in\_destroy](#input\_disable\_waiting\_in\_destroy) | Disable addressing cluster state in the destroy resource. Default value is false, and so a `destroy` will wait for the cluster to be deleted. | `bool` | `null` | no |
 | <a name="input_etcd_encryption"></a> [etcd\_encryption](#input\_etcd\_encryption) | Add etcd encryption. By default etcd data is encrypted at rest. This option configures etcd encryption on top of existing storage encryption. | `bool` | `null` | no |

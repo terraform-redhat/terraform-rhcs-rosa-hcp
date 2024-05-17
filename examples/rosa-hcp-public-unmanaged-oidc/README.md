@@ -11,19 +11,15 @@ This example includes:
 ## Example Usage
 
 ```
-locals {
-  account_role_prefix  = "${var.cluster_name}-account"
-  operator_role_prefix = "${var.cluster_name}-operator"
-}
-
 ############################
 # Cluster
 ############################
 module "hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs"
+  version = "1.6.2"
 
-  cluster_name           = var.cluster_name
-  openshift_version      = var.openshift_version
+  cluster_name           = "my-cluster"
+  openshift_version      = "4.14.24"
   machine_cidr           = module.vpc.cidr_block
   aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
   aws_availability_zones = module.vpc.availability_zones
@@ -31,11 +27,11 @@ module "hcp" {
 
   // STS configuration
   create_account_roles  = true
-  account_role_prefix   = local.account_role_prefix
+  account_role_prefix   = "my-cluster-account
   create_oidc           = true
   managed_oidc          = false
   create_operator_roles = true
-  operator_role_prefix  = local.operator_role_prefix
+  operator_role_prefix  = "my-cluster-operator"
 }
 
 ############################
@@ -61,7 +57,7 @@ resource "random_password" "password" {
 module "vpc" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/vpc"
 
-  name_prefix              = var.cluster_name
+  name_prefix              = "my-cluster"
   availability_zones_count = 3
 }
 ```
@@ -85,9 +81,9 @@ module "vpc" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_hcp"></a> [hcp](#module\_hcp) | terraform-redhat/rosa-hcp/rhcs | 1.6.2-prerelease.1 |
-| <a name="module_htpasswd_idp"></a> [htpasswd\_idp](#module\_htpasswd\_idp) | terraform-redhat/rosa-hcp/rhcs//modules/idp | 1.6.2-prerelease.1 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-redhat/rosa-hcp/rhcs//modules/vpc | 1.6.2-prerelease.1 |
+| <a name="module_hcp"></a> [hcp](#module\_hcp) | ../../ | n/a |
+| <a name="module_htpasswd_idp"></a> [htpasswd\_idp](#module\_htpasswd\_idp) | ../../modules/idp | n/a |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 
 ## Resources
 

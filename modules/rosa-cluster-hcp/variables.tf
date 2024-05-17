@@ -73,7 +73,7 @@ variable "operator_role_prefix" {
 
 variable "aws_subnet_ids" {
   type        = list(string)
-  default     = null
+  nullable    = false
   description = "The Subnet IDs to use when installing the cluster."
 }
 
@@ -268,5 +268,5 @@ variable "autoscaler_max_nodes_total" {
 variable "default_ingress_listening_method" {
   type        = string
   default     = ""
-  description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\"."
+  description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\". When empty is set based on private variable."
 }
