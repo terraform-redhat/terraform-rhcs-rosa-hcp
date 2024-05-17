@@ -217,7 +217,7 @@ variable "autoscaler_max_nodes_total" {
 variable "default_ingress_listening_method" {
   type        = string
   default     = ""
-  description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\"."
+  description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\". When empty is set based on private variable."
 }
 ##############################################################
 # General variables

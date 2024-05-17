@@ -8,17 +8,12 @@ This module serves as a comprehensive solution for deploying, configuring and ma
 ## Example Usage
 
 ```
-locals {
-  account_role_prefix  = "${var.cluster_name}-account"
-  operator_role_prefix = "${var.cluster_name}-operator"
-}
-
 module "hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs"
   version = "1.6.2"
 
-  cluster_name           = var.cluster_name
-  openshift_version      = var.openshift_version
+  cluster_name           = "my-cluster"
+  openshift_version      = "4.14.24"
   machine_cidr           = "10.0.0.0/16"
   aws_subnet_ids         = ["subnet-1", "subnet-2"]
   aws_availability_zones = ["us-west-2a"]
@@ -26,20 +21,10 @@ module "hcp" {
 
   // STS configuration
   create_account_roles  = true
-  account_role_prefix   = local.account_role_prefix
+  account_role_prefix   = "my-cluster-account"
   create_oidc           = true
   create_operator_roles = true
-  operator_role_prefix  = local.operator_role_prefix
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "Name of the cluster. After the creation of the resource, it is not possible to update the attribute value."
-}
-
-variable "openshift_version" {
-  type        = string
-  description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
+  operator_role_prefix  = "my-cluster-operator"
 }
 ```
 
@@ -50,7 +35,7 @@ Sub-modules included in this module:
 - account-iam-resource: Handles the provisioning of Identity and Access Management (IAM) resources required for managing access and permissions in the AWS account associated with the ROSA HCP cluster.
 - idp: Responsible for configuring Identity Providers (IDPs) within the ROSA HCP cluster, faciliting seamless integration with external authentication system such as Github (GH), GitLab, Google, HTPasswd, LDAP and OpenID Connect (OIDC).
 - machine-pool: Facilitates the management of machine pools within the ROSA HCP cluster, enabling users to scale resources and adjust specifications based on workload demands.
-- oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enaling secure authentication and access control mechanisms for operator roles.
+- oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enabling secure authentication and access control mechanisms for operator roles.
 - operator-roles: Oversees the management of roles assigned to operators within the ROSA HCP cluster, enabling to perform required actions with appropriate permissions on the lifecyle of a cluster.
 - rosa-cluster-hcp: Handles the core configuration and provisioning of the ROSA HCP cluster, including cluster networking, security settings and other essential components.
 - vpc: Handles the configuration and provisioning of the Virtucal Private Cloud (VPC) infrastracture required for hosting the ROSA HCP cluster and it's associated resources.
@@ -91,10 +76,10 @@ We recommend you install the following CLI tools:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources | 1.6.2-prerelease.1 |
-| <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider | 1.6.2-prerelease.1 |
-| <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | terraform-redhat/rosa-hcp/rhcs//modules/operator-roles | 1.6.2-prerelease.1 |
-| <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp | 1.6.2-prerelease.1 |
+| <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | ./modules/account-iam-resources | n/a |
+| <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ./modules/oidc-config-and-provider | n/a |
+| <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
+| <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ./modules/rosa-cluster-hcp | n/a |
 
 ## Resources
 
@@ -122,7 +107,7 @@ We recommend you install the following CLI tools:
 | <a name="input_create_account_roles"></a> [create\_account\_roles](#input\_create\_account\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
 | <a name="input_create_oidc"></a> [create\_oidc](#input\_create\_oidc) | Create the oidc resources. | `bool` | `false` | no |
 | <a name="input_create_operator_roles"></a> [create\_operator\_roles](#input\_create\_operator\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
-| <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". | `string` | `""` | no |
+| <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". When empty is set based on private variable. | `string` | `""` | no |
 | <a name="input_destroy_timeout"></a> [destroy\_timeout](#input\_destroy\_timeout) | Maximum duration in minutes to allow for destroying resources. (Default: 60 minutes) | `number` | `null` | no |
 | <a name="input_disable_waiting_in_destroy"></a> [disable\_waiting\_in\_destroy](#input\_disable\_waiting\_in\_destroy) | Disable addressing cluster state in the destroy resource. Default value is false, and so a `destroy` will wait for the cluster to be deleted. | `bool` | `null` | no |
 | <a name="input_etcd_encryption"></a> [etcd\_encryption](#input\_etcd\_encryption) | Add etcd encryption. By default etcd data is encrypted at rest. This option configures etcd encryption on top of existing storage encryption. | `bool` | `null` | no |
