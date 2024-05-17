@@ -12,7 +12,7 @@ variable "aws_region" {
 variable "path" {
   type        = string
   default     = "/"
-  description = "The arn path for the account/operator roles as well as their policies."
+  description = "The arn path for the account/operator roles as well as their policies. Must begin and end with '/'."
 }
 
 variable "openshift_version" {
@@ -91,7 +91,8 @@ variable "etcd_kms_key_arn" {
 
 variable "private" {
   type        = bool
-  default     = null
+  default     = false
+  nullable    = false
   description = "Restrict master API endpoint and application routes to direct, private connectivity. (default: false)"
 }
 

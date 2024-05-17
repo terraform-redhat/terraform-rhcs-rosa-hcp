@@ -16,6 +16,17 @@ The following permissions are included in this sub-module:
 
 For more information, see the [About IAM resources for ROSA clusters that use STS](https://docs.openshift.com/rosa/rosa_architecture/rosa-sts-about-iam-resources.html#rosa-sts-about-iam-resources) in the ROSA documentation.
 
+## Example Usage
+
+```
+module "operator_roles" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/operator-roles"
+
+  operator_role_prefix = "role-prefix"
+  oidc_endpoint_url    = "my-url"
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -53,7 +64,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_oidc_endpoint_url"></a> [oidc\_endpoint\_url](#input\_oidc\_endpoint\_url) | oidc provider url | `string` | n/a | yes |
 | <a name="input_operator_role_prefix"></a> [operator\_role\_prefix](#input\_operator\_role\_prefix) | Prefix to be used when creating the operator roles | `string` | `"tf-op"` | no |
-| <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. | `string` | `"/"` | no |
+| <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
 

@@ -35,7 +35,7 @@ variable "labels" {
 variable "subnet_id" {
   description = "Select the subnet in which to create a single AZ machine pool for BYO-VPC cluster"
   type        = string
-  default     = null
+  nullable = false
 }
 
 variable "autoscaling" {
@@ -49,6 +49,7 @@ variable "autoscaling" {
     min_replicas = null
     max_replicas = null
   }
+  nullable = false
   description = "Configures autoscaling for the pool."
 }
 
@@ -57,7 +58,7 @@ variable "aws_node_pool" {
     instance_type = string
     tags = map(string)
   })
-  default = null
+  nullable = false
   description = "Configures aws settings for the pool."
 }
 
@@ -70,6 +71,7 @@ variable "auto_repair" {
 variable "openshift_version" {
   type        = string
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
+  nullable = false
 }
 
 variable "upgrade_acknowledgements_for" {

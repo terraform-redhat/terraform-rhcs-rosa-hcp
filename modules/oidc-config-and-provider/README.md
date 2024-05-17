@@ -6,6 +6,16 @@ This Terraform sub-module manages the OpenID Connect (OIDC) provider and configu
 
 For more information, see [OpenID Connect Overview](https://docs.openshift.com/rosa/rosa_architecture/rosa-oidc-overview.html) in the ROSA documentation.
 
+## Example Usage
+
+```
+module "oidc_config_and_provider" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider"
+
+  managed = true
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -54,7 +64,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_installer_role_arn"></a> [installer\_role\_arn](#input\_installer\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role used by the ROSA installer. Applicable exclusively to unmanaged OIDC; otherwise, leave empty. | `string` | `null` | no |
-| <a name="input_managed"></a> [managed](#input\_managed) | Indicates whether it is a Red Hat managed or unmanaged (Customer hosted) OIDC Configuration | `bool` | `true` | no |
+| <a name="input_managed"></a> [managed](#input\_managed) | Indicates whether it is a Red Hat managed or unmanaged (Customer hosted) OIDC Configuration. This value should not be updated, please create a new resource instead. | `bool` | `true` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs

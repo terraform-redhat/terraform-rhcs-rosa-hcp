@@ -4,6 +4,17 @@
 
 This Terraform sub-module allow you to Bring Your Own VPC (BYO VPC) for ROSA HCP clusters. It enables you to provision and configure all necessary resources within an existing AWS VPC, ensuring compatibility and seamless integration with ROSA deployments. By leveraging this module, you can efficiently set up your own VPC environment, complete with networking components such as subnets, route tables, internet gateways, NAT gateways, and security groups, tailored specifically for ROSA HCP cluster requirements. This flexibility allows for a smooth change if you prefer to use your own VPC infrastructure while leveraging the capabilities of ROSA.
 
+## Example Usage
+
+```
+module "vpc" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/vpc"
+
+  name_prefix              = "my-vpc"
+  availability_zones_count = 3
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 

@@ -3,6 +3,12 @@ variable "cluster_name" {
   description = "Name of the cluster. After the creation of the resource, it is not possible to update the attribute value."
 }
 
+variable "aws_billing_account_id" {
+  type        = string
+  default     = null
+  description = "The AWS billing account identifier where all resources are billed. If no information is provided, the data will be retrieved from the currently connected account."
+}
+
 variable "openshift_version" {
   type        = string
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
@@ -11,13 +17,13 @@ variable "openshift_version" {
 variable "oidc_config_id" {
   type        = string
   default     = null
-  description = "The unique identifier associated with users authenticated through OpenID Connect (OIDC) within the ROSA cluster."
+  description = "The unique identifier associated with users authenticated through OpenID Connect (OIDC) within the ROSA cluster. If create_oidc is false this attribute is required."
 }
 
 variable "aws_subnet_ids" {
   type        = list(string)
-  default     = null
   description = "The Subnet IDs to use when installing the cluster."
+  nullable    = false
 }
 
 variable "kms_key_arn" {
@@ -35,6 +41,7 @@ variable "etcd_kms_key_arn" {
 variable "private" {
   type        = bool
   default     = false
+  nullable    = false
   description = "Restrict master API endpoint and application routes to direct, private connectivity. (default: false)"
 }
 
@@ -220,7 +227,7 @@ variable "default_ingress_listening_method" {
 variable "path" {
   type        = string
   default     = "/"
-  description = "The arn path for the account/operator roles as well as their policies."
+  description = "The arn path for the account/operator roles as well as their policies. Must begin and end with '/'."
 }
 
 variable "permissions_boundary" {

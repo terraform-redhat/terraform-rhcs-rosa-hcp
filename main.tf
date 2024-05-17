@@ -14,7 +14,8 @@ locals {
 ##############################################################
 
 module "account_iam_resources" {
-  source = "./modules/account-iam-resources"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources"
+  version = "1.6.2-prerelease.1"
   count  = var.create_account_roles ? 1 : 0
 
   account_role_prefix  = local.account_role_prefix
@@ -27,7 +28,8 @@ module "account_iam_resources" {
 # OIDC config and provider
 ############################
 module "oidc_config_and_provider" {
-  source = "./modules/oidc-config-and-provider"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/oidc-config-and-provider"
+  version = "1.6.2-prerelease.1"
   count  = var.create_oidc ? 1 : 0
 
   managed = var.managed_oidc
@@ -47,7 +49,8 @@ module "oidc_config_and_provider" {
 # operator roles
 ############################
 module "operator_roles" {
-  source = "./modules/operator-roles"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/operator-roles"
+  version = "1.6.2-prerelease.1"
   count  = var.create_operator_roles ? 1 : 0
 
   operator_role_prefix = local.operator_role_prefix
@@ -61,26 +64,28 @@ module "operator_roles" {
 # ROSA STS cluster
 ############################
 module "rosa_cluster_hcp" {
-  source = "./modules/rosa-cluster-hcp"
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/rosa-cluster-hcp"
+  version = "1.6.2-prerelease.1"
 
-  cluster_name         = var.cluster_name
-  operator_role_prefix = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
-  openshift_version    = var.openshift_version
-  installer_role_arn   = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
-  support_role_arn     = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
-  worker_role_arn      = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
-  oidc_config_id       = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
-  aws_subnet_ids       = var.aws_subnet_ids
-  machine_cidr         = var.machine_cidr
-  service_cidr         = var.service_cidr
-  pod_cidr             = var.pod_cidr
-  host_prefix          = var.host_prefix
-  private              = var.private
-  tags                 = var.tags
-  properties           = var.properties
-  etcd_encryption      = var.etcd_encryption
-  etcd_kms_key_arn     = var.etcd_kms_key_arn
-  kms_key_arn          = var.kms_key_arn
+  cluster_name           = var.cluster_name
+  operator_role_prefix   = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
+  openshift_version      = var.openshift_version
+  installer_role_arn     = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
+  support_role_arn       = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
+  worker_role_arn        = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
+  oidc_config_id         = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
+  aws_subnet_ids         = var.aws_subnet_ids
+  machine_cidr           = var.machine_cidr
+  service_cidr           = var.service_cidr
+  pod_cidr               = var.pod_cidr
+  host_prefix            = var.host_prefix
+  private                = var.private
+  tags                   = var.tags
+  properties             = var.properties
+  etcd_encryption        = var.etcd_encryption
+  etcd_kms_key_arn       = var.etcd_kms_key_arn
+  kms_key_arn            = var.kms_key_arn
+  aws_billing_account_id = var.aws_billing_account_id
 
   ########
   # Flags

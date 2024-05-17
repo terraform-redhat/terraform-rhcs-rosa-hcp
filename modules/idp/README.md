@@ -4,6 +4,24 @@
 
 This Terraform sub-module assists with the configuration of identity providers (IDPs) for ROSA HCP clusters. It offers support for various IDP types, including GitHub, GitLab, Google, HTPasswd, LDAP, and OpenID. With this module, you can seamlessly integrate external authentication mechanisms into your ROSA HCP clusters, enhancing security and user management capabilities. By enabling the configuration of different IDP types, you can tailor authentication methods to their specific requirements, ensuring flexibility and compatibility within the ROSA HCP cluster environment deployed on AWS.
 
+## Example Usage
+
+```
+module "htpasswd_idp" {
+  source = "terraform-redhat/rosa-hcp/rhcs//modules/idp"
+
+  cluster_id         = "cluster-id-123"
+  name               = "htpasswd-idp"
+  idp_type           = "htpasswd"
+  htpasswd_idp_users = [{ username = "test-user", password = random_password.password.result }]
+}
+
+resource "random_password" "password" {
+  length  = 14
+  special = true
+}
+```
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
