@@ -257,13 +257,13 @@ variable "account_role_prefix" {
 ##############################################################
 
 variable "create_oidc" {
-  description = "Create the oidc resources."
+  description = "Create the oidc resources. This value should not be updated, please create a new resource instead or utilize the submodule to create a new oidc config"
   type        = bool
   default     = false
 }
 
 variable "managed_oidc" {
-  description = "OIDC type managed or unmanaged oidc"
+  description = "OIDC type managed or unmanaged oidc. Only active when create_oidc also enabled. This value should not be updated, please create a new resource instead"
   type        = bool
   default     = true
 }
