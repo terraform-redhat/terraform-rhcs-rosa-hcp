@@ -184,7 +184,7 @@ variable "aws_availability_zones" {
 variable "cluster_autoscaler_enabled" {
   type        = bool
   default     = false
-  description = "Enable Autoscaler for this cluster."
+  description = "Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available'"
 }
 
 variable "autoscaler_max_pod_grace_period" {
@@ -257,13 +257,13 @@ variable "account_role_prefix" {
 ##############################################################
 
 variable "create_oidc" {
-  description = "Create the oidc resources."
+  description = "Create the oidc resources. This value should not be updated, please create a new resource instead or utilize the submodule to create a new oidc config"
   type        = bool
   default     = false
 }
 
 variable "managed_oidc" {
-  description = "OIDC type managed or unmanaged oidc"
+  description = "OIDC type managed or unmanaged oidc. Only active when create_oidc also enabled. This value should not be updated, please create a new resource instead"
   type        = bool
   default     = true
 }

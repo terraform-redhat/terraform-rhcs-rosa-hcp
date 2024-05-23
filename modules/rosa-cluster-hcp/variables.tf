@@ -235,7 +235,7 @@ variable "aws_availability_zones" {
 variable "cluster_autoscaler_enabled" {
   type        = bool
   default     = false
-  description = "Enable Autoscaler for this cluster."
+  description = "Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available'"
 }
 
 variable "autoscaler_max_pod_grace_period" {
