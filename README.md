@@ -40,7 +40,7 @@ Sub-modules included in this module:
 - rosa-cluster-hcp: Handles the core configuration and provisioning of the ROSA HCP cluster, including cluster networking, security settings and other essential components.
 - vpc: Handles the configuration and provisioning of the Virtucal Private Cloud (VPC) infrastracture required for hosting the ROSA HCP cluster and it's associated resources.
 
-The primary sub-modules responsible for ROSA HCP cluster creation includes optional configurations for setting up account roles, oeprator roles and OIDC config/provider. This comprehensive module handles the entire process of provisioning and configuring ROSA HCP clusters in your AWS environment.
+The primary sub-modules responsible for ROSA HCP cluster creation includes optional configurations for setting up account roles, operator roles and OIDC config/provider. This comprehensive module handles the entire process of provisioning and configuring ROSA HCP clusters in your AWS environment.
 
 ## Pre-requisites
 
