@@ -26,6 +26,7 @@ module "hcp" {
         instance_type = "r5.xlarge"
         tags = {}
       }
+      auto_repair = true
       replicas = 3
       openshift_version = var.openshift_version
       subnet_id = module.vpc.private_subnets[0]
@@ -36,6 +37,7 @@ module "hcp" {
         instance_type = "r5.xlarge"
         tags = {}
       }
+      auto_repair = true
       replicas = 3
       openshift_version = var.openshift_version
       subnet_id = module.vpc.private_subnets[1]
