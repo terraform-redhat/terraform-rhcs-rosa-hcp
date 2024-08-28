@@ -36,13 +36,13 @@ module "mp" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
 
 ## Modules
 
@@ -52,7 +52,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [rhcs_hcp_machine_pool.machine_pool](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/hcp_machine_pool) | resource |
+| [rhcs_hcp_machine_pool.machine_pool](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/hcp_machine_pool) | resource |
 
 ## Inputs
 

@@ -39,14 +39,14 @@ module "rosa_cluster_hcp" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
 
 ## Modules
 
@@ -56,9 +56,9 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [rhcs_cluster_rosa_hcp.rosa_hcp_cluster](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/cluster_rosa_hcp) | resource |
-| [rhcs_hcp_cluster_autoscaler.cluster_autoscaler](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/hcp_cluster_autoscaler) | resource |
-| [rhcs_hcp_default_ingress.default_ingress](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.2/docs/resources/hcp_default_ingress) | resource |
+| [rhcs_cluster_rosa_hcp.rosa_hcp_cluster](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/cluster_rosa_hcp) | resource |
+| [rhcs_hcp_cluster_autoscaler.cluster_autoscaler](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/hcp_cluster_autoscaler) | resource |
+| [rhcs_hcp_default_ingress.default_ingress](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/hcp_default_ingress) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
