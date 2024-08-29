@@ -16,6 +16,7 @@ module "hcp" {
   aws_availability_zones = module.vpc.availability_zones
   replicas               = length(module.vpc.availability_zones)
   private                = true
+  create_admin_user      = true
 
   // STS configuration
   create_account_roles  = true

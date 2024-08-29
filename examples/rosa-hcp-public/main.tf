@@ -15,6 +15,7 @@ module "hcp" {
   aws_subnet_ids         = concat(module.vpc.public_subnets, module.vpc.private_subnets)
   aws_availability_zones = module.vpc.availability_zones
   replicas               = length(module.vpc.availability_zones)
+  create_admin_user      = true
 
   // STS configuration
   create_account_roles  = true
