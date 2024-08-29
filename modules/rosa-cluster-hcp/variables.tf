@@ -120,6 +120,25 @@ variable "host_prefix" {
   description = "Subnet prefix length to assign to each individual node. For example, if host prefix is set to \"23\", then each node is assigned a /23 subnet out of the given CIDR."
 }
 
+variable "create_admin_user" {
+  type        = bool
+  default     = null
+  description = "To create cluster admin user with default username `cluster-admin` and generated password. It will be ignored if `admin_credentials_username` or `admin_credentials_password` is set. (default: false)"
+}
+
+variable "admin_credentials_username" {
+  type        = string
+  default     = null
+  description = "Admin username that is created with the cluster. auto generated username - \"cluster-admin\""
+}
+
+variable "admin_credentials_password" {
+  type        = string
+  default     = null
+  description = "Admin password that is created with the cluster. The password must contain at least 14 characters (ASCII-standard) without whitespaces including uppercase letters, lowercase letters, and numbers or symbols."
+  sensitive   = true
+}
+
 ##############################################################
 # Proxy variables
 ##############################################################

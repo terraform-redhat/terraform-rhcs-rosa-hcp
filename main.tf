@@ -84,6 +84,13 @@ module "rosa_cluster_hcp" {
   aws_billing_account_id = var.aws_billing_account_id
 
   ########
+  # Cluster Admin User
+  ########  
+  create_admin_user          = var.create_admin_user
+  admin_credentials_username = var.admin_credentials_username
+  admin_credentials_password = var.admin_credentials_password
+
+  ########
   # Flags
   ########
   wait_for_create_complete            = var.wait_for_create_complete

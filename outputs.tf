@@ -3,6 +3,17 @@ output "cluster_id" {
   description = "Unique identifier of the cluster."
 }
 
+output "cluster_admin_username" {
+  value       = module.rosa_cluster_hcp.cluster_admin_username
+  description = "The username of the admin user."
+}
+
+output "cluster_admin_password" {
+  value       = module.rosa_cluster_hcp.cluster_admin_password
+  description = "The password of the admin user."
+  sensitive   = true
+}
+
 output "account_role_prefix" {
   value       = var.create_account_roles ? module.account_iam_resources[0].account_role_prefix: null
   description = "The prefix used for all generated AWS resources."

@@ -23,6 +23,12 @@ locals {
     oidc_config_id       = var.oidc_config_id
   }
   aws_account_arn = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
+  create_admin_user = var.create_admin_user
+  admin_credentials = var.admin_credentials_username == null && var.admin_credentials_password == null ? (
+    null
+    ) : (
+    { username = var.admin_credentials_username, password = var.admin_credentials_password }
+  )
 }
 
 resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
@@ -55,7 +61,9 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   replicas             = var.replicas
   aws_subnet_ids       = var.aws_subnet_ids
   compute_machine_type = var.compute_machine_type
-
+  create_admin_user    = local.create_admin_user
+  admin_credentials    = local.admin_credentials
+  
   machine_cidr = var.machine_cidr
   service_cidr = var.service_cidr
   pod_cidr     = var.pod_cidr
