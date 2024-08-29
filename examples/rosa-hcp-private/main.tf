@@ -9,14 +9,15 @@ locals {
 module "hcp" {
   source = "../../"
 
-  cluster_name           = var.cluster_name
-  openshift_version      = var.openshift_version
-  machine_cidr           = module.vpc.cidr_block
-  aws_subnet_ids         = module.vpc.private_subnets
-  aws_availability_zones = module.vpc.availability_zones
-  replicas               = length(module.vpc.availability_zones)
-  private                = true
-  create_admin_user      = true
+  cluster_name             = var.cluster_name
+  openshift_version        = var.openshift_version
+  machine_cidr             = module.vpc.cidr_block
+  aws_subnet_ids           = module.vpc.private_subnets
+  aws_availability_zones   = module.vpc.availability_zones
+  replicas                 = length(module.vpc.availability_zones)
+  private                  = true
+  create_admin_user        = true
+  ec2_metadata_http_tokens = "required"
 
   // STS configuration
   create_account_roles  = true
