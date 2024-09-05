@@ -9,9 +9,16 @@ variable "name_prefix" {
   description = "User-defined prefix for all generated AWS resources of this VPC. This value should not be updated, please create a new resource instead"
 }
 
+variable "availability_zones" {
+  type        = list(string)
+  default     = null
+  description = "A list of availability zones names in the region.  This value should not be updated, please create a new resource instead"
+}
+
 variable "availability_zones_count" {
   type        = number
-  description = "The count of availability zones to utilize within the specified AWS Region, where pairs of public and private subnets will be generated. This value should not be updated, please create a new resource instead"
+  default     = null
+  description = "The count of availability zones to utilize within the specified AWS Region, where pairs of public and private subnets will be generated. Valid only when availability_zones variable is not provided. This value should not be updated, please create a new resource instead"
 }
 
 variable "tags" {
