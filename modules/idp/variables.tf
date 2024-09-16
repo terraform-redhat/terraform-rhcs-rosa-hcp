@@ -30,13 +30,14 @@ variable "mapping_method" {
 variable "github_idp_client_id" {
   type        = string
   default     = null
-  description = "Client secret issued by Github (required). Valid only to Github Identity Provider (idp_type=github)"
+  description = "Client identifier issued by Github (required). Valid only to Github Identity Provider (idp_type=github)"
 }
 
 variable "github_idp_client_secret" {
   type        = string
   default     = null
   description = "Client secret issued by Github (required). Valid only to Github Identity Provider (idp_type=github)"
+  sensitive   = true
 }
 
 variable "github_idp_ca" {
@@ -77,6 +78,7 @@ variable "gitlab_idp_client_secret" {
   type        = string
   default     = null
   description = "Client secret issued by Gitlab (required). Valid only to Gitlab Identity Provider (idp_type=gitlab)"
+  sensitive   = true
 }
 
 variable "gitlab_idp_url" {
@@ -105,6 +107,7 @@ variable "google_idp_client_secret" {
   type        = string
   default     = null
   description = "Client secret issued by Google (required). Valid only to Google Identity Provider (idp_type=google)"
+  sensitive   = true
 }
 
 variable "google_idp_hosted_domain" {
@@ -124,6 +127,7 @@ variable "htpasswd_idp_users" {
   }))
   default     = null
   description = "A list of htpasswd user credentials (required). Valid only to Htpasswd Identity Provider (idp_type=htpasswd)"
+  sensitive   = true
 }
 
 #########################
@@ -140,6 +144,7 @@ variable "ldap_idp_bind_password" {
   type        = string
   default     = null
   description = "Password to bind with during the search phase (optional). Valid only to Ldap Identity Provider (idp_type=ldap)"
+  sensitive   = true
 }
 
 variable "ldap_idp_ca" {
@@ -228,6 +233,7 @@ variable "openid_idp_client_secret" {
   type        = string
   default     = null
   description = "Client Secret from the registered application (required). Valid only to OpenID Identity Provider (idp_type=openid)"
+  sensitive   = true
 }
 
 variable "openid_idp_extra_scopes" {

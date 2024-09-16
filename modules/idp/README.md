@@ -62,7 +62,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_github_idp_ca"></a> [github\_idp\_ca](#input\_github\_idp\_ca) | Path to PEM-encoded certificate file to use when making requests to the server (optional). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
-| <a name="input_github_idp_client_id"></a> [github\_idp\_client\_id](#input\_github\_idp\_client\_id) | Client secret issued by Github (required). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
+| <a name="input_github_idp_client_id"></a> [github\_idp\_client\_id](#input\_github\_idp\_client\_id) | Client identifier issued by Github (required). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
 | <a name="input_github_idp_client_secret"></a> [github\_idp\_client\_secret](#input\_github\_idp\_client\_secret) | Client secret issued by Github (required). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
 | <a name="input_github_idp_hostname"></a> [github\_idp\_hostname](#input\_github\_idp\_hostname) | Optional domain to use with a hosted instance of GitHub Enterprise (optional). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
 | <a name="input_github_idp_organizations"></a> [github\_idp\_organizations](#input\_github\_idp\_organizations) | Only users that are members of at least one of the listed organizations will be allowed to log in (optional). Valid only to Github Identity Provider (idp\_type=github) | `list(string)` | `null` | no |
