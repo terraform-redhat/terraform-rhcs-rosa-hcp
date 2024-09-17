@@ -1,7 +1,6 @@
 variable "operator_role_prefix" {
   type = string
   description = "Prefix to be used when creating the operator roles"
-  default = "tf-op"
 }
 
 variable "path" {
