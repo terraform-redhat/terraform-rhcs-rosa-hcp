@@ -224,7 +224,7 @@ variable "destroy_timeout" {
 }
 
 variable "upgrade_acknowledgements_for" {
-  type        = bool
+  type        = string
   default     = null
   description = "Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of \"4.12\" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before)."
 }
