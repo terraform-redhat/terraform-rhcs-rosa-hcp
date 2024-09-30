@@ -121,5 +121,10 @@ No modules.
 |------|-------------|
 | <a name="output_cluster_admin_password"></a> [cluster\_admin\_password](#output\_cluster\_admin\_password) | The password of the admin user. |
 | <a name="output_cluster_admin_username"></a> [cluster\_admin\_username](#output\_cluster\_admin\_username) | The username of the admin user. |
-| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | n/a |
+| <a name="output_cluster_api_url"></a> [cluster\_api\_url](#output\_cluster\_api\_url) | The URL of the API server. |
+| <a name="output_cluster_console_url"></a> [cluster\_console\_url](#output\_cluster\_console\_url) | The URL of the console. |
+| <a name="output_cluster_current_version"></a> [cluster\_current\_version](#output\_cluster\_current\_version) | The currently running version of OpenShift on the cluster, for example '4.11.0'. |
+| <a name="output_cluster_domain"></a> [cluster\_domain](#output\_cluster\_domain) | The DNS domain of cluster. |
+| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The identification of the cluster in OCM |
+| <a name="output_cluster_state"></a> [cluster\_state](#output\_cluster\_state) | The state of the cluster. |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->
