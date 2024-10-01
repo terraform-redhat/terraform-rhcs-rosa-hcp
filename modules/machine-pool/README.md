@@ -70,7 +70,7 @@ No modules.
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | Select the subnet in which to create a single AZ machine pool for BYO-VPC cluster | `string` | n/a | yes |
 | <a name="input_taints"></a> [taints](#input\_taints) | Taints for a machine pool. This list will overwrite any modifications made to node taints on an ongoing basis. | <pre>list(object({<br>    key           = string<br>    value         = string<br>    schedule_type = string<br>  }))</pre> | `null` | no |
 | <a name="input_tuning_configs"></a> [tuning\_configs](#input\_tuning\_configs) | A list of tuning config names to attach to this machine pool. The tuning configs must already exist | `list(string)` | `null` | no |
-| <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `bool` | `null` | no |
+| <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `string` | `null` | no |
 
 ## Outputs
 
