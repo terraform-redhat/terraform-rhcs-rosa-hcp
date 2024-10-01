@@ -154,6 +154,7 @@ module "rhcs_hcp_machine_pool" {
   taints                       = try(each.value.taints, null)
   labels                       = try(each.value.labels, null)
   subnet_id                    = each.value.subnet_id
+  kubelet_configs              = try(each.value.kubelet_configs, null)
 }
 
 ###########################################
@@ -201,6 +202,18 @@ module "rhcs_identity_provider" {
   openid_idp_extra_scopes               = try(jsondecode(each.value.openid_idp_extra_scopes), null)
   openid_idp_extra_authorize_parameters = try(jsondecode(each.value.openid_idp_extra_authorize_parameters), null)
   openid_idp_issuer                     = try(each.value.openid_idp_issuer, null)
+}
+
+######################################
+# Multiple Kubelet Configs block
+######################################
+module "rhcs_hcp_kubelet_configs" {
+  source   = "./modules/kubelet-configs"
+  for_each = var.kubelet_configs
+
+  cluster_id                   = module.rosa_cluster_hcp.cluster_id
+  name                         = each.value.name
+  pod_pids_limit               = each.value.pod_pids_limit
 }
 
 resource "null_resource" "validations" {

@@ -19,6 +19,16 @@ module "hcp" {
   create_oidc           = true
   create_operator_roles = true
   operator_role_prefix  = local.operator_role_prefix
+  kubelet_configs = {
+    config1 = {
+      name = "config1"
+      pod_pids_limit = 8192
+    },
+    config2 = {
+      name = "config2"
+      pod_pids_limit = 16384
+    }
+  }
   machine_pools = {
     pool1 = {
       name = "pool1"
@@ -30,6 +40,7 @@ module "hcp" {
       replicas = 3
       openshift_version = var.openshift_version
       subnet_id = module.vpc.private_subnets[0]
+      kubelet_configs = "config1"
     },
     pool2 = {
       name = "pool2"
@@ -41,6 +52,7 @@ module "hcp" {
       replicas = 3
       openshift_version = var.openshift_version
       subnet_id = module.vpc.private_subnets[1]
+      kubelet_configs = "config2"
     },
   }
   identity_providers = {

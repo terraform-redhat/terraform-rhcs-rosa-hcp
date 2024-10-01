@@ -11,6 +11,7 @@ resource "rhcs_hcp_machine_pool" "machine_pool" {
   version                      = var.openshift_version
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
   tuning_configs               = var.tuning_configs
+  kubelet_configs              = var.kubelet_configs
 
   lifecycle {
     ignore_changes = [

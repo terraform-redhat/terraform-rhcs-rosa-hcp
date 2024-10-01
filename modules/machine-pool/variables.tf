@@ -86,3 +86,9 @@ variable "tuning_configs" {
   description = "A list of tuning config names to attach to this machine pool. The tuning configs must already exist"
 }
 
+variable "kubelet_configs" {
+  type        = string
+  default     = null
+  description = "Name of the kubelet configs to attach to this machine pool. The kubelet configs must already exist"
+}
+
