@@ -12,6 +12,7 @@ resource "rhcs_hcp_machine_pool" "machine_pool" {
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
   tuning_configs               = var.tuning_configs
   kubelet_configs              = var.kubelet_configs
+  ignore_deletion_error        = var.ignore_deletion_error
 
   lifecycle {
     ignore_changes = [

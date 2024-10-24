@@ -330,6 +330,11 @@ variable "identity_providers" {
 variable "kubelet_configs" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
- 
+  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string." 
+}
+
+variable "ignore_machine_pools_deletion_error" {
+  type        = bool
+  default     = false
+  description = "Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case"
 }
