@@ -116,6 +116,14 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
       ) == false
       error_message = "Autoscaler parameters cannot be modified while the cluster autoscaler is disabled. Please ensure that cluster_autoscaler_enabled variable is set to true"
     }
+
+    # Mitigation: allow different user identities to create and update the terraform project
+    #   When using AWS STS ephemeral tokens, it creates different identities every hour.
+    #   Without ignoring the properties, that contains the `rosa_creator_arn` key, it will fail
+    #   the `apply` after the token being refreshed.
+    #
+    #   Probably the right fix is to ignore this field change in the provider or remove this value entirely.
+    ignore_changes = [ properties ]
   }
 }
 
