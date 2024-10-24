@@ -181,7 +181,7 @@ variable "upgrade_acknowledgements_for" {
 
 ##############################################################
 # Default Machine Pool Variables
-# These attributes are specifically applies for the default Machine Pool and becomes irrelevant once the resource is created.
+# These attributes specifically apply to the default Machine Pool and become irrelevant once the resource is created.
 # Any modifications to the default Machine Pool should be made through the Terraform imported Machine Pool resource.
 ##############################################################
 
@@ -200,6 +200,12 @@ variable "aws_availability_zones" {
   type        = list(string)
   default     = []
   description = "The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones"
+}
+
+variable "aws_additional_compute_security_group_ids" {
+  type        = list(string)
+  default     = null
+  description = "The additional security group IDs to be added to the default worker machine pool."
 }
 
 ##############################################################

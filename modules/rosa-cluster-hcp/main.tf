@@ -58,13 +58,14 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
       slice(data.aws_availability_zones.available[0].names, 0, 1)
     )
   )
-  replicas                 = var.replicas
-  aws_subnet_ids           = var.aws_subnet_ids
-  compute_machine_type     = var.compute_machine_type
-  create_admin_user        = local.create_admin_user
-  admin_credentials        = local.admin_credentials
-  ec2_metadata_http_tokens = var.ec2_metadata_http_tokens
-  
+  aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
+  replicas                                  = var.replicas
+  aws_subnet_ids                            = var.aws_subnet_ids
+  compute_machine_type                      = var.compute_machine_type
+  create_admin_user                         = local.create_admin_user
+  admin_credentials                         = local.admin_credentials
+  ec2_metadata_http_tokens                  = var.ec2_metadata_http_tokens
+
   machine_cidr = var.machine_cidr
   service_cidr = var.service_cidr
   pod_cidr     = var.pod_cidr

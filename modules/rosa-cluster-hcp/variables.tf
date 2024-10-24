@@ -253,6 +253,12 @@ variable "aws_availability_zones" {
   description = "The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones"
 }
 
+variable "aws_additional_compute_security_group_ids" {
+  type        = list(string)
+  default     = null
+  description = "The additional security group IDs to be added to the default worker machine pool."
+}
+
 ##############################################################
 # Autoscaler resource variables
 ##############################################################

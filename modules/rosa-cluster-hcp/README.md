@@ -114,6 +114,7 @@ No modules.
 | <a name="input_wait_for_create_complete"></a> [wait\_for\_create\_complete](#input\_wait\_for\_create\_complete) | Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true) | `bool` | `true` | no |
 | <a name="input_wait_for_std_compute_nodes_complete"></a> [wait\_for\_std\_compute\_nodes\_complete](#input\_wait\_for\_std\_compute\_nodes\_complete) | Wait until the cluster standard compute nodes are available. The waiter has a timeout of 60 minutes. (default: true) | `bool` | `true` | no |
 | <a name="input_worker_role_arn"></a> [worker\_role\_arn](#input\_worker\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role that will be used by the cluster's compute instances. | `string` | `null` | no |
+| <a name="input_aws_additional_compute_security_group_ids"></a> [aws\_additional\_compute\_security\_group\_ids](#input\_aws\_additional\_compute\_security\_group\_ids) | The additional security group IDs to be added to the default worker machine pool. | `list(string)` | `null` | no |
 
 ## Outputs
 
