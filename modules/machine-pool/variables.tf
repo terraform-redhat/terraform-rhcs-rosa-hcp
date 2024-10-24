@@ -18,7 +18,7 @@ variable "replicas" {
 
 variable "taints" {
   description = "Taints for a machine pool. This list will overwrite any modifications made to node taints on an ongoing basis."
-  type        = list(object({
+  type = list(object({
     key           = string
     value         = string
     schedule_type = string
@@ -35,43 +35,43 @@ variable "labels" {
 variable "subnet_id" {
   description = "Select the subnet in which to create a single AZ machine pool for BYO-VPC cluster"
   type        = string
-  nullable = false
+  nullable    = false
 }
 
 variable "autoscaling" {
   type = object({
-    enabled = bool
+    enabled      = bool
     min_replicas = number
     max_replicas = number
   })
   default = {
-    enabled = false
+    enabled      = false
     min_replicas = null
     max_replicas = null
   }
-  nullable = false
+  nullable    = false
   description = "Configures autoscaling for the pool."
 }
 
 variable "aws_node_pool" {
   type = object({
     instance_type = string
-    tags = map(string)
+    tags          = map(string)
   })
-  nullable = false
+  nullable    = false
   description = "Configures aws settings for the pool."
 }
 
 variable "auto_repair" {
-  type = bool
-  default = true
+  type        = bool
+  default     = true
   description = "Configures auto repair option for the pool."
 }
 
 variable "openshift_version" {
   type        = string
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
-  nullable = false
+  nullable    = false
 }
 
 variable "upgrade_acknowledgements_for" {
@@ -81,8 +81,8 @@ variable "upgrade_acknowledgements_for" {
 }
 
 variable "tuning_configs" {
-  type = list(string)
-  default = null
+  type        = list(string)
+  default     = null
   description = "A list of tuning config names to attach to this machine pool. The tuning configs must already exist"
 }
 
@@ -92,3 +92,8 @@ variable "kubelet_configs" {
   description = "Name of the kubelet configs to attach to this machine pool. The kubelet configs must already exist"
 }
 
+variable "ignore_deletion_error" {
+  type        = bool
+  default     = false
+  description = "Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case"
+}
