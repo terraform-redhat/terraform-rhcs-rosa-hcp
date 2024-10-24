@@ -1,10 +1,10 @@
 output "private_subnets" {
-  value       = aws_subnet.private_subnet[*].id
+  value       = sort(aws_subnet.private_subnet[*].id)
   description = "List of private subnets created this this AWS VPC"
 }
 
 output "public_subnets" {
-  value       = aws_subnet.public_subnet[*].id
+  value       = sort(aws_subnet.public_subnet[*].id)
   description = "List of public subnets created this this AWS VPC"
 }
 
