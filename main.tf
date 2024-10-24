@@ -155,6 +155,7 @@ module "rhcs_hcp_machine_pool" {
   labels                       = try(each.value.labels, null)
   subnet_id                    = each.value.subnet_id
   kubelet_configs              = try(each.value.kubelet_configs, null)
+  ignore_deletion_error        = try(each.value.ignore_deletion_error, var.ignore_machine_pools_deletion_error)
 }
 
 ###########################################
@@ -211,9 +212,9 @@ module "rhcs_hcp_kubelet_configs" {
   source   = "./modules/kubelet-configs"
   for_each = var.kubelet_configs
 
-  cluster_id                   = module.rosa_cluster_hcp.cluster_id
-  name                         = each.value.name
-  pod_pids_limit               = each.value.pod_pids_limit
+  cluster_id     = module.rosa_cluster_hcp.cluster_id
+  name           = each.value.name
+  pod_pids_limit = each.value.pod_pids_limit
 }
 
 resource "null_resource" "validations" {
