@@ -34,10 +34,16 @@ locals {
   route53_shared_role_arn = var.shared_vpc_roles["route53"]
   route53_splits          = split("/", local.route53_shared_role_arn)
   route53_role_name       = local.route53_splits[length(local.route53_splits) - 1]
+  route53_policy_name     = substr("${local.route53_role_name}-route53-assume-role", 0, 64)
   vpce_shared_role_arn    = var.shared_vpc_roles["vpce"]
   vpce_splits             = split("/", local.vpce_shared_role_arn)
   vpce_role_name          = local.vpce_splits[length(local.vpce_splits) - 1]
+  vpce_policy_name        = substr("${local.vpce_role_name}-vpce-assume-role", 0, 64)
+
+  policy_arn_base = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy"
 }
+
+data "aws_caller_identity" "current" {}
 
 data "rhcs_hcp_policies" "all_policies" {}
 
@@ -92,8 +98,8 @@ resource "random_string" "default_random" {
 resource "aws_iam_policy" "route53_policy" {
   count = (local.route53_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
-  name = substr("${route53_role_name}-route53-assume-role", 0, 64)
-  policy = {
+  name = substr("${local.route53_role_name}-route53-assume-role", 0, 64)
+  policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
       {
@@ -103,15 +109,15 @@ resource "aws_iam_policy" "route53_policy" {
         "Resource" : "${local.route53_shared_role_arn}"
       }
     ]
-  }
+  })
   path = local.path
 }
 
 resource "aws_iam_policy" "vpce_policy" {
   count = (local.vpce_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
-  name = substr("${vpce_role_name}-vpce-assume-role", 0, 64)
-  policy = {
+  name = substr("${local.vpce_role_name}-vpce-assume-role", 0, 64)
+  policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
       {
@@ -121,21 +127,21 @@ resource "aws_iam_policy" "vpce_policy" {
         "Resource" : "${local.vpce_shared_role_arn}"
       }
     ]
-  }
+  })
   path = local.path
 }
 
-resource "aws_iam_role_policy_attachment" "route53_policy_control_plane_operator_role_attachment" {
+resource "aws_iam_role_policy_attachment" "route53_policy_installer_account_role_attachment" {
   count      = local.route53_shared_role_arn != "" ? 1 : 0
-  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}", 0, 64)
-  policy_arn = aws_iam_policy.route53_policy.arn
+  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}-Role", 0, 64)
+  policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.route53_policy[0].arn : "${local.policy_arn_base}${local.path}${local.route53_policy_name}"
   depends_on = [aws_iam_role_policy_attachment.account_role_policy_attachment]
 }
 
-resource "aws_iam_role_policy_attachment" "vpce_policy_control_plane_operator_role_attachment" {
+resource "aws_iam_role_policy_attachment" "vpce_policy_installer_account_role_attachment" {
   count      = local.vpce_shared_role_arn != "" ? 1 : 0
-  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}", 0, 64)
-  policy_arn = aws_iam_policy.vpce_policy.arn
+  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}-Role", 0, 64)
+  policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.vpce_policy[0].arn : "${local.policy_arn_base}${local.path}${local.vpce_policy_name}"
   depends_on = [aws_iam_role_policy_attachment.account_role_policy_attachment]
 }
 
