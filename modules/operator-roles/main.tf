@@ -132,6 +132,10 @@ resource "aws_iam_policy" "route53_policy" {
     ]
   })
   path = local.path
+  tags = merge(var.tags, {
+    red-hat-managed = true,
+    hcp-shared-vpc  = true
+  })
 }
 
 resource "aws_iam_policy" "vpce_policy" {
@@ -150,6 +154,10 @@ resource "aws_iam_policy" "vpce_policy" {
     ]
   })
   path = local.path
+  tags = merge(var.tags, {
+    red-hat-managed = true,
+    hcp-shared-vpc  = true
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "route53_policy_ingress_operator_role_attachment" {
