@@ -47,8 +47,12 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_iam_policy.route53_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.vpce_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.account_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.account_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.route53_policy_control_plane_operator_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.vpce_policy_control_plane_operator_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [random_string.default_random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [time_sleep.account_iam_resources_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_iam_policy_document.custom_trust_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -61,9 +65,11 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_role_prefix"></a> [account\_role\_prefix](#input\_account\_role\_prefix) | Prefix to be used when creating the account roles | `string` | `"tf-acc"` | no |
+| <a name="input_create_shared_vpc_policies"></a> [create\_shared\_vpc\_policies](#input\_create\_shared\_vpc\_policies) | Signals to create the shared vpc policies, it might not be needed if created through another step | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
+| <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br>  "route53": "",<br>  "vpce": ""<br>}</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Mapping of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
 
