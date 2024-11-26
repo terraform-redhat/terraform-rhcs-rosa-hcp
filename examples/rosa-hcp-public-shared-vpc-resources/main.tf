@@ -48,7 +48,7 @@ module "operator_roles" {
 }
 
 resource "rhcs_dns_domain" "dns_domain" {
-  //cluster_arch = "hcp"
+  cluster_arch = "hcp"
 }
 
 ############################
