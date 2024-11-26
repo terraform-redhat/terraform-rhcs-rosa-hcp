@@ -60,7 +60,16 @@ locals {
   operator_roles_count = length(local.operator_roles_properties)
   operator_role_prefix = var.operator_role_prefix
   path                 = coalesce(var.path, "/")
+
+  route53_shared_role_arn = var.shared_vpc_roles["route53"]
+  route53_splits          = split("/", local.route53_shared_role_arn)
+  route53_role_name       = local.route53_splits[length(local.route53_splits) - 1]
+  vpce_shared_role_arn    = var.shared_vpc_roles["vpce"]
+  vpce_splits             = split("/", local.vpce_shared_role_arn)
+  vpce_role_name          = local.vpce_splits[length(local.vpce_splits) - 1]
 }
+
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "custom_trust_policy" {
   count = local.operator_roles_count
@@ -102,8 +111,65 @@ resource "aws_iam_role_policy_attachment" "operator_role_policy_attachment" {
   policy_arn = local.operator_roles_properties[count.index].policy_details
 }
 
-data "aws_caller_identity" "current" {}
+### Shared VPC resources
+resource "aws_iam_policy" "route53_policy" {
+  count = (local.route53_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
+  name = substr("${route53_role_name}-route53-assume-role", 0, 64)
+  policy = {
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "AssumeInto",
+        "Effect" : "Allow",
+        "Action" : "sts:AssumeRole",
+        "Resource" : "${local.route53_shared_role_arn}"
+      }
+    ]
+  }
+  path = local.path
+}
+
+resource "aws_iam_policy" "vpce_policy" {
+  count = (local.vpce_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
+
+  name = substr("${vpce_role_name}-vpce-assume-role", 0, 64)
+  policy = {
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "AssumeInto",
+        "Effect" : "Allow",
+        "Action" : "sts:AssumeRole",
+        "Resource" : "${local.vpce_shared_role_arn}"
+      }
+    ]
+  }
+  path = local.path
+}
+
+resource "aws_iam_role_policy_attachment" "route53_policy_ingress_operator_role_attachment" {
+  count      = local.route53_shared_role_arn != "" ? 1 : 0
+  role       = substr("${local.operator_role_prefix}-${local.operator_roles_properties[1].role_name}", 0, 64)
+  policy_arn = aws_iam_policy.route53_policy.arn
+  depends_on = [aws_iam_role_policy_attachment.operator_role_policy_attachment]
+}
+
+resource "aws_iam_role_policy_attachment" "route53_policy_control_plane_operator_role_attachment" {
+  count      = local.route53_shared_role_arn != "" ? 1 : 0
+  role       = substr("${local.operator_role_prefix}-${local.operator_roles_properties[6].role_name}", 0, 64)
+  policy_arn = aws_iam_policy.route53_policy.arn
+  depends_on = [aws_iam_role_policy_attachment.operator_role_policy_attachment]
+}
+
+resource "aws_iam_role_policy_attachment" "vpce_policy_control_plane_operator_role_attachment" {
+  count      = local.vpce_shared_role_arn != "" ? 1 : 0
+  role       = substr("${local.operator_role_prefix}-${local.operator_roles_properties[6].role_name}", 0, 64)
+  policy_arn = aws_iam_policy.vpce_policy.arn
+  depends_on = [aws_iam_role_policy_attachment.operator_role_policy_attachment]
+}
+
+#### Outputs
 resource "time_sleep" "role_resources_propagation" {
   create_duration = "20s"
   triggers = {
