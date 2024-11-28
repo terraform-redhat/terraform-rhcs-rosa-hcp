@@ -45,6 +45,7 @@ resource "aws_iam_policy" "route53_policy" {
         "Action" : [
           "elasticloadbalancing:DescribeLoadBalancers",
           "route53:GetHostedZone",
+          "route53:ListHostedZones",
           "route53:ListResourceRecordSets",
           "tag:GetResources"
         ],
