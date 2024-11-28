@@ -1,53 +1,43 @@
-# output "cluster_id" {
-#   value       = module.rosa_cluster_hcp.cluster_id
-#   description = "Unique identifier of the cluster."
-# }
+output "cluster_id" {
+  value       = module.rosa_cluster_hcp.cluster_id
+  description = "Unique identifier of the cluster."
+}
 
-# output "api_url" {
-#   value       = module.rosa_cluster_hcp.api_url
-#   description = "URL of the API server."
-# }
+output "api_url" {
+  value       = module.rosa_cluster_hcp.cluster_api_url
+  description = "URL of the API server."
+}
 
-# output "console_url" {
-#   value       = module.rosa_cluster_hcp.console_url
-#   description = "URL of the console."
-# }
+output "console_url" {
+  value       = module.rosa_cluster_hcp.cluster_console_url
+  description = "URL of the console."
+}
 
-# output "domain" {
-#   value       = module.rosa_cluster_hcp.domain
-#   description = "DNS domain of cluster."
-# }
+output "domain" {
+  value       = module.rosa_cluster_hcp.cluster_domain
+  description = "DNS domain of cluster."
+}
 
-# output "infra_id" {
-#   value       = module.rosa_cluster_hcp.infra_id
-#   description = "The ROSA cluster infrastructure ID."
-# }
+output "current_version" {
+  value       = module.rosa_cluster_hcp.cluster_current_version
+  description = "The currently running version of OpenShift on the cluster, for example '4.11.0'."
+}
 
-# output "current_version" {
-#   value       = module.rosa_cluster_hcp.current_version
-#   description = "The currently running version of OpenShift on the cluster, for example '4.11.0'."
-# }
+output "state" {
+  value       = module.rosa_cluster_hcp.cluster_state
+  description = "The state of the cluster."
+}
 
-# output "state" {
-#   value       = module.rosa_cluster_hcp.state
-#   description = "The state of the cluster."
-# }
+output "cluster_admin_username" {
+  value       = module.rosa_cluster_hcp.cluster_admin_username
+  description = "The username of the admin user."
+}
 
-# output "cluster_admin_username" {
-#   value       = module.rosa_cluster_hcp.cluster_admin_username
-#   description = "The username of the admin user."
-# }
-
-# output "cluster_admin_password" {
-#   value       = module.rosa_cluster_hcp.cluster_admin_password
-#   description = "The password of the admin user."
-#   sensitive   = true
-# }
-
-# output "private_hosted_zone_id" {
-#   value       = module.rosa_cluster_hcp.private_hosted_zone_id
-#   description = "ID assigned by AWS to private Route 53 hosted zone associated with intended shared VPC"
-# }
+output "cluster_admin_password" {
+  value       = module.rosa_cluster_hcp.cluster_admin_password
+  description = "The password of the admin user."
+  sensitive   = true
+}
 
 output "account_role_prefix" {
   value       = module.account_iam_resources.account_role_prefix
@@ -84,7 +74,7 @@ output "operator_roles_arn" {
   description = "List of Amazon Resource Names (ARNs) for all operator roles created."
 }
 
-# output "password" {
-#   value     = resource.random_password.password
-#   sensitive = true
-# }
+output "password" {
+  value     = resource.random_password.password
+  sensitive = true
+}

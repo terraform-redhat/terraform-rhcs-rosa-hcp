@@ -56,9 +56,9 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [rhcs_cluster_rosa_hcp.rosa_hcp_cluster](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/cluster_rosa_hcp) | resource |
-| [rhcs_hcp_cluster_autoscaler.cluster_autoscaler](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/hcp_cluster_autoscaler) | resource |
-| [rhcs_hcp_default_ingress.default_ingress](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/hcp_default_ingress) | resource |
+| rhcs_cluster_rosa_hcp.rosa_hcp_cluster | resource |
+| rhcs_hcp_cluster_autoscaler.cluster_autoscaler | resource |
+| rhcs_hcp_default_ingress.default_ingress | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
@@ -78,11 +78,13 @@ No modules.
 | <a name="input_autoscaler_pod_priority_threshold"></a> [autoscaler\_pod\_priority\_threshold](#input\_autoscaler\_pod\_priority\_threshold) | To allow users to schedule 'best-effort' pods, which shouldn't trigger Cluster Autoscaler actions, but only run when there are spare resources available. | `number` | `null` | no |
 | <a name="input_aws_account_arn"></a> [aws\_account\_arn](#input\_aws\_account\_arn) | The ARN of the AWS account where all resources are created during the installation of the ROSA cluster. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | The AWS account identifier where all resources are created during the installation of the ROSA cluster. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
+| <a name="input_aws_additional_allowed_principals"></a> [aws\_additional\_allowed\_principals](#input\_aws\_additional\_allowed\_principals) | The additional allowed principals to use when installing the cluster. | `list(string)` | `null` | no |
 | <a name="input_aws_additional_compute_security_group_ids"></a> [aws\_additional\_compute\_security\_group\_ids](#input\_aws\_additional\_compute\_security\_group\_ids) | The additional security group IDs to be added to the default worker machine pool. | `list(string)` | `null` | no |
 | <a name="input_aws_availability_zones"></a> [aws\_availability\_zones](#input\_aws\_availability\_zones) | The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones | `list(string)` | `[]` | no |
 | <a name="input_aws_billing_account_id"></a> [aws\_billing\_account\_id](#input\_aws\_billing\_account\_id) | The AWS billing account identifier where all resources are billed. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The full name of the AWS region used for the ROSA cluster installation, for example 'us-east-1'. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
 | <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The Subnet IDs to use when installing the cluster. | `list(string)` | n/a | yes |
+| <a name="input_base_dns_domain"></a> [base\_dns\_domain](#input\_base\_dns\_domain) | Base DNS domain name previously reserved, e.g. '1vo8.p3.openshiftapps.com'. | `string` | `null` | no |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available' | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
 | <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
@@ -109,9 +111,11 @@ No modules.
 | <a name="input_properties"></a> [properties](#input\_properties) | User defined properties. | `map(string)` | `null` | no |
 | <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of worker nodes to provision. This attribute is applicable solely when autoscaling is disabled. Single zone clusters need at least 2 nodes, multizone clusters need at least 3 nodes. Hosted clusters require that the number of worker nodes be a multiple of the number of private subnets. (default: 2) | `number` | `null` | no |
 | <a name="input_service_cidr"></a> [service\_cidr](#input\_service\_cidr) | Block of IP addresses for services, for example "172.30.0.0/16". | `string` | `null` | no |
+| <a name="input_shared_vpc"></a> [shared\_vpc](#input\_shared\_vpc) | Shared VPC settings | <pre>object({<br>    ingress_private_hosted_zone_id                = string<br>    internal_communication_private_hosted_zone_id = string<br>    route53_role_arn                              = string<br>    vpce_role_arn                                 = string<br>  })</pre> | `null` | no |
 | <a name="input_support_role_arn"></a> [support\_role\_arn](#input\_support\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role used by Red Hat SREs to enable access to the cluster account in order to provide support. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute. | `map(string)` | `null` | no |
 | <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `string` | `null` | no |
+| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Desired channel group of the version [stable, candidate, fast, nightly]. | `string` | `"stable"` | no |
 | <a name="input_wait_for_create_complete"></a> [wait\_for\_create\_complete](#input\_wait\_for\_create\_complete) | Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true) | `bool` | `true` | no |
 | <a name="input_wait_for_std_compute_nodes_complete"></a> [wait\_for\_std\_compute\_nodes\_complete](#input\_wait\_for\_std\_compute\_nodes\_complete) | Wait until the cluster standard compute nodes are available. The waiter has a timeout of 60 minutes. (default: true) | `bool` | `true` | no |
 | <a name="input_worker_role_arn"></a> [worker\_role\_arn](#input\_worker\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role that will be used by the cluster's compute instances. | `string` | `null` | no |
