@@ -34,11 +34,11 @@ locals {
   route53_shared_role_arn = var.shared_vpc_roles["route53"]
   route53_splits          = split("/", local.route53_shared_role_arn)
   route53_role_name       = local.route53_splits[length(local.route53_splits) - 1]
-  route53_policy_name     = substr("${local.route53_role_name}-route53-assume-role", 0, 64)
+  route53_policy_name     = substr("${local.route53_role_name}-assume-role", 0, 64)
   vpce_shared_role_arn    = var.shared_vpc_roles["vpce"]
   vpce_splits             = split("/", local.vpce_shared_role_arn)
   vpce_role_name          = local.vpce_splits[length(local.vpce_splits) - 1]
-  vpce_policy_name        = substr("${local.vpce_role_name}-vpce-assume-role", 0, 64)
+  vpce_policy_name        = substr("${local.vpce_role_name}-assume-role", 0, 64)
 
   policy_arn_base = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy"
 }
@@ -98,7 +98,7 @@ resource "random_string" "default_random" {
 resource "aws_iam_policy" "route53_policy" {
   count = (local.route53_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
-  name = substr("${local.route53_role_name}-route53-assume-role", 0, 64)
+  name = local.route53_policy_name
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -120,7 +120,7 @@ resource "aws_iam_policy" "route53_policy" {
 resource "aws_iam_policy" "vpce_policy" {
   count = (local.vpce_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
-  name = substr("${local.vpce_role_name}-vpce-assume-role", 0, 64)
+  name = local.vpce_policy_name
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -141,16 +141,14 @@ resource "aws_iam_policy" "vpce_policy" {
 
 resource "aws_iam_role_policy_attachment" "route53_policy_installer_account_role_attachment" {
   count      = local.route53_shared_role_arn != "" ? 1 : 0
-  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}-Role", 0, 64)
+  role       = aws_iam_role.account_role[0].name
   policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.route53_policy[0].arn : "${local.policy_arn_base}${local.path}${local.route53_policy_name}"
-  depends_on = [aws_iam_role_policy_attachment.account_role_policy_attachment]
 }
 
 resource "aws_iam_role_policy_attachment" "vpce_policy_installer_account_role_attachment" {
   count      = local.vpce_shared_role_arn != "" ? 1 : 0
-  role       = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[0].role_name}-Role", 0, 64)
+  role       = aws_iam_role.account_role[0].name
   policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.vpce_policy[0].arn : "${local.policy_arn_base}${local.path}${local.vpce_policy_name}"
-  depends_on = [aws_iam_role_policy_attachment.account_role_policy_attachment]
 }
 
 
@@ -159,10 +157,11 @@ resource "time_sleep" "account_iam_resources_wait" {
   destroy_duration = "10s"
   create_duration  = "10s"
   triggers = {
-    account_iam_role_name = jsonencode([for value in aws_iam_role.account_role : value.name])
-    account_roles_arn     = jsonencode({ for idx, value in aws_iam_role.account_role : local.account_roles_properties[idx].role_name => value.arn })
-    account_policy_arns   = jsonencode([for value in aws_iam_role_policy_attachment.account_role_policy_attachment : value.policy_arn])
-    account_role_prefix   = local.account_role_prefix_valid
-    path                  = local.path
+    account_iam_role_name         = jsonencode([for value in aws_iam_role.account_role : value.name])
+    account_roles_arn             = jsonencode({ for idx, value in aws_iam_role.account_role : local.account_roles_properties[idx].role_name => value.arn })
+    account_policy_arns           = jsonencode([for value in aws_iam_role_policy_attachment.account_role_policy_attachment : value.policy_arn])
+    account_role_prefix           = local.account_role_prefix_valid
+    path                          = local.path
+    shared_vpc_policy_attachments = local.route53_shared_role_arn != "" && local.vpce_shared_role_arn != "" ? jsonencode([aws_iam_role_policy_attachment.route53_policy_installer_account_role_attachment[0].policy_arn, aws_iam_role_policy_attachment.vpce_policy_installer_account_role_attachment[0].policy_arn]) : jsonencode([])
   }
 }
