@@ -1,5 +1,5 @@
 variable "operator_role_prefix" {
-  type = string
+  type        = string
   description = "Prefix to be used when creating the operator roles"
 }
 
@@ -16,7 +16,7 @@ variable "permissions_boundary" {
 }
 
 variable "tags" {
-  description = "List of AWS resource tags to apply."
+  description = "Mapping of AWS resource tags to apply."
   type        = map(string)
   default     = null
 }
@@ -24,4 +24,19 @@ variable "tags" {
 variable "oidc_endpoint_url" {
   description = "oidc provider url"
   type        = string
+}
+
+variable "shared_vpc_roles" {
+  description = "Mapping of shared vpc roles, available keys are [route53, vpce]"
+  type        = map(string)
+  default = {
+    "route53" : "",
+    "vpce" : ""
+  }
+}
+
+variable "create_shared_vpc_policies" {
+  description = "Signals to create the shared vpc policies, it might not be needed if created through another step"
+  type        = bool
+  default     = false
 }
