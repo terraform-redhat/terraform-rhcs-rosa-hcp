@@ -8,7 +8,8 @@ terraform {
     }
     rhcs = {
       version = ">= 1.6.2"
-      source  = "terraform-redhat/rhcs"
+      #source  = "terraform-redhat/rhcs"
+      source = "terraform.local/local/rhcs"
     }
   }
 }
