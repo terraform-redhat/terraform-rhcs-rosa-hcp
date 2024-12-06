@@ -56,7 +56,8 @@ variable "autoscaling" {
 variable "aws_node_pool" {
   type = object({
     instance_type = string
-    tags          = map(string)
+    tags = map(string)
+    additional_security_group_ids = list(string)
   })
   nullable    = false
   description = "Configures aws settings for the pool."
