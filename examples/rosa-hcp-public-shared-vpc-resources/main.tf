@@ -1,24 +1,43 @@
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
+provider "aws" {
+  alias = "cluster-owner"
+
+  access_key               = var.cluster_owner_aws_access_key_id
+  secret_key               = var.cluster_owner_aws_secret_access_key
+  region                   = data.aws_region.current.name
+  profile                  = var.cluster_owner_aws_profile
+  shared_credentials_files = var.cluster_owner_aws_shared_credentials_files
+}
+
 locals {
   account_role_prefix          = "${var.cluster_name}-acc"
   operator_role_prefix         = "${var.cluster_name}-op"
   shared_resources_name_prefix = var.cluster_name
   shared_route53_role_name     = substr("${local.shared_resources_name_prefix}-shared-route53-role", 0, 64)
   shared_vpce_role_name        = substr("${local.shared_resources_name_prefix}-shared-vpce-role", 0, 64)
+  # Required to generate the expected names for the shared vpc role arns
+  # There is a cyclic dependency on the shared vpc role arns and the installer,control-plane,ingress roles
+  # that is because AWS will not accept to include these into the trust policy without first creating it
+  # however, will allow to generate a permission policy with these values before the creation of the roles
   shared_vpc_roles_arns = {
     "route53" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_route53_role_name}",
     "vpce" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_vpce_role_name}"
   }
 }
 
-data "aws_region" "current" {}
-
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+  provider = aws.cluster-owner
+}
 
 ##############################################################
 # Account roles includes IAM roles and IAM policies
 ##############################################################
 module "account_iam_resources" {
   source = "../../modules/account-iam-resources"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
   account_role_prefix        = local.account_role_prefix
   create_shared_vpc_policies = true
@@ -30,6 +49,9 @@ module "account_iam_resources" {
 ############################
 module "oidc_config_and_provider" {
   source = "../../modules/oidc-config-and-provider"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
   managed = true
 }
@@ -39,6 +61,9 @@ module "oidc_config_and_provider" {
 ############################
 module "operator_roles" {
   source = "../../modules/operator-roles"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
   operator_role_prefix       = local.operator_role_prefix
   path                       = module.account_iam_resources.path
@@ -48,31 +73,31 @@ module "operator_roles" {
 }
 
 resource "rhcs_dns_domain" "dns_domain" {
-  //cluster_arch = "hcp"
+  cluster_arch = "hcp"
 }
 
 ############################
 # shared-vpc-resources
 ############################
 provider "aws" {
-  alias = "shared-vpc"
+  alias = "network-owner"
 
-  access_key               = var.shared_vpc_aws_access_key_id
-  secret_key               = var.shared_vpc_aws_secret_access_key
+  access_key               = var.network_owner_aws_access_key_id
+  secret_key               = var.network_owner_aws_secret_access_key
   region                   = data.aws_region.current.name
-  profile                  = var.shared_vpc_aws_profile
-  shared_credentials_files = var.shared_vpc_aws_shared_credentials_files
+  profile                  = var.network_owner_aws_profile
+  shared_credentials_files = var.network_owner_aws_shared_credentials_files
 }
 
 data "aws_caller_identity" "shared_vpc" {
-  provider = aws.shared-vpc
+  provider = aws.network-owner
 }
 
 module "vpc" {
   source = "../../modules/vpc"
 
   providers = {
-    aws = aws.shared-vpc
+    aws = aws.network-owner
   }
 
   name_prefix              = local.shared_resources_name_prefix
@@ -83,12 +108,12 @@ module "shared-vpc-resources" {
   source = "../../modules/shared-vpc-resources"
 
   providers = {
-    aws = aws.shared-vpc
+    aws = aws.network-owner
   }
 
   cluster_name                            = var.cluster_name
-  account_roles_prefix                    = local.account_role_prefix
-  operator_roles_prefix                   = local.operator_role_prefix
+  account_roles_prefix                    = module.account_iam_resources.account_role_prefix
+  operator_roles_prefix                   = module.operator_roles.operator_role_prefix
   ingress_private_hosted_zone_base_domain = rhcs_dns_domain.dns_domain.id
   name_prefix                             = local.shared_resources_name_prefix
   target_aws_account                      = data.aws_caller_identity.current.account_id
@@ -96,44 +121,82 @@ module "shared-vpc-resources" {
   vpc_id                                  = module.vpc.vpc_id
 }
 
+resource "aws_ec2_tag" "tag_public_subnets" {
+  provider    = aws.cluster-owner
+  count       = length(module.vpc.public_subnets)
+  resource_id = module.vpc.public_subnets[count.index]
+  key         = "kubernetes.io/role/elb"
+  value       = ""
+}
+
+resource "aws_ec2_tag" "tag_private_subnets" {
+  provider    = aws.cluster-owner
+  count       = length(module.vpc.private_subnets)
+  resource_id = module.vpc.private_subnets[count.index]
+  key         = "kubernetes.io/role/internal-elb"
+  value       = ""
+}
+
 ############################
 # ROSA STS cluster
 ############################
-# module "rosa_cluster_hcp" {
-#   source = "../../modules/rosa-cluster-hcp"
+module "rosa_cluster_hcp" {
+  source = "../../modules/rosa-cluster-hcp"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
-#   cluster_name                 = var.cluster_name
-#   operator_role_prefix         = module.operator_roles.operator_role_prefix
-#   account_role_prefix          = module.account_iam_resources.account_role_prefix
-#   openshift_version            = var.openshift_version
-#   oidc_config_id               = module.oidc_config_and_provider.oidc_config_id
-#   aws_subnet_ids               = module.shared-vpc-policy-and-hosted-zone.shared_subnets
-#   multi_az                     = length(module.vpc.availability_zones) > 1
-#   replicas                     = 3
-#   admin_credentials_username   = "kubeadmin"
-#   admin_credentials_password   = random_password.password.result
-#   base_dns_domain              = rhcs_dns_domain.dns_domain.id
-#   private_hosted_zone_id       = module.shared-vpc-policy-and-hosted-zone.hosted_zone_id
-#   private_hosted_zone_role_arn = module.shared-vpc-policy-and-hosted-zone.shared_role
-# }
+  cluster_name               = var.cluster_name
+  openshift_version          = var.openshift_version
+  version_channel_group      = var.version_channel_group
+  machine_cidr               = module.vpc.cidr_block
+  aws_subnet_ids             = module.shared-vpc-resources.shared_subnets
+  replicas                   = 2
+  create_admin_user          = true
+  admin_credentials_username = "admin"
+  admin_credentials_password = random_password.password.result
+  ec2_metadata_http_tokens   = "required"
+  aws_billing_account_id     = "765374464689"
 
-# resource "random_password" "password" {
-#   length  = 14
-#   special = true
-# }
+  // STS configuration
+  oidc_config_id       = module.oidc_config_and_provider.oidc_config_id
+  account_role_prefix  = module.account_iam_resources.account_role_prefix
+  operator_role_prefix = module.operator_roles.operator_role_prefix
+  shared_vpc = {
+    ingress_private_hosted_zone_id                = module.shared-vpc-resources.ingress_private_hosted_zone_id
+    internal_communication_private_hosted_zone_id = module.shared-vpc-resources.hcp_internal_communication_private_hosted_zone_id
+    route53_role_arn                              = module.shared-vpc-resources.route53_role
+    vpce_role_arn                                 = module.shared-vpc-resources.vpce_role
+  }
+  base_dns_domain                   = rhcs_dns_domain.dns_domain.id
+  aws_additional_allowed_principals = [module.shared-vpc-resources.route53_role, module.shared-vpc-resources.vpce_role]
+}
+
+resource "random_password" "password" {
+  length      = 14
+  special     = true
+  min_lower   = 1
+  min_numeric = 1
+  min_special = 1
+  min_upper   = 1
+}
 
 locals {
-  shared_vpc_aws_credentials_provided = length(var.shared_vpc_aws_access_key_id) > 0 && length(var.shared_vpc_aws_secret_access_key) > 0
-  shared_vpc_aws_profile_provided     = length(var.shared_vpc_aws_profile) > 0
+  network_owner_aws_credentials_provided = length(var.network_owner_aws_access_key_id) > 0 && length(var.network_owner_aws_secret_access_key) > 0
+  network_owner_aws_profile_provided     = length(var.network_owner_aws_profile) > 0
+  cluster_owner_aws_credentials_provided = length(var.cluster_owner_aws_access_key_id) > 0 && length(var.cluster_owner_aws_secret_access_key) > 0
+  cluster_owner_aws_profile_provided     = length(var.cluster_owner_aws_profile) > 0
 }
 
 resource "null_resource" "validations" {
   lifecycle {
     precondition {
-      condition     = (local.shared_vpc_aws_credentials_provided == false && local.shared_vpc_aws_profile_provided == false) == false
-      error_message = "AWS credentials for the shared-vpc account must be provided. This can provided with \"var.shared_vpc_aws_access_key_id\" and \"var.shared_vpc_aws_secret_access_key\" or with existing profile \"var.shared_vpc_aws_profile\""
+      condition     = (local.network_owner_aws_credentials_provided == false && local.network_owner_aws_profile_provided == false) == false
+      error_message = "AWS credentials for the network-owner account must be provided. This can provided with \"var.network_owner_aws_access_key_id\" and \"var.network_owner_aws_secret_access_key\" or with existing profile \"var.network_owner_aws_profile\""
+    }
+    precondition {
+      condition     = (local.cluster_owner_aws_credentials_provided == false && local.cluster_owner_aws_profile_provided == false) == false
+      error_message = "AWS credentials for the cluster-owner account must be provided. This can provided with \"var.cluster_owner_aws_access_key_id\" and \"var.cluster_owner_aws_secret_access_key\" or with existing profile \"var.cluster_owner_aws_profile\""
     }
   }
 }
-
-data "aws_partition" "current" {}

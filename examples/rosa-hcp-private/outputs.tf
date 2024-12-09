@@ -1,6 +1,21 @@
+output "bastion_host_public_ip" {
+  value       = module.bastion_host.bastion_host_public_ip
+  description = "Bastion Host Public IP"
+}
+
 output "cluster_id" {
   value       = module.hcp.cluster_id
   description = "Unique identifier of the cluster."
+}
+
+output "cluster_api_url" {
+  value       = module.hcp.cluster_api_url
+  description = "The URL of the API server."
+}
+
+output "cluster_console_url" {
+  value       = module.hcp.cluster_console_url
+  description = "The URL of the console."
 }
 
 output "account_role_prefix" {

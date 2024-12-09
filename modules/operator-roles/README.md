@@ -82,4 +82,5 @@ No modules.
 |------|-------------|
 | <a name="output_operator_role_prefix"></a> [operator\_role\_prefix](#output\_operator\_role\_prefix) | Prefix used for generated AWS operator policies. |
 | <a name="output_operator_roles_arn"></a> [operator\_roles\_arn](#output\_operator\_roles\_arn) | List of Amazon Resource Names (ARNs) for all operator roles created. |
+| <a name="output_shared_vpc_policy_attachments"></a> [shared\_vpc\_policy\_attachments](#output\_shared\_vpc\_policy\_attachments) | A list of Amazon Resource Names (ARNs) related to the shared VPC |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->
