@@ -1,5 +1,4 @@
 # ROSA HCP with shared VPC example
-NEEDS TO BE UPDATED
 
 ## Introduction
 
@@ -12,7 +11,7 @@ This example includes:
 ## Prerequisites
 
 * You have installed the [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (1.4.6+).
-* You have an [AWS account](https://aws.amazon.com/free/?all-free-tier) and [associated credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html) that you can use to create resources. The credentials configured for the AWS provider (see the [Authentication and Configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration) section in the AWS Terraform provider documentation).
+* You have an [AWS account](https://aws.amazon.com/free/?all-free-tier) and [associated credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html) that you can use to create resources. You must supply the credentials for this account through the appropriate input variables in the example.
 * You have a secondary AWS account for the shared VPC resources. You must supply the credentials for this account through the appropriate input variables in the example.
 * You have completed the [ROSA getting started AWS prerequisites](https://console.redhat.com/openshift/create/rosa/getstarted).
 * You have a valid [OpenShift Cluster Manager API Token](https://console.redhat.com/openshift/token) configured (see [Authentication and configuration](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs#authentication-and-configuration) for more info).
@@ -26,74 +25,60 @@ For more info about shared VPC, see [Configuring a shared VPC for ROSA clusters]
 ## Example Usage
 
 ```
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
 provider "aws" {
-  alias = "shared-vpc"
+  alias = "cluster-owner"
 
-  access_key               = "<shared_vpc_aws_access_key_id>"
-  secret_key               = "<shared_vpc_aws_secret_access_key>"
+  access_key               = var.cluster_owner_aws_access_key_id
+  secret_key               = var.cluster_owner_aws_secret_access_key
   region                   = data.aws_region.current.name
-  profile                  = "<shared_vpc_aws_profile>"
-  shared_credentials_files = "<shared_vpc_aws_shared_credentials_files>"
+  profile                  = var.cluster_owner_aws_profile
+  shared_credentials_files = var.cluster_owner_aws_shared_credentials_files
 }
 
 locals {
-  account_role_prefix          = "my-shared-vpc-cluster-account"
-  operator_role_prefix         = "my-shared-vpc-cluster-operator"
-  shared_resources_name_prefix = "my-shared-vpc-cluster"
-  shared_vpc_role_name         = "${local.shared_resources_name_prefix}-shared-vpc-role"
+  account_role_prefix          = "${var.cluster_name}-acc"
+  operator_role_prefix         = "${var.cluster_name}-op"
+  shared_resources_name_prefix = var.cluster_name
+  shared_route53_role_name     = substr("${local.shared_resources_name_prefix}-shared-route53-role", 0, 64)
+  shared_vpce_role_name        = substr("${local.shared_resources_name_prefix}-shared-vpce-role", 0, 64)
+  # Required to generate the expected names for the shared vpc role arns
+  # There is a cyclic dependency on the shared vpc role arns and the installer,control-plane,ingress roles
+  # that is because AWS will not accept to include these into the trust policy without first creating it
+  # however, will allow to generate a permission policy with these values before the creation of the roles
+  shared_vpc_roles_arns = {
+    "route53" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_route53_role_name}",
+    "vpce" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_vpce_role_name}"
+  }
 }
 
-data "aws_region" "current" {}
-
-############################
-# VPC
-############################
-module "vpc" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/vpc"
-  version = "1.6.2-prerelease.2"
-
-  providers = {
-    aws = aws.shared-vpc
-  }
-
-  name_prefix              = local.shared_resources_name_prefix
-  availability_zones_count = 3
+data "aws_caller_identity" "current" {
+  provider = aws.cluster-owner
 }
 
 ##############################################################
 # Account roles includes IAM roles and IAM policies
 ##############################################################
 module "account_iam_resources" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/account-iam-resources"
-  version = "1.6.2-prerelease.2"
+  source = "../../modules/account-iam-resources"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
-  account_role_prefix = local.account_role_prefix
-  openshift_version   = "4.16.13"
-}
-
-data "aws_caller_identity" "shared_vpc" {
-  provider = aws.shared-vpc
-}
-
-############################
-# operator policies
-############################
-module "operator_policies" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/operator-policies"
-  version = "1.6.2-prerelease.2"
-
-  account_role_prefix = module.account_iam_resources.account_role_prefix
-  openshift_version   = module.account_iam_resources.openshift_version
-  shared_vpc_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_vpc_role_name}"
-  path                = module.account_iam_resources.path
+  account_role_prefix        = local.account_role_prefix
+  create_shared_vpc_policies = true
+  shared_vpc_roles           = local.shared_vpc_roles_arns
 }
 
 ############################
 # OIDC provider
 ############################
 module "oidc_config_and_provider" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/oidc-config-and-provider"
-  version = "1.6.2-prerelease.2"
+  source = "../../modules/oidc-config-and-provider"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
   managed = true
 }
@@ -102,69 +87,151 @@ module "oidc_config_and_provider" {
 # operator roles
 ############################
 module "operator_roles" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/operator-roles"
-  version = "1.6.2-prerelease.2"
-
-  operator_role_prefix = local.operator_role_prefix
-
-  account_role_prefix = module.operator_policies.account_role_prefix
-  path                = module.account_iam_resources.path
-  oidc_endpoint_url   = module.oidc_config_and_provider.oidc_endpoint_url
-}
-
-resource "rhcs_dns_domain" "dns_domain" {}
-
-############################
-# shared-vpc-policy-and-hosted-zone
-############################
-data "aws_caller_identity" "current" {}
-
-module "shared-vpc-policy-and-hosted-zone" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/shared-vpc-policy-and-hosted-zone"
-  version = "1.6.2-prerelease.2"
-
+  source = "../../modules/operator-roles"
   providers = {
-    aws = aws.shared-vpc
+    aws = aws.cluster-owner
   }
 
-  cluster_name              = "my-shared-vpc-cluster"
-  name_prefix               = local.shared_resources_name_prefix
-  target_aws_account        = data.aws_caller_identity.current.account_id
-  installer_role_arn        = module.account_iam_resources.account_roles_arn["Installer"]
-  ingress_operator_role_arn = module.operator_roles.operator_roles_arn["openshift-ingress-operator"]
-  subnets                   = concat(module.vpc.private_subnets, module.vpc.public_subnets)
-  hosted_zone_base_domain   = rhcs_dns_domain.dns_domain.id
-  vpc_id                    = module.vpc.vpc_id
+  operator_role_prefix       = local.operator_role_prefix
+  path                       = module.account_iam_resources.path
+  oidc_endpoint_url          = module.oidc_config_and_provider.oidc_endpoint_url
+  create_shared_vpc_policies = false
+  shared_vpc_roles           = local.shared_vpc_roles_arns
+}
+
+############################
+# dns reservation
+############################
+resource "rhcs_dns_domain" "dns_domain" {
+  cluster_arch = "hcp"
+}
+
+############################
+# shared-vpc-resources
+############################
+provider "aws" {
+  alias = "network-owner"
+
+  access_key               = var.network_owner_aws_access_key_id
+  secret_key               = var.network_owner_aws_secret_access_key
+  region                   = data.aws_region.current.name
+  profile                  = var.network_owner_aws_profile
+  shared_credentials_files = var.network_owner_aws_shared_credentials_files
+}
+
+data "aws_caller_identity" "shared_vpc" {
+  provider = aws.network-owner
+}
+
+module "vpc" {
+  source = "../../modules/vpc"
+
+  providers = {
+    aws = aws.network-owner
+  }
+
+  name_prefix              = local.shared_resources_name_prefix
+  availability_zones_count = 1
+}
+
+module "shared-vpc-resources" {
+  source = "../../modules/shared-vpc-resources"
+
+  providers = {
+    aws = aws.network-owner
+  }
+
+  cluster_name                            = var.cluster_name
+  account_roles_prefix                    = module.account_iam_resources.account_role_prefix
+  operator_roles_prefix                   = module.operator_roles.operator_role_prefix
+  ingress_private_hosted_zone_base_domain = rhcs_dns_domain.dns_domain.id
+  name_prefix                             = local.shared_resources_name_prefix
+  target_aws_account                      = data.aws_caller_identity.current.account_id
+  subnets                                 = concat(module.vpc.private_subnets, module.vpc.public_subnets)
+  vpc_id                                  = module.vpc.vpc_id
+}
+
+# Public elb tags for the shared subnets
+resource "aws_ec2_tag" "tag_public_subnets" {
+  provider    = aws.cluster-owner
+  count       = length(module.vpc.public_subnets)
+  resource_id = module.vpc.public_subnets[count.index]
+  key         = "kubernetes.io/role/elb"
+  value       = ""
+}
+
+# Private elb tags for the shared subnets
+resource "aws_ec2_tag" "tag_private_subnets" {
+  provider    = aws.cluster-owner
+  count       = length(module.vpc.private_subnets)
+  resource_id = module.vpc.private_subnets[count.index]
+  key         = "kubernetes.io/role/internal-elb"
+  value       = ""
 }
 
 ############################
 # ROSA STS cluster
 ############################
-module "rosa_cluster_classic" {
-  source  = "terraform-redhat/rosa-classic/rhcs//modules/rosa-cluster-classic"
-  version = "1.6.2-prerelease.2"
+module "rosa_cluster_hcp" {
+  source = "../../modules/rosa-cluster-hcp"
+  providers = {
+    aws = aws.cluster-owner
+  }
 
-  cluster_name                 = "my-shared-vpc-cluster"
-  operator_role_prefix         = module.operator_roles.operator_role_prefix
-  account_role_prefix          = module.account_iam_resources.account_role_prefix
-  openshift_version            = "4.16.13"
-  oidc_config_id               = module.oidc_config_and_provider.oidc_config_id
-  aws_subnet_ids               = module.shared-vpc-policy-and-hosted-zone.shared_subnets
-  multi_az                     = length(module.vpc.availability_zones) > 1
-  replicas                     = 3
-  admin_credentials_username   = "kubeadmin"
-  admin_credentials_password   = random_password.password.result
-  base_dns_domain              = rhcs_dns_domain.dns_domain.id
-  private_hosted_zone_id       = module.shared-vpc-policy-and-hosted-zone.hosted_zone_id
-  private_hosted_zone_role_arn = module.shared-vpc-policy-and-hosted-zone.shared_role
+  cluster_name               = var.cluster_name
+  openshift_version          = var.openshift_version
+  version_channel_group      = var.version_channel_group
+  machine_cidr               = module.vpc.cidr_block
+  aws_subnet_ids             = module.shared-vpc-resources.shared_subnets
+  replicas                   = 2
+  create_admin_user          = true
+  admin_credentials_username = "admin"
+  admin_credentials_password = random_password.password.result
+  ec2_metadata_http_tokens   = "required"
+  aws_billing_account_id     = "765374464689"
+
+  // STS configuration
+  oidc_config_id       = module.oidc_config_and_provider.oidc_config_id
+  account_role_prefix  = module.account_iam_resources.account_role_prefix
+  operator_role_prefix = module.operator_roles.operator_role_prefix
+  shared_vpc = {
+    ingress_private_hosted_zone_id                = module.shared-vpc-resources.ingress_private_hosted_zone_id
+    internal_communication_private_hosted_zone_id = module.shared-vpc-resources.hcp_internal_communication_private_hosted_zone_id
+    route53_role_arn                              = module.shared-vpc-resources.route53_role
+    vpce_role_arn                                 = module.shared-vpc-resources.vpce_role
+  }
+  base_dns_domain                   = rhcs_dns_domain.dns_domain.id
+  aws_additional_allowed_principals = [module.shared-vpc-resources.route53_role, module.shared-vpc-resources.vpce_role]
 }
 
 resource "random_password" "password" {
-  length  = 14
-  special = true
+  length      = 14
+  special     = true
+  min_lower   = 1
+  min_numeric = 1
+  min_special = 1
+  min_upper   = 1
 }
 
-data "aws_partition" "current" {}
+locals {
+  network_owner_aws_credentials_provided = length(var.network_owner_aws_access_key_id) > 0 && length(var.network_owner_aws_secret_access_key) > 0
+  network_owner_aws_profile_provided     = length(var.network_owner_aws_profile) > 0
+  cluster_owner_aws_credentials_provided = length(var.cluster_owner_aws_access_key_id) > 0 && length(var.cluster_owner_aws_secret_access_key) > 0
+  cluster_owner_aws_profile_provided     = length(var.cluster_owner_aws_profile) > 0
+}
+
+resource "null_resource" "validations" {
+  lifecycle {
+    precondition {
+      condition     = (local.network_owner_aws_credentials_provided == false && local.network_owner_aws_profile_provided == false) == false
+      error_message = "AWS credentials for the network-owner account must be provided. This can provided with \"var.network_owner_aws_access_key_id\" and \"var.network_owner_aws_secret_access_key\" or with existing profile \"var.network_owner_aws_profile\""
+    }
+    precondition {
+      condition     = (local.cluster_owner_aws_credentials_provided == false && local.cluster_owner_aws_profile_provided == false) == false
+      error_message = "AWS credentials for the cluster-owner account must be provided. This can provided with \"var.cluster_owner_aws_access_key_id\" and \"var.cluster_owner_aws_secret_access_key\" or with existing profile \"var.cluster_owner_aws_profile\""
+    }
+  }
+}
 ```
 
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
@@ -176,7 +243,7 @@ data "aws_partition" "current" {}
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.6.8-prerelease.1 |
 
 ## Providers
 
@@ -187,7 +254,7 @@ data "aws_partition" "current" {}
 | <a name="provider_aws.network-owner"></a> [aws.network-owner](#provider\_aws.network-owner) | >= 4.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.6.8-prerelease.1 |
 
 ## Modules
 
@@ -208,7 +275,7 @@ data "aws_partition" "current" {}
 | [aws_ec2_tag.tag_public_subnets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
 | [null_resource.validations](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| rhcs_dns_domain.dns_domain | resource |
+| [rhcs_dns_domain.dns_domain](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.8-prerelease.1/docs/resources/dns_domain) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_caller_identity.shared_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |

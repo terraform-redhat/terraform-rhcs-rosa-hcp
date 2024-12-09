@@ -92,11 +92,7 @@ module "bastion_host" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws.network-owner"></a> [aws.network-owner](#provider\_aws.network-owner) | >= 5.35.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | n/a |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
 ## Modules
 
@@ -110,13 +106,7 @@ module "bastion_host" {
 
 | Name | Type |
 |------|------|
-| [aws_instance.bastion_host](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
-| [aws_key_pair.bastion_ssh_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
-| [aws_security_group.bastion_host_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [local_file.bastion_private_ssh_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [tls_private_key.pk](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
-| [http_http.myip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
 

@@ -27,7 +27,7 @@ module "account_iam_resources" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.6.8-prerelease.1 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 
 ## Providers
@@ -36,7 +36,7 @@ module "account_iam_resources" {
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.6.8-prerelease.1 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
@@ -58,8 +58,8 @@ No modules.
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.custom_trust_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
-| rhcs_hcp_policies.all_policies | data source |
-| rhcs_info.current | data source |
+| [rhcs_hcp_policies.all_policies](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.8-prerelease.1/docs/data-sources/hcp_policies) | data source |
+| [rhcs_info.current](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.8-prerelease.1/docs/data-sources/info) | data source |
 
 ## Inputs
 
