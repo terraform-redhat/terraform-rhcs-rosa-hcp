@@ -16,6 +16,10 @@ locals {
   shared_resources_name_prefix = var.cluster_name
   shared_route53_role_name     = substr("${local.shared_resources_name_prefix}-shared-route53-role", 0, 64)
   shared_vpce_role_name        = substr("${local.shared_resources_name_prefix}-shared-vpce-role", 0, 64)
+  # Required to generate the expected names for the shared vpc role arns
+  # There is a cyclic dependency on the shared vpc role arns and the installer,control-plane,ingress roles
+  # that is because AWS will not accept to include these into the trust policy without first creating it
+  # however, will allow to generate a permission policy with these values before the creation of the roles
   shared_vpc_roles_arns = {
     "route53" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_route53_role_name}",
     "vpce" : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.shared_vpc.account_id}:role/${local.shared_vpce_role_name}"
