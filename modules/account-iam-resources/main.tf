@@ -86,6 +86,12 @@ resource "aws_iam_role_policy_attachment" "account_role_policy_attachment" {
   policy_arn = local.account_roles_properties[count.index].policy_details
 }
 
+resource "aws_iam_role_policy_attachment" "worker_role_zero_egress_policy_attachment" {
+  count      = var.attach_worker_role_zero_egress_policy ? 1 : 0
+  role       = aws_iam_role.account_role[2].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
 resource "random_string" "default_random" {
   count = (var.account_role_prefix != null && var.account_role_prefix != "") ? 0 : 1
 

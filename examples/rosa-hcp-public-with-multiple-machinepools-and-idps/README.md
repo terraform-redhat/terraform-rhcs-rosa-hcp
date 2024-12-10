@@ -1,4 +1,4 @@
-# ROSA Hosted Control Plane public with multiple IDPs and machine pools
+# Public ROSA Hosted Control Plane with multiple IDPs and machine pools
 
 ## Introduction
 

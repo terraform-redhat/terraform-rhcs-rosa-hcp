@@ -344,3 +344,9 @@ variable "ignore_machine_pools_deletion_error" {
   default     = false
   description = "Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case"
 }
+
+variable "attach_worker_role_zero_egress_policy" {
+  description = "Signals to attach zero egress policy to worker role"
+  type        = bool
+  default     = false
+}

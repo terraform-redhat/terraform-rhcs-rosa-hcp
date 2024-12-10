@@ -1,12 +1,13 @@
-# Public ROSA HCP with shared VPC example
+# Private zero egress ROSA HCP with shared VPC example
 
 ## Introduction
 
 This is a Terraform manifest example for creating a Red Hat OpenShift Service on AWS (ROSA) cluster. This example provides a structured configuration template that demonstrates how to deploy a ROSA cluster within your AWS environment by using Terraform.
 
 This example includes:
-- A ROSA cluster with public access.
-- A pre-existing shared VPC within a separate AWS account.
+- A zero egress ROSA cluster with private access.
+- A pre-existing zero egress shared VPC within a separate AWS account.
+- A bastion host EC2 instance that allows to reach the private cluster.
 
 ## Prerequisites
 
@@ -261,6 +262,7 @@ resource "null_resource" "validations" {
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | ../../modules/account-iam-resources | n/a |
+| <a name="module_bastion_host"></a> [bastion\_host](#module\_bastion\_host) | ../../modules/bastion-host | n/a |
 | <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ../../modules/oidc-config-and-provider | n/a |
 | <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ../../modules/operator-roles | n/a |
 | <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ../../modules/rosa-cluster-hcp | n/a |
@@ -272,10 +274,10 @@ resource "null_resource" "validations" {
 | Name | Type |
 |------|------|
 | [aws_ec2_tag.tag_private_subnets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
-| [aws_ec2_tag.tag_public_subnets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
 | [null_resource.validations](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [rhcs_dns_domain.dns_domain](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.6.8-prerelease.1/docs/resources/dns_domain) | resource |
+| [aws_ami.rhel9](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_caller_identity.shared_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
