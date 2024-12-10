@@ -41,12 +41,15 @@ resource "aws_security_group" "bastion_host_ingress" {
 
 resource "aws_instance" "bastion_host" {
   count                       = length(var.subnet_ids)
-  ami                         = var.ami_id != null ? var.ami_id : "ami-004130e0a96e1f4df"
-  instance_type               = var.instance_type != null ? var.instance_type : "t2.micro"
-  key_name                    = "${var.prefix}-bastion-ssh-key"
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.bastion_ssh_key.key_name
   security_groups             = [aws_security_group.bastion_host_ingress.id]
   subnet_id                   = var.subnet_ids[count.index]
   associate_public_ip_address = true
+
+  user_data                   = var.user_data_file
+  user_data_replace_on_change = true
   tags = {
     Name = "${var.prefix}-bastion-host"
   }

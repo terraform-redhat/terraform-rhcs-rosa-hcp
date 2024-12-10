@@ -1,4 +1,4 @@
-# ROSA HCP Public
+# Public ROSA HCP with unmanaged (byo) oidc
 
 ## Introduction
 

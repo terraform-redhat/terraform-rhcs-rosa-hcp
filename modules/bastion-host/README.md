@@ -29,6 +29,8 @@ module "bastion_host" {
   prefix     = "my-host"
   vpc_id     = module.vpc.vpc_id
   subnet_ids = [module.vpc.public_subnets[0]]
+  ami_id         = aws_ami.rhel9.id
+  user_data_file = file("../assets/bastion-host-user-data.yaml")
 }
 ```
 
@@ -69,11 +71,12 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Amazon Machine Image to run the bastion host with | `string` | `"ami-004130e0a96e1f4df"` | no |
+| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | Amazon Machine Image to run the bastion host with | `string` | `null` | no |
 | <a name="input_cidr_blocks"></a> [cidr\_blocks](#input\_cidr\_blocks) | CIDR ranges to include as ingress allowed ranges | `list(string)` | `null` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Instance type of the bastion hosts | `string` | `"t2.micro"` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for the name of each AWS resource | `string` | n/a | yes |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Set of subnet IDs to instantiate a bastion host against | `list(string)` | n/a | yes |
+| <a name="input_user_data_file"></a> [user\_data\_file](#input\_user\_data\_file) | User data for proxy configuration | `string` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the AWS VPC resource | `string` | n/a | yes |
 
 ## Outputs

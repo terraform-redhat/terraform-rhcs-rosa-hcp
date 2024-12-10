@@ -27,6 +27,12 @@ variable "instance_type" {
 
 variable "ami_id" {
   type        = string
-  default     = "ami-004130e0a96e1f4df"
+  default     = null
   description = "Amazon Machine Image to run the bastion host with"
+}
+
+variable "user_data_file" {
+  type        = string
+  default     = null
+  description = "User data for proxy configuration"
 }

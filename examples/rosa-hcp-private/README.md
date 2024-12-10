@@ -1,4 +1,4 @@
-# ROSA HCP Private
+# Private ROSA HCP
 
 ## Introduction
 
@@ -69,11 +69,38 @@ module "vpc" {
 ############################
 # Bastion instance for connection to the cluster
 ############################
+data "aws_ami" "rhel9" {
+  most_recent = true
+
+  filter {
+    name   = "platform-details"
+    values = ["Red Hat Enterprise Linux"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "manifest-location"
+    values = ["amazon/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP2"]
+  }
+
+  owners = ["309956199498"] # Amazon's "Official Red Hat" account
+}
 module "bastion_host" {
   source     = "../../modules/bastion-host"
   prefix     = "my-host"
   vpc_id     = module.vpc.vpc_id
   subnet_ids = [module.vpc.public_subnets[0]]
+  ami_id         = aws_ami.rhel9.id
+  user_data_file = file("../assets/bastion-host-user-data.yaml")
 }
 ```
 
@@ -92,6 +119,7 @@ module "bastion_host" {
 
 | Name | Version |
 |------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.35.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 
 ## Modules
@@ -107,6 +135,7 @@ module "bastion_host" {
 | Name | Type |
 |------|------|
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [aws_ami.rhel9](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 
 ## Inputs
 
