@@ -36,3 +36,10 @@ variable "create_shared_vpc_policies" {
   type        = bool
   default     = false
 }
+
+
+variable "attach_worker_role_zero_egress_policy" {
+  description = "Signals to attach zero egress policy to worker role"
+  type        = bool
+  default     = false
+}

@@ -17,10 +17,11 @@ module "account_iam_resources" {
   source = "./modules/account-iam-resources"
   count  = var.create_account_roles ? 1 : 0
 
-  account_role_prefix  = local.account_role_prefix
-  path                 = local.path
-  permissions_boundary = var.permissions_boundary
-  tags                 = var.tags
+  account_role_prefix                   = local.account_role_prefix
+  path                                  = local.path
+  permissions_boundary                  = var.permissions_boundary
+  tags                                  = var.tags
+  attach_worker_role_zero_egress_policy = var.attach_worker_role_zero_egress_policy
 }
 
 ############################
@@ -104,9 +105,9 @@ module "rosa_cluster_hcp" {
   # Default Machine Pool
   #######################
 
-  replicas               = var.replicas
-  compute_machine_type   = var.compute_machine_type
-  aws_availability_zones = var.aws_availability_zones
+  replicas                                  = var.replicas
+  compute_machine_type                      = var.compute_machine_type
+  aws_availability_zones                    = var.aws_availability_zones
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
 
   ########

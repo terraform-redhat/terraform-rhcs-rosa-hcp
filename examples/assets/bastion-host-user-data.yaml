@@ -1,0 +1,5 @@
+#cloud-config
+#package_update: true
+#package_upgrade: true
+runcmd:
+- curl -L https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.1.15/openshift-client-linux-4.1.15.tar.gz | tar -C /usr/bin/ -xzf -

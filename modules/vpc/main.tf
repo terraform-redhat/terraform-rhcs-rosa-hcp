@@ -1,5 +1,5 @@
 locals {
-  tags = var.tags == null ? {} : var.tags
+  tags               = var.tags == null ? {} : var.tags
   availability_zones = var.availability_zones != null ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, var.availability_zones_count)
 }
 
@@ -18,11 +18,6 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.vpc.id
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
-}
-
 resource "aws_subnet" "public_subnet" {
   count = length(local.availability_zones)
 
@@ -31,7 +26,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                   = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/elb" = ""
     },
     local.tags,
@@ -49,11 +44,75 @@ resource "aws_subnet" "private_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                            = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/internal-elb" = ""
     },
     local.tags,
   )
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+#########################
+# ZERO EGRESS SUPPORT
+#########################
+resource "aws_security_group" "authorize_inbound_vpc_traffic" {
+  count = var.is_zero_egress ? 1 : 0
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [for subnet in aws_subnet.private_subnet[*] : subnet.cidr_block]
+  }
+  vpc_id = aws_vpc.vpc.id
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_vpc_endpoint" "sts" {
+  count             = var.is_zero_egress ? 1 : 0
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.sts"
+  vpc_id            = aws_vpc.vpc.id
+  vpc_endpoint_type = "Interface"
+
+  private_dns_enabled = true
+  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
+  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "aws_vpc_endpoint" "ecr_api" {
+  count             = var.is_zero_egress ? 1 : 0
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
+  vpc_id            = aws_vpc.vpc.id
+  vpc_endpoint_type = "Interface"
+
+  private_dns_enabled = true
+  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
+  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  count             = var.is_zero_egress ? 1 : 0
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
+  vpc_id            = aws_vpc.vpc.id
+  vpc_endpoint_type = "Interface"
+
+  private_dns_enabled = true
+  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
+  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
   lifecycle {
     ignore_changes = [tags]
   }
@@ -79,7 +138,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 # Elastic IPs for NAT gateways
 #
 resource "aws_eip" "eip" {
-  count = length(local.availability_zones)
+  count = var.is_zero_egress ? 0 : length(local.availability_zones)
 
   domain = "vpc"
   tags = merge(
@@ -97,7 +156,7 @@ resource "aws_eip" "eip" {
 # NAT gateways
 #
 resource "aws_nat_gateway" "public_nat_gateway" {
-  count = length(local.availability_zones)
+  count = var.is_zero_egress ? 0 : length(local.availability_zones)
 
   allocation_id = aws_eip.eip[count.index].id
   subnet_id     = aws_subnet.public_subnet[count.index].id
@@ -144,6 +203,13 @@ resource "aws_route_table" "private_route_table" {
   }
 }
 
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = var.is_zero_egress ? [for rt in aws_route_table.private_route_table[*] : rt.id] : []
+}
+
 #
 # Routes
 #
@@ -165,7 +231,7 @@ resource "aws_route" "ipv6_egress_route" {
 
 # Send private traffic to NAT
 resource "aws_route" "private_nat" {
-  count = length(local.availability_zones)
+  count = var.is_zero_egress ? 0 : length(local.availability_zones)
 
   route_table_id         = aws_route_table.private_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
@@ -202,14 +268,14 @@ resource "aws_route_table_association" "private_route_table_association" {
 # This resource is used in order to add dependencies on all resources 
 # Any resource uses this VPC ID, must wait to all resources creation completion
 resource "time_sleep" "vpc_resources_wait" {
-  create_duration = "20s"
+  create_duration  = "20s"
   destroy_duration = "20s"
   triggers = {
     vpc_id                                           = aws_vpc.vpc.id
     cidr_block                                       = aws_vpc.vpc.cidr_block
     ipv4_egress_route_id                             = aws_route.ipv4_egress_route.id
     ipv6_egress_route_id                             = aws_route.ipv6_egress_route.id
-    private_nat_ids                                  = jsonencode([for value in aws_route.private_nat : value.id])
+    private_nat_ids                                  = var.is_zero_egress ? jsonencode([]) : jsonencode([for value in aws_route.private_nat : value.id])
     private_vpc_endpoint_route_table_association_ids = jsonencode([for value in aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association : value.id])
     public_route_table_association_ids               = jsonencode([for value in aws_route_table_association.public_route_table_association : value.id])
     private_route_table_association_ids              = jsonencode([for value in aws_route_table_association.private_route_table_association : value.id])

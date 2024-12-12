@@ -26,3 +26,9 @@ variable "tags" {
   default     = null
   description = "AWS tags to be applied to generated AWS resources of this VPC."
 }
+
+variable "is_zero_egress" {
+  type        = bool
+  default     = false
+  description = "Indicates intention for zero egress vpc."
+}

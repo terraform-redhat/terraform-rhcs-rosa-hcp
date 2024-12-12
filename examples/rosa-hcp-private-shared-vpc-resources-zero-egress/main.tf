@@ -39,9 +39,10 @@ module "account_iam_resources" {
     aws = aws.cluster-owner
   }
 
-  account_role_prefix        = local.account_role_prefix
-  create_shared_vpc_policies = true
-  shared_vpc_roles           = local.shared_vpc_roles_arns
+  account_role_prefix                   = local.account_role_prefix
+  create_shared_vpc_policies            = true
+  shared_vpc_roles                      = local.shared_vpc_roles_arns
+  attach_worker_role_zero_egress_policy = true
 }
 
 ############################
@@ -102,6 +103,7 @@ module "vpc" {
 
   name_prefix              = local.shared_resources_name_prefix
   availability_zones_count = 1
+  is_zero_egress           = true
 }
 
 module "shared-vpc-resources" {
@@ -117,16 +119,8 @@ module "shared-vpc-resources" {
   ingress_private_hosted_zone_base_domain = rhcs_dns_domain.dns_domain.id
   name_prefix                             = local.shared_resources_name_prefix
   target_aws_account                      = data.aws_caller_identity.current.account_id
-  subnets                                 = concat(module.vpc.private_subnets, module.vpc.public_subnets)
+  subnets                                 = concat(module.vpc.private_subnets)
   vpc_id                                  = module.vpc.vpc_id
-}
-
-resource "aws_ec2_tag" "tag_public_subnets" {
-  provider    = aws.cluster-owner
-  count       = length(module.vpc.public_subnets)
-  resource_id = module.vpc.public_subnets[count.index]
-  key         = "kubernetes.io/role/elb"
-  value       = ""
 }
 
 resource "aws_ec2_tag" "tag_private_subnets" {
@@ -152,6 +146,7 @@ module "rosa_cluster_hcp" {
   machine_cidr               = module.vpc.cidr_block
   aws_subnet_ids             = module.shared-vpc-resources.shared_subnets
   replicas                   = 2
+  private                    = true
   create_admin_user          = true
   admin_credentials_username = "admin"
   admin_credentials_password = random_password.password.result
@@ -170,6 +165,9 @@ module "rosa_cluster_hcp" {
   }
   base_dns_domain                   = rhcs_dns_domain.dns_domain.id
   aws_additional_allowed_principals = [module.shared-vpc-resources.route53_role, module.shared-vpc-resources.vpce_role]
+  properties = {
+    "zero_egress" : "true"
+  }
 }
 
 resource "random_password" "password" {
@@ -180,6 +178,48 @@ resource "random_password" "password" {
   min_special = 1
   min_upper   = 1
 }
+
+############################
+# Bastion instance for connection to the cluster
+############################
+
+data "aws_ami" "rhel9" {
+  most_recent = true
+
+  filter {
+    name   = "platform-details"
+    values = ["Red Hat Enterprise Linux"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "manifest-location"
+    values = ["amazon/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP2"]
+  }
+
+  owners = ["309956199498"] # Amazon's "Official Red Hat" account
+}
+module "bastion_host" {
+  providers = {
+    aws = aws.network-owner
+  }
+  source     = "../../modules/bastion-host"
+  prefix     = var.cluster_name
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = [module.vpc.public_subnets[0]]
+  ami_id         = aws_ami.rhel9.id
+  user_data_file = file("../assets/bastion-host-user-data.yaml")
+}
+
 
 locals {
   network_owner_aws_credentials_provided = length(var.network_owner_aws_access_key_id) > 0 && length(var.network_owner_aws_secret_access_key) > 0
