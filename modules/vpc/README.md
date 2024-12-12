@@ -33,14 +33,19 @@ module "vpc" {
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_transparent-proxy"></a> [transparent-proxy](#module\_transparent-proxy) | ./transparent-proxy | n/a |
+| <a name="module_zero_egress"></a> [zero\_egress](#module\_zero\_egress) | ./zero-egress | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_eip.eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip) | resource |
+| [aws_eip.escape_nat_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip) | resource |
 | [aws_internet_gateway.internet_gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway) | resource |
+| [aws_nat_gateway.escape_nat_gw](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway) | resource |
 | [aws_nat_gateway.public_nat_gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway) | resource |
 | [aws_route.ipv4_egress_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
 | [aws_route.ipv6_egress_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
@@ -49,16 +54,13 @@ No modules.
 | [aws_route_table.public_route_table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) | resource |
 | [aws_route_table_association.private_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association) | resource |
 | [aws_route_table_association.public_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association) | resource |
-| [aws_security_group.authorize_inbound_vpc_traffic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_subnet.private_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
-| [aws_vpc_endpoint.ecr_api](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
-| [aws_vpc_endpoint.ecr_dkr](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint.s3](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
-| [aws_vpc_endpoint.sts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint_route_table_association) | resource |
 | [time_sleep.vpc_resources_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [aws_ami.rhel9](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
@@ -68,8 +70,10 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | A list of availability zones names in the region.  This value should not be updated, please create a new resource instead | `list(string)` | `null` | no |
 | <a name="input_availability_zones_count"></a> [availability\_zones\_count](#input\_availability\_zones\_count) | The count of availability zones to utilize within the specified AWS Region, where pairs of public and private subnets will be generated. Valid only when availability\_zones variable is not provided. This value should not be updated, please create a new resource instead | `number` | `null` | no |
+| <a name="input_enable_transparent_proxy"></a> [enable\_transparent\_proxy](#input\_enable\_transparent\_proxy) | Indicates intention for transparent proxy. | `bool` | `false` | no |
 | <a name="input_is_zero_egress"></a> [is\_zero\_egress](#input\_is\_zero\_egress) | Indicates intention for zero egress vpc. | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | User-defined prefix for all generated AWS resources of this VPC. This value should not be updated, please create a new resource instead | `string` | n/a | yes |
+| <a name="input_proxy_user_data_file"></a> [proxy\_user\_data\_file](#input\_proxy\_user\_data\_file) | User data for proxy configuration | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | AWS tags to be applied to generated AWS resources of this VPC. | `map(string)` | `null` | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | Cidr block of the desired VPC. This value should not be updated, please create a new resource instead | `string` | `"10.0.0.0/16"` | no |
 
