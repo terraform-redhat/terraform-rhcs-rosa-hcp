@@ -57,65 +57,51 @@ resource "aws_subnet" "private_subnet" {
 #########################
 # ZERO EGRESS SUPPORT
 #########################
-resource "aws_security_group" "authorize_inbound_vpc_traffic" {
-  count = var.is_zero_egress ? 1 : 0
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [for subnet in aws_subnet.private_subnet[*] : subnet.cidr_block]
-  }
-  vpc_id = aws_vpc.vpc.id
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+module "zero_egress" {
+  count       = var.is_zero_egress ? 1 : 0
+  source      = "./zero-egress"
+  vpc_id      = aws_vpc.vpc.id
+  subnet_ids  = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
+  cidr_blocks = [for subnet in aws_subnet.private_subnet[*] : subnet.cidr_block]
 }
 
-resource "aws_vpc_endpoint" "sts" {
-  count             = var.is_zero_egress ? 1 : 0
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.sts"
-  vpc_id            = aws_vpc.vpc.id
-  vpc_endpoint_type = "Interface"
+#########################
+# Transparent Proxy Support
+#########################
+data "aws_ami" "rhel9" {
+  most_recent = true
 
-  private_dns_enabled = true
-  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
-  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
-  lifecycle {
-    ignore_changes = [tags]
+  filter {
+    name   = "platform-details"
+    values = ["Red Hat Enterprise Linux"]
   }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "manifest-location"
+    values = ["amazon/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP2"]
+  }
+
+  owners = ["309956199498"] # Amazon's "Official Red Hat" account
 }
+module "transparent-proxy" {
+  count  = var.enable_transparent_proxy ? 1 : 0
+  source = "./transparent-proxy"
+  ami_id = data.aws_ami.rhel9.id
+  prefix = var.name_prefix
 
-resource "aws_vpc_endpoint" "ecr_api" {
-  count             = var.is_zero_egress ? 1 : 0
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.ecr.api"
-  vpc_id            = aws_vpc.vpc.id
-  vpc_endpoint_type = "Interface"
-
-  private_dns_enabled = true
-  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
-  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
-  lifecycle {
-    ignore_changes = [tags]
-  }
-}
-
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  count             = var.is_zero_egress ? 1 : 0
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.ecr.dkr"
-  vpc_id            = aws_vpc.vpc.id
-  vpc_endpoint_type = "Interface"
-
-  private_dns_enabled = true
-  subnet_ids          = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
-  security_group_ids  = [aws_security_group.authorize_inbound_vpc_traffic[count.index].id]
-  lifecycle {
-    ignore_changes = [tags]
-  }
+  subnet_id      = aws_subnet.public_subnet[0].id
+  vpc_id         = aws_vpc.vpc.id
+  user_data_file = var.proxy_user_data_file
 }
 
 #
@@ -188,6 +174,20 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
+resource "aws_eip" "escape_nat_eip" {
+  count      = var.is_zero_egress ? 0 : 1
+  domain     = "vpc"
+  tags       = { Name = "${var.name_prefix}-escape-nat-eip" }
+  depends_on = [aws_internet_gateway.internet_gateway]
+}
+resource "aws_nat_gateway" "escape_nat_gw" {
+  count         = var.is_zero_egress ? 0 : 1
+  allocation_id = aws_eip.escape_nat_eip[0].id
+  subnet_id     = aws_subnet.public_subnet[0].id
+  tags          = { Name = "${var.name_prefix}-escape-nat-gw" }
+  depends_on    = [aws_internet_gateway.internet_gateway]
+}
+
 resource "aws_route_table" "private_route_table" {
   count = length(local.availability_zones)
 
@@ -198,6 +198,17 @@ resource "aws_route_table" "private_route_table" {
     },
     local.tags,
   )
+  route {
+    cidr_block           = "0.0.0.0/0"
+    network_interface_id = var.enable_transparent_proxy ? module.transparent-proxy[0].proxy_network_interface_id : null
+  }
+  dynamic "route" {
+    for_each = var.is_zero_egress ? null : toset([for subnet in aws_subnet.private_subnet[*] : subnet.cidr_block] )
+    content {
+      cidr_block = route.value
+      gateway_id = aws_nat_gateway.escape_nat_gw[0].id
+    }
+  }
   lifecycle {
     ignore_changes = [tags]
   }
@@ -231,7 +242,7 @@ resource "aws_route" "ipv6_egress_route" {
 
 # Send private traffic to NAT
 resource "aws_route" "private_nat" {
-  count = var.is_zero_egress ? 0 : length(local.availability_zones)
+  count = (var.is_zero_egress || var.enable_transparent_proxy) ? 0 : length(local.availability_zones)
 
   route_table_id         = aws_route_table.private_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
@@ -275,7 +286,7 @@ resource "time_sleep" "vpc_resources_wait" {
     cidr_block                                       = aws_vpc.vpc.cidr_block
     ipv4_egress_route_id                             = aws_route.ipv4_egress_route.id
     ipv6_egress_route_id                             = aws_route.ipv6_egress_route.id
-    private_nat_ids                                  = var.is_zero_egress ? jsonencode([]) : jsonencode([for value in aws_route.private_nat : value.id])
+    private_nat_ids                                  = (var.is_zero_egress || var.enable_transparent_proxy) ? jsonencode([]) : jsonencode([for value in aws_route.private_nat : value.id])
     private_vpc_endpoint_route_table_association_ids = jsonencode([for value in aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association : value.id])
     public_route_table_association_ids               = jsonencode([for value in aws_route_table_association.public_route_table_association : value.id])
     private_route_table_association_ids              = jsonencode([for value in aws_route_table_association.private_route_table_association : value.id])

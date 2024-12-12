@@ -32,3 +32,15 @@ variable "is_zero_egress" {
   default     = false
   description = "Indicates intention for zero egress vpc."
 }
+
+variable "enable_transparent_proxy" {
+  type        = bool
+  default     = false
+  description = "Indicates intention for transparent proxy."
+}
+
+variable "proxy_user_data_file" {
+  type        = string
+  default     = null
+  description = "User data for proxy configuration"
+}

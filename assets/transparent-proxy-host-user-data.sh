@@ -2,19 +2,11 @@
 set -x
 
 # Install latest Docker
-apt update
-apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
-apt update
-apt install -y docker-ce
+dnf -y install dnf-plugins-core
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+dnf -y install iptables
+systemctl enable --now docker
 
 # Create squid configuration
 mkdir /etc/squid
@@ -59,12 +51,12 @@ chmod u+rwx /var/log/squid/
 
 # Pull squid image and run using config and cert setup above
 docker pull karlhopkinsonturrell/squid-alpine
-docker run -it -d --net host \
+docker run -it --ulimit nofile=65535:65535 -d --net host \
     --mount type=bind,src=/etc/squid/squid.conf,dst=/etc/squid/squid.conf \
     --mount type=bind,src=/etc/squid/ssl,dst=/etc/squid/ssl \
     --mount type=bind,src=/var/log/squid/,dst=/var/log/squid/ \
     karlhopkinsonturrell/squid-alpine
 
 # Route inbound traffic into squid
-iptables -t nat -I PREROUTING 1 -s 10.0.2.0/24 -p tcp --dport 80 -j REDIRECT --to-port 3129
-iptables -t nat -I PREROUTING 1 -s 10.0.2.0/24 -p tcp --dport 443 -j REDIRECT --to-port 3130
+iptables -t nat -I PREROUTING 1 -s 10.0.0.0/18 -p tcp --dport 80 -j REDIRECT --to-port 3129
+iptables -t nat -I PREROUTING 1 -s 10.0.0.0/18 -p tcp --dport 443 -j REDIRECT --to-port 3130

@@ -30,7 +30,7 @@ module "bastion_host" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = [module.vpc.public_subnets[0]]
   ami_id         = aws_ami.rhel9.id
-  user_data_file = file("../assets/bastion-host-user-data.yaml")
+  user_data_file = file("bastion-host-user-data.yaml")
 }
 ```
 

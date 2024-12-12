@@ -15,8 +15,7 @@ resource "local_file" "bastion_private_ssh_key" {
 }
 
 data "http" "myip" {
-  count = var.cidr_blocks == null ? 1 : 0
-  url   = "https://ipv4.icanhazip.com"
+  url = "https://ipv4.icanhazip.com"
 }
 
 resource "aws_security_group" "bastion_host_ingress" {
@@ -27,7 +26,7 @@ resource "aws_security_group" "bastion_host_ingress" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = var.cidr_blocks == null ? ["${chomp(data.http.myip[0].response_body)}/32"] : var.cidr_blocks
+    cidr_blocks = concat(["${chomp(data.http.myip[0].response_body)}/32"], var.cidr_blocks == null ? [] : var.cidr_blocks)
   }
 
   egress {
