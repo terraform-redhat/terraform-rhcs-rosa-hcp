@@ -21,7 +21,6 @@ For more information, see the [About IAM resources for ROSA clusters that use ST
 ```
 module "operator_roles" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/operator-roles"
-  version = "1.6.2"
 
   operator_role_prefix = "role-prefix"
   oidc_endpoint_url    = "my-url"

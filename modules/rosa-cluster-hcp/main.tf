@@ -22,7 +22,7 @@ locals {
     operator_role_prefix = var.operator_role_prefix,
     oidc_config_id       = var.oidc_config_id
   }
-  aws_account_arn = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
+  aws_account_arn   = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
   create_admin_user = var.create_admin_user
   admin_credentials = var.admin_credentials_username == null && var.admin_credentials_password == null ? (
     null
@@ -36,14 +36,9 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   version                      = var.openshift_version
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
   private                      = var.private
-  properties = merge(
-    {
-      rosa_creator_arn = local.aws_account_arn
-    },
-    var.properties
-  )
-  cloud_region   = var.aws_region == null ? data.aws_region.current[0].name : var.aws_region
-  aws_account_id = local.aws_account_id
+  properties                   = merge(merge(var.properties, { rosa_creator_arn = local.aws_account_arn }), var.is_zero_ingress ? { "zero_egress" : "true" } : {})
+  cloud_region                 = var.aws_region == null ? data.aws_region.current[0].name : var.aws_region
+  aws_account_id               = local.aws_account_id
   aws_billing_account_id = var.aws_billing_account_id == null || var.aws_billing_account_id == "" ? (
     local.aws_account_id
   ) : (var.aws_billing_account_id)
@@ -134,7 +129,7 @@ resource "rhcs_hcp_cluster_autoscaler" "cluster_autoscaler" {
 }
 
 resource "rhcs_hcp_default_ingress" "default_ingress" {
-  cluster          = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
+  cluster = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
   listening_method = var.default_ingress_listening_method != "" ? (
     var.default_ingress_listening_method) : (
     var.private ? "internal" : "external"

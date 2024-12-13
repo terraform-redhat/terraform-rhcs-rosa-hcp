@@ -13,7 +13,6 @@ For more information, see [About IAM resources for ROSA clusters that use STS](h
 ```
 module "account_iam_resources" {
   source = "terraform-redhat/rosa-hcp/rhcs//modules/account-iam-resources"
-  version = "1.6.2"
 
   account_role_prefix  = "my-cluster-account"
 }
@@ -61,9 +60,10 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_role_prefix"></a> [account\_role\_prefix](#input\_account\_role\_prefix) | Prefix to be used when creating the account roles | `string` | `"tf-acc"` | no |
+| <a name="input_attach_worker_role_zero_egress_policy"></a> [attach\_worker\_role\_zero\_egress\_policy](#input\_attach\_worker\_role\_zero\_egress\_policy) | Signals to attach zero egress policy to worker role | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Mapping of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
 

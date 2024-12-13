@@ -17,7 +17,13 @@ variable "permissions_boundary" {
 }
 
 variable "tags" {
-  description = "List of AWS resource tags to apply."
+  description = "Mapping of AWS resource tags to apply."
   type        = map(string)
   default     = null
+}
+
+variable "attach_worker_role_zero_egress_policy" {
+  description = "Signals to attach zero egress policy to worker role"
+  type        = bool
+  default     = false
 }

@@ -1,5 +1,5 @@
 locals {
-  tags = var.tags == null ? {} : var.tags
+  tags               = var.tags == null ? {} : var.tags
   availability_zones = var.availability_zones != null ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, var.availability_zones_count)
 }
 
@@ -18,9 +18,22 @@ resource "aws_vpc" "vpc" {
   }
 }
 
+#########################
+# ZERO EGRESS SUPPORT
+#########################
+module "zero_egress" {
+  count       = var.is_zero_egress ? 1 : 0
+  source      = "./zero-egress"
+  vpc_id      = aws_vpc.vpc.id
+  subnet_ids  = [for subnet in aws_subnet.private_subnet[*] : subnet.id]
+  cidr_blocks = [for subnet in aws_subnet.private_subnet[*] : subnet.cidr_block]
+}
+
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.vpc.id
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = var.is_zero_egress ? [for rt in aws_route_table.private_route_table[*] : rt.id] : null
 }
 
 resource "aws_subnet" "public_subnet" {
@@ -31,7 +44,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                   = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/elb" = ""
     },
     local.tags,
@@ -49,7 +62,7 @@ resource "aws_subnet" "private_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                            = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/internal-elb" = ""
     },
     local.tags,
@@ -165,7 +178,7 @@ resource "aws_route" "ipv6_egress_route" {
 
 # Send private traffic to NAT
 resource "aws_route" "private_nat" {
-  count = length(local.availability_zones)
+  count = (var.is_zero_egress) ? 0 : length(local.availability_zones)
 
   route_table_id         = aws_route_table.private_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
@@ -202,14 +215,14 @@ resource "aws_route_table_association" "private_route_table_association" {
 # This resource is used in order to add dependencies on all resources 
 # Any resource uses this VPC ID, must wait to all resources creation completion
 resource "time_sleep" "vpc_resources_wait" {
-  create_duration = "20s"
+  create_duration  = "20s"
   destroy_duration = "20s"
   triggers = {
     vpc_id                                           = aws_vpc.vpc.id
     cidr_block                                       = aws_vpc.vpc.cidr_block
     ipv4_egress_route_id                             = aws_route.ipv4_egress_route.id
     ipv6_egress_route_id                             = aws_route.ipv6_egress_route.id
-    private_nat_ids                                  = jsonencode([for value in aws_route.private_nat : value.id])
+    private_nat_ids                                  = (var.is_zero_egress) ? jsonencode([]) : jsonencode([for value in aws_route.private_nat : value.id])
     private_vpc_endpoint_route_table_association_ids = jsonencode([for value in aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association : value.id])
     public_route_table_association_ids               = jsonencode([for value in aws_route_table_association.public_route_table_association : value.id])
     private_route_table_association_ids              = jsonencode([for value in aws_route_table_association.private_route_table_association : value.id])

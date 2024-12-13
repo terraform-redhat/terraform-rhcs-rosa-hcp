@@ -17,10 +17,11 @@ module "account_iam_resources" {
   source = "./modules/account-iam-resources"
   count  = var.create_account_roles ? 1 : 0
 
-  account_role_prefix  = local.account_role_prefix
-  path                 = local.path
-  permissions_boundary = var.permissions_boundary
-  tags                 = var.tags
+  account_role_prefix                   = local.account_role_prefix
+  path                                  = local.path
+  permissions_boundary                  = var.permissions_boundary
+  tags                                  = var.tags
+  attach_worker_role_zero_egress_policy = var.is_zero_ingress
 }
 
 ############################
@@ -83,6 +84,7 @@ module "rosa_cluster_hcp" {
   kms_key_arn              = var.kms_key_arn
   aws_billing_account_id   = var.aws_billing_account_id
   ec2_metadata_http_tokens = var.ec2_metadata_http_tokens
+  is_zero_ingress          = var.is_zero_ingress
 
   ########
   # Cluster Admin User
@@ -103,10 +105,9 @@ module "rosa_cluster_hcp" {
   #######################
   # Default Machine Pool
   #######################
-
-  replicas               = var.replicas
-  compute_machine_type   = var.compute_machine_type
-  aws_availability_zones = var.aws_availability_zones
+  replicas                                  = var.replicas
+  compute_machine_type                      = var.compute_machine_type
+  aws_availability_zones                    = var.aws_availability_zones
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
 
   ########
