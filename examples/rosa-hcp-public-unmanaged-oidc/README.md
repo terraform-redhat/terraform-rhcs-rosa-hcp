@@ -16,7 +16,6 @@ This example includes:
 ############################
 module "hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs"
-  version = "1.6.2"
 
   cluster_name           = "my-cluster"
   openshift_version      = "4.14.24"

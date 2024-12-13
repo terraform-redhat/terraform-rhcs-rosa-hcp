@@ -10,7 +10,6 @@ This module serves as a comprehensive solution for deploying, configuring and ma
 ```
 module "hcp" {
   source = "terraform-redhat/rosa-hcp/rhcs"
-  version = "1.6.2"
 
   cluster_name           = "my-cluster"
   openshift_version      = "4.14.24"
@@ -125,6 +124,7 @@ We recommend you install the following CLI tools:
 | <a name="input_https_proxy"></a> [https\_proxy](#input\_https\_proxy) | A proxy URL to use for creating HTTPS connections outside the cluster. | `string` | `null` | no |
 | <a name="input_identity_providers"></a> [identity\_providers](#input\_identity\_providers) | Provides a generic approach to add multiple identity providers after the creation of the cluster. This variable allows users to specify configurations for multiple identity providers in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/idp). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_ignore_machine_pools_deletion_error"></a> [ignore\_machine\_pools\_deletion\_error](#input\_ignore\_machine\_pools\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
+| <a name="input_is_zero_ingress"></a> [is\_zero\_ingress](#input\_is\_zero\_ingress) | Indicates use of zero ingress resources | `bool` | `false` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
 | <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_machine_cidr"></a> [machine\_cidr](#input\_machine\_cidr) | Block of IP addresses used by OpenShift while installing the cluster, for example "10.0.0.0/16". | `string` | `null` | no |
