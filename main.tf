@@ -31,12 +31,8 @@ module "oidc_config_and_provider" {
   count  = var.create_oidc ? 1 : 0
 
   managed = var.managed_oidc
-  installer_role_arn = var.managed_oidc ? (
-    null
-    ) : (
-    var.create_account_roles ? (
-      module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"]
-      ) : (
+  installer_role_arn = var.managed_oidc ? (null) : (
+    var.create_account_roles ? (module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"]) : (
       local.sts_roles.installer_role_arn
     )
   )
@@ -51,7 +47,7 @@ module "operator_roles" {
   count  = var.create_operator_roles ? 1 : 0
 
   operator_role_prefix = local.operator_role_prefix
-  path                 = var.create_account_roles ? module.account_iam_resources[0].path : local.path
+  path                 = local.path
   oidc_endpoint_url    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_endpoint_url : var.oidc_endpoint_url
   tags                 = var.tags
   permissions_boundary = var.permissions_boundary
@@ -104,9 +100,9 @@ module "rosa_cluster_hcp" {
   # Default Machine Pool
   #######################
 
-  replicas               = var.replicas
-  compute_machine_type   = var.compute_machine_type
-  aws_availability_zones = var.aws_availability_zones
+  replicas                                  = var.replicas
+  compute_machine_type                      = var.compute_machine_type
+  aws_availability_zones                    = var.aws_availability_zones
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
 
   ########
