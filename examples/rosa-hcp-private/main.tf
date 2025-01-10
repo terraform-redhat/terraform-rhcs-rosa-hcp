@@ -50,36 +50,9 @@ module "vpc" {
 ############################
 # Bastion instance for connection to the cluster
 ############################
-data "aws_ami" "rhel9" {
-  most_recent = true
-
-  filter {
-    name   = "platform-details"
-    values = ["Red Hat Enterprise Linux"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "manifest-location"
-    values = ["amazon/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP2"]
-  }
-
-  owners = ["309956199498"] # Amazon's "Official Red Hat" account
-}
 module "bastion_host" {
   source         = "../../modules/bastion-host"
   prefix         = var.cluster_name
   vpc_id         = module.vpc.vpc_id
   subnet_ids     = [module.vpc.public_subnets[0]]
-  ami_id         = data.aws_ami.rhel9.id
-  user_data_file = file("../../assets/bastion-host-user-data.yaml")
 }
