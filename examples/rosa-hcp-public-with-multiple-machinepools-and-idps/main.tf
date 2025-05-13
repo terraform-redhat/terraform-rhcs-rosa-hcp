@@ -35,6 +35,7 @@ module "hcp" {
       aws_node_pool = {
         instance_type = "r5.xlarge"
         tags = {}
+        additional_security_group_ids = [""]
       }
       auto_repair = true
       replicas = 3
@@ -47,6 +48,7 @@ module "hcp" {
       aws_node_pool = {
         instance_type = "r5.xlarge"
         tags = {}
+        additional_security_group_ids = [""]
       }
       auto_repair = true
       replicas = 3

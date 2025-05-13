@@ -18,6 +18,7 @@ module "mp" {
   aws_node_pool = {
     instance_type = "my-instance"
     tags = {}
+    additional_security_group_ids = [""]
   }
 
   subnet_id = "subnet-123"
