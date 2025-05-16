@@ -3,6 +3,11 @@ output "bastion_host_public_ip" {
   description = "Bastion Host Public IP"
 }
 
+output "bastion_host_pem_path" {
+  value = module.bastion_host.bastion_host_pem_path
+  description = "Bastion Host key file path"
+}
+
 output "cluster_id" {
   value       = module.hcp.cluster_id
   description = "Unique identifier of the cluster."
