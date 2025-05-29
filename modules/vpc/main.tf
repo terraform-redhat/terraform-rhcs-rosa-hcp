@@ -227,3 +227,58 @@ data "aws_availability_zones" "available" {
     values = ["opt-in-not-required"]
   }
 }
+
+resource "aws_vpc_endpoint" "dynamic_endpoints" {
+  for_each = var.vpc_endpoints
+
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
+  vpc_endpoint_type = each.value
+
+  subnet_ids         = each.value == "Interface" ? [for subnet in aws_subnet.private_subnet : subnet.id] : null
+  security_group_ids = each.value == "Interface" ? [aws_security_group.vpce.id] : null
+  route_table_ids    = each.value == "Gateway" ? [for rt in aws_route_table.private_route_table : rt.id] : null
+
+  private_dns_enabled = each.value == "Interface" ? true : null
+
+  tags = merge(
+    {
+      Name = "${var.name_prefix}-vpce-${each.key}"
+    },
+    local.tags
+  )
+}
+
+resource "aws_security_group" "vpce" {
+  name        = "${var.name_prefix}-vpce-sg"
+  description = "Security group for VPC interface endpoints"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr] # or tighter scope
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr] # or tighter scope
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    {
+      Name = "${var.name_prefix}-vpce-sg"
+    },
+    local.tags
+  )
+}

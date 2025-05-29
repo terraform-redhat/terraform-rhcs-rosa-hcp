@@ -26,3 +26,14 @@ variable "tags" {
   default     = null
   description = "AWS tags to be applied to generated AWS resources of this VPC."
 }
+
+variable "vpc_endpoints" {
+  type = map(string)
+  description = "Map of service name to endpoint type (Interface or Gateway)"
+  default = {
+    ec2                   = "Interface"
+    elasticloadbalancing  = "Interface"
+    elasticfilesystem     = "Interface"
+    s3                    = "Gateway"
+  }
+}
