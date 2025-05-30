@@ -18,11 +18,6 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.vpc.id
-  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
-}
-
 resource "aws_subnet" "public_subnet" {
   count = length(local.availability_zones)
 
@@ -174,13 +169,61 @@ resource "aws_route" "private_nat" {
 }
 
 
-# Private route for vpc endpoint
-resource "aws_vpc_endpoint_route_table_association" "private_vpc_endpoint_route_table_association" {
-  count = length(local.availability_zones)
+resource "aws_vpc_endpoint" "private_vpc_endpoints" {
+  for_each = var.private_vpc_endpoints_map
 
-  route_table_id  = aws_route_table.private_route_table[count.index].id
-  vpc_endpoint_id = aws_vpc_endpoint.s3.id
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
+  vpc_endpoint_type = each.value
+
+  subnet_ids         = each.value == "Interface" ? [for subnet in aws_subnet.private_subnet : subnet.id] : null
+  security_group_ids = each.value == "Interface" ? [aws_security_group.vpce.id] : null
+  route_table_ids    = each.value == "Gateway" ? [for rt in aws_route_table.private_route_table : rt.id] : null
+
+  private_dns_enabled = each.value == "Interface" ? true : null
+
+  tags = merge(
+    {
+      Name = "${var.name_prefix}-vpce-${each.key}"
+    },
+    local.tags
+  )
 }
+
+resource "aws_security_group" "vpce" {
+  name        = "${var.name_prefix}-vpce-sg"
+  description = "Security group for custom VPC endpoints"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr] # or tighter scope
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr] # or tighter scope
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    {
+      Name = "${var.name_prefix}-vpce-sg"
+    },
+    local.tags
+  )
+}
+
 
 #
 # Route table associations
@@ -210,7 +253,7 @@ resource "time_sleep" "vpc_resources_wait" {
     ipv4_egress_route_id                             = aws_route.ipv4_egress_route.id
     ipv6_egress_route_id                             = aws_route.ipv6_egress_route.id
     private_nat_ids                                  = jsonencode([for value in aws_route.private_nat : value.id])
-    private_vpc_endpoint_route_table_association_ids = jsonencode([for value in aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association : value.id])
+    private_vpc_endpoints                            = jsonencode([for value in aws_vpc_endpoint.private_vpc_endpoints : value.id])
     public_route_table_association_ids               = jsonencode([for value in aws_route_table_association.public_route_table_association : value.id])
     private_route_table_association_ids              = jsonencode([for value in aws_route_table_association.private_route_table_association : value.id])
   }
@@ -226,59 +269,4 @@ data "aws_availability_zones" "available" {
     name   = "opt-in-status"
     values = ["opt-in-not-required"]
   }
-}
-
-resource "aws_vpc_endpoint" "dynamic_endpoints" {
-  for_each = var.vpc_endpoints
-
-  vpc_id            = aws_vpc.vpc.id
-  service_name      = "com.amazonaws.${data.aws_region.current.name}.${each.key}"
-  vpc_endpoint_type = each.value
-
-  subnet_ids         = each.value == "Interface" ? [for subnet in aws_subnet.private_subnet : subnet.id] : null
-  security_group_ids = each.value == "Interface" ? [aws_security_group.vpce.id] : null
-  route_table_ids    = each.value == "Gateway" ? [for rt in aws_route_table.private_route_table : rt.id] : null
-
-  private_dns_enabled = each.value == "Interface" ? true : null
-
-  tags = merge(
-    {
-      Name = "${var.name_prefix}-vpce-${each.key}"
-    },
-    local.tags
-  )
-}
-
-resource "aws_security_group" "vpce" {
-  name        = "${var.name_prefix}-vpce-sg"
-  description = "Security group for VPC interface endpoints"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(
-    {
-      Name = "${var.name_prefix}-vpce-sg"
-    },
-    local.tags
-  )
 }
