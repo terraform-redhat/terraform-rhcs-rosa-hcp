@@ -258,14 +258,14 @@ resource "aws_security_group" "vpce" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr] # or tighter scope
+    cidr_blocks = [var.vpc_cidr]
   }
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr] # or tighter scope
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
