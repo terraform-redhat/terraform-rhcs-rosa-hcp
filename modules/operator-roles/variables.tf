@@ -1,5 +1,5 @@
 variable "operator_role_prefix" {
-  type = string
+  type        = string
   description = "Prefix to be used when creating the operator roles"
 }
 

@@ -17,11 +17,11 @@ module "account_iam_resources" {
   source = "./modules/account-iam-resources"
   count  = var.create_account_roles ? 1 : 0
 
-  account_role_prefix  = local.account_role_prefix
-  path                 = local.path
-  permissions_boundary = var.permissions_boundary
+  account_role_prefix            = local.account_role_prefix
+  path                           = local.path
+  permissions_boundary           = var.permissions_boundary
   permissions_boundary_overrides = var.permissions_boundary_overrides
-  tags                 = var.tags
+  tags                           = var.tags
 }
 
 ############################
@@ -47,11 +47,11 @@ module "operator_roles" {
   source = "./modules/operator-roles"
   count  = var.create_operator_roles ? 1 : 0
 
-  operator_role_prefix = local.operator_role_prefix
-  path                 = local.path
-  oidc_endpoint_url    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_endpoint_url : var.oidc_endpoint_url
-  tags                 = var.tags
-  permissions_boundary = var.permissions_boundary
+  operator_role_prefix           = local.operator_role_prefix
+  path                           = local.path
+  oidc_endpoint_url              = var.create_oidc ? module.oidc_config_and_provider[0].oidc_endpoint_url : var.oidc_endpoint_url
+  tags                           = var.tags
+  permissions_boundary           = var.permissions_boundary
   permissions_boundary_overrides = var.permissions_boundary_overrides
 }
 

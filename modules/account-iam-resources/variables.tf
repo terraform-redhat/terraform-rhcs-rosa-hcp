@@ -1,7 +1,7 @@
 variable "account_role_prefix" {
-  type    = string
+  type        = string
   description = "Prefix to be used when creating the account roles"
-  default = "tf-acc"
+  default     = "tf-acc"
 }
 
 variable "path" {
