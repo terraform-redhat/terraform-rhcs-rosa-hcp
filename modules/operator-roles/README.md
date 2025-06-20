@@ -67,6 +67,7 @@ No modules.
 | <a name="input_operator_role_prefix"></a> [operator\_role\_prefix](#input\_operator\_role\_prefix) | Prefix to be used when creating the operator roles | `string` | n/a | yes |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
+| <a name="input_permissions_boundary_overrides"></a> [permissions\_boundary\_overrides](#input\_permissions\_boundary\_overrides) | Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions\_boundary | `map(string)` | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
