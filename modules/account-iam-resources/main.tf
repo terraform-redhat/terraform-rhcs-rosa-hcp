@@ -48,7 +48,11 @@ data "aws_iam_policy_document" "custom_trust_policy" {
 resource "aws_iam_role" "account_role" {
   count                = local.account_roles_count
   name                 = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[count.index].role_name}-Role", 0, 64)
-  permissions_boundary = var.permissions_boundary
+  permissions_boundary = lookup(
+    var.permissions_boundary_overrides,
+    local.account_roles_properties[count.index].role_name,
+    var.permissions_boundary
+  )
   path                 = local.path
   assume_role_policy   = data.aws_iam_policy_document.custom_trust_policy[count.index].json
 

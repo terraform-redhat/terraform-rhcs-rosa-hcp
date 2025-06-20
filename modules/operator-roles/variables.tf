@@ -15,6 +15,12 @@ variable "permissions_boundary" {
   default     = ""
 }
 
+variable "permissions_boundary_overrides" {
+  description = "Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions_boundary"
+  type        = map(string)
+  default     = {}
+}
+
 variable "tags" {
   description = "List of AWS resource tags to apply."
   type        = map(string)

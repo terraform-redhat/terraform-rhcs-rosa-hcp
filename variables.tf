@@ -267,6 +267,12 @@ variable "permissions_boundary" {
   description = "The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters."
 }
 
+variable "permissions_boundary_overrides" {
+  description = "Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions_boundary"
+  type        = map(string)
+  default     = {}
+}
+
 ##############################################################
 # Account Roles
 ##############################################################

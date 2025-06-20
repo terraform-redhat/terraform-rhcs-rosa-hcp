@@ -20,6 +20,7 @@ module "account_iam_resources" {
   account_role_prefix  = local.account_role_prefix
   path                 = local.path
   permissions_boundary = var.permissions_boundary
+  permissions_boundary_overrides = var.permissions_boundary_overrides
   tags                 = var.tags
 }
 
@@ -51,6 +52,7 @@ module "operator_roles" {
   oidc_endpoint_url    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_endpoint_url : var.oidc_endpoint_url
   tags                 = var.tags
   permissions_boundary = var.permissions_boundary
+  permissions_boundary_overrides = var.permissions_boundary_overrides
 }
 
 ############################
