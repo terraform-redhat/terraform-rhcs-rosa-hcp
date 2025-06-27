@@ -66,7 +66,8 @@ resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
 resource "rhcs_rosa_oidc_config_input" "oidc_input" {
   count = var.managed ? 0 : 1
 
-  region = data.aws_region.current.name
+  # region = data.aws_region.current.name
+  region = data.aws_region.current.region
 }
 
 resource "aws_secretsmanager_secret" "secret" {
