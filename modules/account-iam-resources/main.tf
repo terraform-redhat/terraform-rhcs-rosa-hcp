@@ -68,7 +68,6 @@ resource "aws_iam_role_policy_attachment" "account_role_policy_attachment" {
 }
 
 resource "random_string" "default_random" {
-  count = 1
   length  = 4
   special = false
   upper   = false
