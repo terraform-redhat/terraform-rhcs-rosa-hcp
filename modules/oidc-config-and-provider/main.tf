@@ -58,9 +58,10 @@ data "aws_iam_policy_document" "allow_access_from_another_account" {
 }
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
-  count  = var.managed ? 0 : 1
-  bucket = aws_s3_bucket.s3_bucket[count.index].id
-  policy = data.aws_iam_policy_document.allow_access_from_another_account[count.index].json
+  depends_on = [aws_s3_bucket_public_access_block.public_access_block]
+  count      = var.managed ? 0 : 1
+  bucket     = aws_s3_bucket.s3_bucket[count.index].id
+  policy     = data.aws_iam_policy_document.allow_access_from_another_account[count.index].json
 }
 
 resource "rhcs_rosa_oidc_config_input" "oidc_input" {
