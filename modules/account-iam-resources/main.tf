@@ -9,10 +9,10 @@ locals {
       principal_identifier = "arn:${data.aws_partition.current.partition}:iam::${data.rhcs_info.current.ocm_aws_account_id}:role/RH-Managed-OpenShift-Installer"
     },
     {
-      role_name            = "HCP-ROSA-Support"
-      role_type            = "support"
-      policy_details       = "arn:aws:iam::aws:policy/service-role/ROSASRESupportPolicy"
-      principal_type       = "AWS"
+      role_name      = "HCP-ROSA-Support"
+      role_type      = "support"
+      policy_details = "arn:aws:iam::aws:policy/service-role/ROSASRESupportPolicy"
+      principal_type = "AWS"
       // This is a SRE RH Support role which is used to assume this support role
       principal_identifier = data.rhcs_hcp_policies.all_policies.account_role_policies["sts_support_rh_sre_role"]
     },
@@ -46,11 +46,15 @@ data "aws_iam_policy_document" "custom_trust_policy" {
 }
 
 resource "aws_iam_role" "account_role" {
-  count                = local.account_roles_count
-  name                 = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[count.index].role_name}-Role", 0, 64)
-  permissions_boundary = var.permissions_boundary
-  path                 = local.path
-  assume_role_policy   = data.aws_iam_policy_document.custom_trust_policy[count.index].json
+  count = local.account_roles_count
+  name  = substr("${local.account_role_prefix_valid}-${local.account_roles_properties[count.index].role_name}-Role", 0, 64)
+  permissions_boundary = lookup(
+    var.permissions_boundary_overrides,
+    local.account_roles_properties[count.index].role_name,
+    var.permissions_boundary
+  )
+  path               = local.path
+  assume_role_policy = data.aws_iam_policy_document.custom_trust_policy[count.index].json
 
   tags = merge(var.tags, {
     red-hat-managed       = true
@@ -85,9 +89,9 @@ resource "time_sleep" "account_iam_resources_wait" {
   destroy_duration = "10s"
   create_duration  = "10s"
   triggers = {
-    account_iam_role_name = jsonencode([ for value in aws_iam_role.account_role : value.name])
+    account_iam_role_name = jsonencode([for value in aws_iam_role.account_role : value.name])
     account_roles_arn     = jsonencode({ for idx, value in aws_iam_role.account_role : local.account_roles_properties[idx].role_name => value.arn })
-    account_policy_arns   = jsonencode([ for value in aws_iam_role_policy_attachment.account_role_policy_attachment : value.policy_arn])
+    account_policy_arns   = jsonencode([for value in aws_iam_role_policy_attachment.account_role_policy_attachment : value.policy_arn])
     account_role_prefix   = local.account_role_prefix_valid
     path                  = local.path
   }
