@@ -137,6 +137,7 @@ We recommend you install the following CLI tools:
 | <a name="input_operator_role_prefix"></a> [operator\_role\_prefix](#input\_operator\_role\_prefix) | User-defined prefix for generated AWS operator policies. Use "account-role-prefix" in case no value provided. | `string` | `null` | no |
 | <a name="input_path"></a> [path](#input\_path) | The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
+| <a name="input_permissions_boundary_overrides"></a> [permissions\_boundary\_overrides](#input\_permissions\_boundary\_overrides) | Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions\_boundary | `map(string)` | `{}` | no |
 | <a name="input_pod_cidr"></a> [pod\_cidr](#input\_pod\_cidr) | Block of IP addresses from which Pod IP addresses are allocated, for example "10.128.0.0/14". | `string` | `null` | no |
 | <a name="input_private"></a> [private](#input\_private) | Restrict master API endpoint and application routes to direct, private connectivity. (default: false) | `bool` | `false` | no |
 | <a name="input_properties"></a> [properties](#input\_properties) | User defined properties. | `map(string)` | `null` | no |

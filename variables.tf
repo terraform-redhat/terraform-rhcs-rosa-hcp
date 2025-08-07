@@ -267,6 +267,12 @@ variable "permissions_boundary" {
   description = "The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters."
 }
 
+variable "permissions_boundary_overrides" {
+  description = "Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions_boundary"
+  type        = map(string)
+  default     = {}
+}
+
 ##############################################################
 # Account Roles
 ##############################################################
@@ -322,7 +328,7 @@ variable "oidc_endpoint_url" {
 }
 
 variable "machine_pools" {
-  type = map(any)
+  type        = map(any)
   default     = {}
   description = "Provides a generic approach to add multiple machine pools after the creation of the cluster. This variable allows users to specify configurations for multiple machine pools in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [machine-pool sub-module](./modules/machine-pool). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
@@ -336,7 +342,7 @@ variable "identity_providers" {
 variable "kubelet_configs" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string." 
+  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
 variable "ignore_machine_pools_deletion_error" {
