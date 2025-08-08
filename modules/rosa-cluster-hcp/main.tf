@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 locals {
   path           = coalesce(var.path, "/")
   aws_account_id = var.aws_account_id == null ? data.aws_caller_identity.current[0].account_id : var.aws_account_id
@@ -45,9 +47,12 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   )
   cloud_region   = var.aws_region == null ? data.aws_region.current[0].region : var.aws_region
   aws_account_id = local.aws_account_id
-  aws_billing_account_id = var.aws_billing_account_id == null || var.aws_billing_account_id == "" ? (
-    local.aws_account_id
-  ) : (var.aws_billing_account_id)
+  // Billing ID must be empty for HCP GovCloud clusters
+  aws_billing_account_id = data.aws_partition.current.partition == "aws-us-gov" ? null : (
+    var.aws_billing_account_id == null || var.aws_billing_account_id == "" ?
+    local.aws_account_id :
+    var.aws_billing_account_id
+  )
   sts  = local.sts_roles
   tags = var.tags
   availability_zones = length(var.aws_availability_zones) > 0 ? (

@@ -4,22 +4,22 @@ locals {
     {
       role_name            = "HCP-ROSA-Installer"
       role_type            = "installer"
-      policy_details       = "arn:aws:iam::aws:policy/service-role/ROSAInstallerPolicy"
+      policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAInstallerPolicy"
       principal_type       = "AWS"
       principal_identifier = "arn:${data.aws_partition.current.partition}:iam::${data.rhcs_info.current.ocm_aws_account_id}:role/RH-Managed-OpenShift-Installer"
     },
     {
-      role_name      = "HCP-ROSA-Support"
-      role_type      = "support"
-      policy_details = "arn:aws:iam::aws:policy/service-role/ROSASRESupportPolicy"
-      principal_type = "AWS"
+      role_name            = "HCP-ROSA-Support"
+      role_type            = "support"
+      policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSASRESupportPolicy"
+      principal_type       = "AWS"
       // This is a SRE RH Support role which is used to assume this support role
       principal_identifier = data.rhcs_hcp_policies.all_policies.account_role_policies["sts_support_rh_sre_role"]
     },
     {
       role_name            = "HCP-ROSA-Worker"
       role_type            = "instance_worker"
-      policy_details       = "arn:aws:iam::aws:policy/service-role/ROSAWorkerInstancePolicy"
+      policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAWorkerInstancePolicy"
       principal_type       = "Service"
       principal_identifier = "ec2.amazonaws.com"
     },
