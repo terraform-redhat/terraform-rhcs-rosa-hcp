@@ -14,6 +14,12 @@ variable "openshift_version" {
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 
+variable "version_channel_group" {
+  type        = string
+  default     = "stable"
+  description = "Desired channel group of the version [stable, candidate, fast, nightly]."
+}
+
 variable "oidc_config_id" {
   type        = string
   default     = null
@@ -92,6 +98,25 @@ variable "ec2_metadata_http_tokens" {
   type        = string
   default     = "optional"
   description = "Should cluster nodes use both v1 and v2 endpoints or just v2 endpoint of EC2 Instance Metadata Service (IMDS). Available since OpenShift 4.11.0."
+}
+
+
+variable "create_dns_domain_reservation" {
+  description = "Creates reserves a dns domain domain for the cluster. This value will be created by the install step if not pre created via this configuration."
+  type        = bool
+  default     = false
+}
+
+variable "base_dns_domain" {
+  type        = string
+  default     = null
+  description = "Base DNS domain name previously reserved, e.g. '1vo8.p3.openshiftapps.com'."
+}
+
+variable "aws_additional_allowed_principals" {
+  type        = list(string)
+  default     = null
+  description = "The additional allowed principals to use when installing the cluster."
 }
 
 ##############################################################
@@ -322,7 +347,7 @@ variable "oidc_endpoint_url" {
 }
 
 variable "machine_pools" {
-  type = map(any)
+  type        = map(any)
   default     = {}
   description = "Provides a generic approach to add multiple machine pools after the creation of the cluster. This variable allows users to specify configurations for multiple machine pools in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [machine-pool sub-module](./modules/machine-pool). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
@@ -336,7 +361,7 @@ variable "identity_providers" {
 variable "kubelet_configs" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string." 
+  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
 variable "ignore_machine_pools_deletion_error" {

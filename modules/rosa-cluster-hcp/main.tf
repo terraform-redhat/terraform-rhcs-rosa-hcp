@@ -22,7 +22,7 @@ locals {
     operator_role_prefix = var.operator_role_prefix,
     oidc_config_id       = var.oidc_config_id
   }
-  aws_account_arn = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
+  aws_account_arn   = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
   create_admin_user = var.create_admin_user
   admin_credentials = var.admin_credentials_username == null && var.admin_credentials_password == null ? (
     null
@@ -34,6 +34,7 @@ locals {
 resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   name                         = var.cluster_name
   version                      = var.openshift_version
+  channel_group                = var.version_channel_group
   upgrade_acknowledgements_for = var.upgrade_acknowledgements_for
   private                      = var.private
   properties = merge(
@@ -80,9 +81,12 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
     ) : (
     null
   )
-  etcd_encryption  = var.etcd_encryption
-  etcd_kms_key_arn = var.etcd_kms_key_arn
-  kms_key_arn      = var.kms_key_arn
+  etcd_encryption                   = var.etcd_encryption
+  etcd_kms_key_arn                  = var.etcd_kms_key_arn
+  kms_key_arn                       = var.kms_key_arn
+  shared_vpc                        = var.shared_vpc
+  base_dns_domain                   = var.base_dns_domain
+  aws_additional_allowed_principals = var.aws_additional_allowed_principals
 
   wait_for_create_complete            = var.wait_for_create_complete
   wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
@@ -121,7 +125,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
 }
 
 resource "rhcs_hcp_cluster_autoscaler" "cluster_autoscaler" {
-  count = var.cluster_autoscaler_enabled == true ? 1 : 0
+  count = var.cluster_autoscaler_enabled ? 1 : 0
 
   cluster                 = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
   max_pod_grace_period    = var.autoscaler_max_pod_grace_period
@@ -134,7 +138,8 @@ resource "rhcs_hcp_cluster_autoscaler" "cluster_autoscaler" {
 }
 
 resource "rhcs_hcp_default_ingress" "default_ingress" {
-  cluster          = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
+  count   = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_create_complete ? 1 : 0
+  cluster = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.id
   listening_method = var.default_ingress_listening_method != "" ? (
     var.default_ingress_listening_method) : (
     var.private ? "internal" : "external"
