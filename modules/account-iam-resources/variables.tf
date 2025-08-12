@@ -1,7 +1,7 @@
 variable "account_role_prefix" {
-  type    = string
+  type        = string
   description = "Prefix to be used when creating the account roles"
-  default = "tf-acc"
+  default     = "tf-acc"
 }
 
 variable "path" {
@@ -14,6 +14,12 @@ variable "permissions_boundary" {
   description = "The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters."
   type        = string
   default     = ""
+}
+
+variable "permissions_boundary_overrides" {
+  description = "Map of AWS role names to custom permission boundary ARNs. If not set for a role, uses the default permissions_boundary"
+  type        = map(string)
+  default     = {}
 }
 
 variable "tags" {
