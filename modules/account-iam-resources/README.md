@@ -25,7 +25,7 @@ module "account_iam_resources" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.8 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
@@ -34,7 +34,7 @@ module "account_iam_resources" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.4 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.8 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
@@ -69,7 +69,7 @@ No modules.
 | <a name="input_create_shared_vpc_policies"></a> [create\_shared\_vpc\_policies](#input\_create\_shared\_vpc\_policies) | Signals to create the shared vpc policies, it might not be needed if created through another step | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
-| <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br>  "route53": "",<br>  "vpce": ""<br>}</pre> | no |
+| <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br/>  "route53": "",<br/>  "vpce": ""<br/>}</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Mapping of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
