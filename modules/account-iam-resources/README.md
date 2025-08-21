@@ -25,7 +25,7 @@ module "account_iam_resources" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.4 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.8 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
@@ -34,7 +34,7 @@ module "account_iam_resources" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.4 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.8 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
