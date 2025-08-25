@@ -28,7 +28,7 @@ locals {
   account_role_prefix_valid = (var.account_role_prefix != null && var.account_role_prefix != "") ? (
     var.account_role_prefix
     ) : (
-    "account-role-${random_string.default_random[0].result}"
+     "account-role-${random_string.default_random.result}"
   )
   route53_shared_role_arn = var.shared_vpc_roles["route53"]
   route53_splits          = split("/", local.route53_shared_role_arn)
@@ -85,8 +85,6 @@ resource "aws_iam_role_policy_attachment" "account_role_policy_attachment" {
 }
 
 resource "random_string" "default_random" {
-  count = (var.account_role_prefix != null && var.account_role_prefix != "") ? 0 : 1
-
   length  = 4
   special = false
   upper   = false
