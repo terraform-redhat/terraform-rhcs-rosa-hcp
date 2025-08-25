@@ -151,6 +151,12 @@ variable "ec2_metadata_http_tokens" {
   description = "Should cluster nodes use both v1 and v2 endpoints or just v2 endpoint of EC2 Instance Metadata Service (IMDS). Available since OpenShift 4.11.0."
 }
 
+variable "domain_prefix" {
+  type        = string
+  default     = null
+  description = "Creates a domain_prefix for your ROSA cluster. Defaults to a random string if not set"
+}
+
 variable "base_dns_domain" {
   type        = string
   default     = null
