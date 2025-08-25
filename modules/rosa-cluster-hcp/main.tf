@@ -86,6 +86,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   kms_key_arn                       = var.kms_key_arn
   shared_vpc                        = var.shared_vpc
   base_dns_domain                   = var.base_dns_domain
+  domain_prefix                     = var.domain_prefix
   aws_additional_allowed_principals = var.aws_additional_allowed_principals
 
   wait_for_create_complete            = var.wait_for_create_complete

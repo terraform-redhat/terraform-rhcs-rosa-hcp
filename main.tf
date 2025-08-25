@@ -86,6 +86,7 @@ module "rosa_cluster_hcp" {
   aws_billing_account_id            = var.aws_billing_account_id
   ec2_metadata_http_tokens          = var.ec2_metadata_http_tokens
   base_dns_domain                   = var.create_dns_domain_reservation ? rhcs_dns_domain.dns_domain[0].id : var.base_dns_domain
+  domain_prefix                     = var.domain_prefix
   aws_additional_allowed_principals = var.aws_additional_allowed_principals
 
   ########

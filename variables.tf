@@ -113,6 +113,12 @@ variable "base_dns_domain" {
   description = "Base DNS domain name previously reserved, e.g. '1vo8.p3.openshiftapps.com'."
 }
 
+variable "domain_prefix" {
+  type        = string
+  default     = null
+  description = "Creates a domain_prefix for your ROSA cluster. Defaults to a random string if not set"
+}
+
 variable "aws_additional_allowed_principals" {
   type        = list(string)
   default     = null
