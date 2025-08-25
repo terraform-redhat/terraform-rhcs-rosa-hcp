@@ -69,7 +69,7 @@ No modules.
 | <a name="input_create_shared_vpc_policies"></a> [create\_shared\_vpc\_policies](#input\_create\_shared\_vpc\_policies) | Signals to create the shared vpc policies, it might not be needed if created through another step | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
-| <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br>  "route53": "",<br>  "vpce": ""<br>}</pre> | no |
+| <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br/>  "route53": "",<br/>  "vpce": ""<br/>}</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Mapping of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
