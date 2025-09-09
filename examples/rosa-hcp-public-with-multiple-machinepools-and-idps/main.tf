@@ -29,6 +29,18 @@ module "hcp" {
       pod_pids_limit = 16384
     }
   }
+  image_mirrors = {
+    mirror1 = {
+      type    = "digest"
+      source  = "registry.redhat.io"
+      mirrors = ["mirror.example.com", "backup-mirror.example.com"]
+    },
+    mirror2 = {
+      type    = "digest"
+      source  = "quay.io"
+      mirrors = ["internal-quay.corp.example.com"]
+    }
+  }
   machine_pools = {
     pool1 = {
       name = "pool1"
