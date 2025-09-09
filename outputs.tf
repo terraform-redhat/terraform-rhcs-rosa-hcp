@@ -81,3 +81,12 @@ output "operator_roles_arn" {
   value       = var.create_operator_roles ? module.operator_roles[0].operator_roles_arn : null
   description = "List of Amazon Resource Names (ARNs) for all operator roles created."
 }
+
+## Image Mirrors Module Outputs
+
+output "image_mirror_ids" {
+  value = {
+    for k, v in module.rhcs_hcp_image_mirrors : k => v.image_mirror_id
+  }
+  description = "A map of image mirror names to their unique identifiers."
+}
