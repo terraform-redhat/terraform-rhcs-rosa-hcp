@@ -223,6 +223,19 @@ module "rhcs_hcp_kubelet_configs" {
   pod_pids_limit = each.value.pod_pids_limit
 }
 
+######################################
+# Multiple Image Mirrors block
+######################################
+module "rhcs_hcp_image_mirrors" {
+  source   = "./modules/image-mirrors"
+  for_each = var.image_mirrors
+
+  cluster_id      = module.rosa_cluster_hcp.cluster_id
+  type            = each.value.type
+  source_registry = each.value.source
+  mirrors         = each.value.mirrors
+}
+
 resource "null_resource" "validations" {
   lifecycle {
     precondition {

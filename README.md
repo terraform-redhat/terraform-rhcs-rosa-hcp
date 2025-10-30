@@ -34,6 +34,7 @@ Sub-modules included in this module:
 
 - account-iam-resource: Handles the provisioning of Identity and Access Management (IAM) resources required for managing access and permissions in the AWS account associated with the ROSA HCP cluster.
 - idp: Responsible for configuring Identity Providers (IDPs) within the ROSA HCP cluster, faciliting seamless integration with external authentication system such as Github (GH), GitLab, Google, HTPasswd, LDAP and OpenID Connect (OIDC).
+- image-mirrors: Manages the configuration of image digest mirror sets for ROSA HCP clusters, enabling container image mirroring to redirect image pulls from source registries to mirror registries for zero-egress networking and improved performance.
 - machine-pool: Facilitates the management of machine pools within the ROSA HCP cluster, enabling users to scale resources and adjust specifications based on workload demands.
 - oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enabling secure authentication and access control mechanisms for operator roles.
 - operator-roles: Oversees the management of roles assigned to operators within the ROSA HCP cluster, enabling to perform required actions with appropriate permissions on the lifecyle of a cluster.
@@ -80,6 +81,7 @@ We recommend you install the following CLI tools:
 | <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | ./modules/account-iam-resources | n/a |
 | <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ./modules/oidc-config-and-provider | n/a |
 | <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
+| <a name="module_rhcs_hcp_image_mirrors"></a> [rhcs\_hcp\_image\_mirrors](#module\_rhcs\_hcp\_image\_mirrors) | ./modules/image-mirrors | n/a |
 | <a name="module_rhcs_hcp_kubelet_configs"></a> [rhcs\_hcp\_kubelet\_configs](#module\_rhcs\_hcp\_kubelet\_configs) | ./modules/kubelet-configs | n/a |
 | <a name="module_rhcs_hcp_machine_pool"></a> [rhcs\_hcp\_machine\_pool](#module\_rhcs\_hcp\_machine\_pool) | ./modules/machine-pool | n/a |
 | <a name="module_rhcs_identity_provider"></a> [rhcs\_identity\_provider](#module\_rhcs\_identity\_provider) | ./modules/idp | n/a |
@@ -131,6 +133,7 @@ We recommend you install the following CLI tools:
 | <a name="input_https_proxy"></a> [https\_proxy](#input\_https\_proxy) | A proxy URL to use for creating HTTPS connections outside the cluster. | `string` | `null` | no |
 | <a name="input_identity_providers"></a> [identity\_providers](#input\_identity\_providers) | Provides a generic approach to add multiple identity providers after the creation of the cluster. This variable allows users to specify configurations for multiple identity providers in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/idp). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_ignore_machine_pools_deletion_error"></a> [ignore\_machine\_pools\_deletion\_error](#input\_ignore\_machine\_pools\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
+| <a name="input_image_mirrors"></a> [image\_mirrors](#input\_image\_mirrors) | Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
 | <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_machine_cidr"></a> [machine\_cidr](#input\_machine\_cidr) | Block of IP addresses used by OpenShift while installing the cluster, for example "10.0.0.0/16". | `string` | `null` | no |
@@ -168,6 +171,7 @@ We recommend you install the following CLI tools:
 | <a name="output_cluster_domain"></a> [cluster\_domain](#output\_cluster\_domain) | The DNS domain of cluster. |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | Unique identifier of the cluster. |
 | <a name="output_cluster_state"></a> [cluster\_state](#output\_cluster\_state) | The state of the cluster. |
+| <a name="output_image_mirror_ids"></a> [image\_mirror\_ids](#output\_image\_mirror\_ids) | A map of image mirror names to their unique identifiers. |
 | <a name="output_oidc_config_id"></a> [oidc\_config\_id](#output\_oidc\_config\_id) | The unique identifier associated with users authenticated through OpenID Connect (OIDC) generated by this OIDC config. |
 | <a name="output_oidc_endpoint_url"></a> [oidc\_endpoint\_url](#output\_oidc\_endpoint\_url) | Registered OIDC configuration issuer URL, generated by this OIDC config. |
 | <a name="output_operator_role_prefix"></a> [operator\_role\_prefix](#output\_operator\_role\_prefix) | Prefix used for generated AWS operator policies. |
