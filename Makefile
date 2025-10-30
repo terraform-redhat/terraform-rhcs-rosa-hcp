@@ -80,3 +80,9 @@ change-ocp-version:
 # This target require teraform-docs, follow the installation guide: https://terraform-docs.io/user-guide/installation/
 terraform-docs:
 	bash scripts/terraform-docs.sh
+
+.PHONY: change-module-version
+# Example for running: make change-module-version MODULE_VERSION=1.7.0
+change-module-version:
+	find ./examples -type f -name '*.tf' -exec sed -i 's^source\s*= "\.\./\.\./"^source = "terraform-redhat/rosa-hcp/rhcs"\n  version = "${MODULE_VERSION}"^g' -- {} +
+	find ./examples -type f -name '*.tf' -exec sed -E -i 's^source\s*= "\.\./\.\./modules/([^"]+)"^source = "terraform-redhat/rosa-hcp/rhcs//modules/\1"\n  version = "${MODULE_VERSION}"^g' -- {} +
