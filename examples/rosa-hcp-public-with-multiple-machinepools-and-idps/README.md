@@ -9,6 +9,7 @@ This example includes:
 - All AWS resources (IAM and networking) that are created as part of the ROSA cluster module execution
 - "Day 2" Machine pool resources - created as part of the root module execution - map of multiple resources is provided.
 - "Day 2" Identity provider resource - created as part of the root module execution - map of multiple resources is provided.
+- "Day 2" Image mirror resources - created as part of the root module execution - map of multiple resources is provided.
 
 Note: This example involves the creation of various identity providers using placeholder values for illustrative purposes. These providers will not grant access to the cluster with the exception of the HTPasswd identity provider. You must supply your own pre-configured values for authentic identity providers.
 
@@ -55,6 +56,18 @@ module "hcp" {
     config2 = {
       name = "config2"
       pod_pids_limit = 16384
+    }
+  }
+  image_mirrors = {
+    mirror1 = {
+      type    = "digest"
+      source  = "registry.redhat.io"
+      mirrors = ["mirror.example.com", "backup-mirror.example.com"]
+    },
+    mirror2 = {
+      type    = "digest"
+      source  = "quay.io"
+      mirrors = ["internal-quay.corp.example.com"]
     }
   }
   machine_pools = {
@@ -216,7 +229,7 @@ module "vpc" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
-| <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | `"4.16.3"` | no |
+| <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | `"4.19.3"` | no |
 
 ## Outputs
 

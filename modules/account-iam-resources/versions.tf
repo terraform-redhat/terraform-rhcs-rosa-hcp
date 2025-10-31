@@ -4,10 +4,10 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.38.0"
+      version = ">= 6.0"
     }
     rhcs = {
-      version = ">= 1.6.2"
+      version = ">= 1.6.8"
       source  = "terraform-redhat/rhcs"
     }
     time = {

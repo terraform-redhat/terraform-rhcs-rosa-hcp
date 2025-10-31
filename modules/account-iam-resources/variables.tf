@@ -1,7 +1,7 @@
 variable "account_role_prefix" {
-  type    = string
+  type        = string
   description = "Prefix to be used when creating the account roles"
-  default = "tf-acc"
+  default     = "tf-acc"
 }
 
 variable "path" {
@@ -17,7 +17,22 @@ variable "permissions_boundary" {
 }
 
 variable "tags" {
-  description = "List of AWS resource tags to apply."
+  description = "Mapping of AWS resource tags to apply."
   type        = map(string)
   default     = null
+}
+
+variable "shared_vpc_roles" {
+  description = "Mapping of shared vpc roles, available keys are [route53, vpce]"
+  type        = map(string)
+  default = {
+    "route53" : "",
+    "vpce" : ""
+  }
+}
+
+variable "create_shared_vpc_policies" {
+  description = "Signals to create the shared vpc policies, it might not be needed if created through another step"
+  type        = bool
+  default     = false
 }

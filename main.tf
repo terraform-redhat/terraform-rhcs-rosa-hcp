@@ -56,29 +56,38 @@ module "operator_roles" {
 ############################
 # ROSA STS cluster
 ############################
+resource "rhcs_dns_domain" "dns_domain" {
+  count        = var.create_dns_domain_reservation ? 1 : 0
+  cluster_arch = "hcp"
+}
+
 module "rosa_cluster_hcp" {
   source = "./modules/rosa-cluster-hcp"
 
-  cluster_name             = var.cluster_name
-  operator_role_prefix     = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
-  openshift_version        = var.openshift_version
-  installer_role_arn       = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
-  support_role_arn         = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
-  worker_role_arn          = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
-  oidc_config_id           = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
-  aws_subnet_ids           = var.aws_subnet_ids
-  machine_cidr             = var.machine_cidr
-  service_cidr             = var.service_cidr
-  pod_cidr                 = var.pod_cidr
-  host_prefix              = var.host_prefix
-  private                  = var.private
-  tags                     = var.tags
-  properties               = var.properties
-  etcd_encryption          = var.etcd_encryption
-  etcd_kms_key_arn         = var.etcd_kms_key_arn
-  kms_key_arn              = var.kms_key_arn
-  aws_billing_account_id   = var.aws_billing_account_id
-  ec2_metadata_http_tokens = var.ec2_metadata_http_tokens
+  cluster_name                      = var.cluster_name
+  operator_role_prefix              = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
+  openshift_version                 = var.openshift_version
+  version_channel_group             = var.version_channel_group
+  installer_role_arn                = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
+  support_role_arn                  = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
+  worker_role_arn                   = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
+  oidc_config_id                    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
+  aws_subnet_ids                    = var.aws_subnet_ids
+  machine_cidr                      = var.machine_cidr
+  service_cidr                      = var.service_cidr
+  pod_cidr                          = var.pod_cidr
+  host_prefix                       = var.host_prefix
+  private                           = var.private
+  tags                              = var.tags
+  properties                        = var.properties
+  etcd_encryption                   = var.etcd_encryption
+  etcd_kms_key_arn                  = var.etcd_kms_key_arn
+  kms_key_arn                       = var.kms_key_arn
+  aws_billing_account_id            = var.aws_billing_account_id
+  ec2_metadata_http_tokens          = var.ec2_metadata_http_tokens
+  base_dns_domain                   = var.create_dns_domain_reservation ? rhcs_dns_domain.dns_domain[0].id : var.base_dns_domain
+  domain_prefix                     = var.domain_prefix
+  aws_additional_allowed_principals = var.aws_additional_allowed_principals
 
   ########
   # Cluster Admin User
@@ -212,6 +221,19 @@ module "rhcs_hcp_kubelet_configs" {
   cluster_id     = module.rosa_cluster_hcp.cluster_id
   name           = each.value.name
   pod_pids_limit = each.value.pod_pids_limit
+}
+
+######################################
+# Multiple Image Mirrors block
+######################################
+module "rhcs_hcp_image_mirrors" {
+  source   = "./modules/image-mirrors"
+  for_each = var.image_mirrors
+
+  cluster_id      = module.rosa_cluster_hcp.cluster_id
+  type            = each.value.type
+  source_registry = each.value.source
+  mirrors         = each.value.mirrors
 }
 
 resource "null_resource" "validations" {

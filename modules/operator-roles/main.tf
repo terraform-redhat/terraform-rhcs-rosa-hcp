@@ -60,7 +60,20 @@ locals {
   operator_roles_count = length(local.operator_roles_properties)
   operator_role_prefix = var.operator_role_prefix
   path                 = coalesce(var.path, "/")
+
+  route53_shared_role_arn = var.shared_vpc_roles["route53"]
+  route53_splits          = split("/", local.route53_shared_role_arn)
+  route53_role_name       = local.route53_splits[length(local.route53_splits) - 1]
+  route53_policy_name     = substr("${local.route53_role_name}-assume-role", 0, 64)
+  vpce_shared_role_arn    = var.shared_vpc_roles["vpce"]
+  vpce_splits             = split("/", local.vpce_shared_role_arn)
+  vpce_role_name          = local.vpce_splits[length(local.vpce_splits) - 1]
+  vpce_policy_name        = substr("${local.vpce_role_name}-assume-role", 0, 64)
+
+  policy_arn_base = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy"
 }
+
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "custom_trust_policy" {
   count = local.operator_roles_count
@@ -102,13 +115,66 @@ resource "aws_iam_role_policy_attachment" "operator_role_policy_attachment" {
   policy_arn = local.operator_roles_properties[count.index].policy_details
 }
 
-data "aws_caller_identity" "current" {}
+### Shared VPC resources
+resource "aws_iam_policy" "route53_policy" {
+  count = (local.route53_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
 
+  name = local.route53_policy_name
+  policy = templatefile(
+    "${path.module}/../../assets/assume_role_policy.tpl",
+    {
+      aws_role_arn = local.route53_shared_role_arn
+    },
+  )
+  path = local.path
+  tags = merge(var.tags, {
+    red-hat-managed = true,
+    hcp-shared-vpc  = true
+  })
+}
+
+resource "aws_iam_policy" "vpce_policy" {
+  count = (local.vpce_shared_role_arn != "" && var.create_shared_vpc_policies) ? 1 : 0
+
+  name = local.vpce_policy_name
+  policy = templatefile(
+    "${path.module}/../../assets/assume_role_policy.tpl",
+    {
+      aws_role_arn = local.vpce_shared_role_arn
+    },
+  )
+  path = local.path
+  tags = merge(var.tags, {
+    red-hat-managed = true,
+    hcp-shared-vpc  = true
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "route53_policy_ingress_operator_role_attachment" {
+  count      = local.route53_shared_role_arn != "" ? 1 : 0
+  role       = aws_iam_role.operator_role[1].name
+  policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.route53_policy[0].arn : "${local.policy_arn_base}${local.path}${local.route53_policy_name}"
+}
+
+resource "aws_iam_role_policy_attachment" "route53_policy_control_plane_operator_role_attachment" {
+  count      = local.route53_shared_role_arn != "" ? 1 : 0
+  role       = aws_iam_role.operator_role[6].name
+  policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.route53_policy[0].arn : "${local.policy_arn_base}${local.path}${local.route53_policy_name}"
+}
+
+resource "aws_iam_role_policy_attachment" "vpce_policy_control_plane_operator_role_attachment" {
+  count      = local.vpce_shared_role_arn != "" ? 1 : 0
+  role       = aws_iam_role.operator_role[6].name
+  policy_arn = var.create_shared_vpc_policies ? aws_iam_policy.vpce_policy[0].arn : "${local.policy_arn_base}${local.path}${local.vpce_policy_name}"
+}
+
+#### Outputs
 resource "time_sleep" "role_resources_propagation" {
   create_duration = "20s"
   triggers = {
-    operator_role_prefix = local.operator_role_prefix
-    operator_role_arns   = jsonencode([for value in aws_iam_role.operator_role : value.arn])
-    operator_policy_arns = jsonencode([for value in aws_iam_role_policy_attachment.operator_role_policy_attachment : value.policy_arn])
+    operator_role_prefix          = local.operator_role_prefix
+    operator_role_arns            = jsonencode([for value in aws_iam_role.operator_role : value.arn])
+    operator_policy_arns          = jsonencode([for value in aws_iam_role_policy_attachment.operator_role_policy_attachment : value.policy_arn])
+    shared_vpc_policy_attachments = local.route53_shared_role_arn != "" && local.vpce_shared_role_arn != "" ? jsonencode([aws_iam_role_policy_attachment.route53_policy_ingress_operator_role_attachment[0].policy_arn, aws_iam_role_policy_attachment.route53_policy_control_plane_operator_role_attachment[0].policy_arn, aws_iam_role_policy_attachment.vpce_policy_control_plane_operator_role_attachment[0].policy_arn]) : jsonencode([])
   }
 }
