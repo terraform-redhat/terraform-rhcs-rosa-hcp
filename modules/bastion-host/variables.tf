@@ -21,7 +21,7 @@ variable "subnet_ids" {
 
 variable "instance_type" {
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
   description = "Instance type of the bastion hosts"
 }
 
