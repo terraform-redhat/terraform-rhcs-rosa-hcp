@@ -1,3 +1,12 @@
+data "aws_partition" "current" {}
+
+locals {
+  govcloud_account   = "219670896067"
+  commercial_account = "309956199498"
+  redhat_aws_account = data.aws_partition.current.partition == "aws-us-gov" ? local.govcloud_account : local.commercial_account
+  manifest_prefix    = data.aws_partition.current.partition == "aws-us-gov" ? local.govcloud_account : "amazon"
+}
+
 resource "tls_private_key" "pk" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -59,10 +68,11 @@ data "aws_ami" "rhel9" {
 
   filter {
     name   = "manifest-location"
-    values = ["amazon/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP2"]
+    values = ["${local.manifest_prefix}/RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP3"]
   }
 
-  owners = ["309956199498"] # Amazon's "Official Red Hat" account
+  # Amazon's "Official Red Hat" account
+  owners = [local.redhat_aws_account]
 }
 
 resource "aws_instance" "bastion_host" {
