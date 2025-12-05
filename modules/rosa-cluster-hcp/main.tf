@@ -71,6 +71,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   create_admin_user                         = local.create_admin_user
   admin_credentials                         = local.admin_credentials
   ec2_metadata_http_tokens                  = var.ec2_metadata_http_tokens
+  external_auth_providers_enabled           = var.external_auth_providers_enabled
 
   machine_cidr = var.machine_cidr
   service_cidr = var.service_cidr
