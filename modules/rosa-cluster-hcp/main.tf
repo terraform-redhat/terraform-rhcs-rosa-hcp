@@ -98,6 +98,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
   disable_waiting_in_destroy          = var.disable_waiting_in_destroy
   destroy_timeout                     = var.destroy_timeout
+  registry_config                     = var.registry_config
 
   lifecycle {
     precondition {

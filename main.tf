@@ -140,6 +140,7 @@ module "rosa_cluster_hcp" {
     var.default_ingress_listening_method) : (
     var.private ? "internal" : "external"
   )
+  registry_config = var.registry_config
 }
 
 ######################################
