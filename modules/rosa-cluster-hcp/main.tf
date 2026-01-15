@@ -24,7 +24,7 @@ locals {
     operator_role_prefix = var.operator_role_prefix,
     oidc_config_id       = var.oidc_config_id
   }
-  aws_account_arn   = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
+  aws_account_arn = var.aws_account_arn == null ? data.aws_iam_session_context.current[0].issuer_arn : var.aws_account_arn
   create_admin_user = var.create_admin_user
   admin_credentials = var.admin_credentials_username == null && var.admin_credentials_password == null ? (
     null
@@ -156,6 +156,12 @@ resource "rhcs_hcp_default_ingress" "default_ingress" {
 data "aws_caller_identity" "current" {
   count = var.aws_account_id == null || var.aws_account_arn == null ? 1 : 0
 }
+
+data "aws_iam_session_context" "current" {
+  count = var.aws_account_id == null || var.aws_account_arn == null ? 1 : 0
+  arn = try(data.aws_caller_identity.current[0].arn, "")
+}
+
 
 data "aws_region" "current" {
   count = var.aws_region == null ? 1 : 0
