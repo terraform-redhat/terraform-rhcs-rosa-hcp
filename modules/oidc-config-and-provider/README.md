@@ -66,6 +66,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_installer_role_arn"></a> [installer\_role\_arn](#input\_installer\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role used by the ROSA installer. Applicable exclusively to unmanaged OIDC; otherwise, leave empty. | `string` | `null` | no |
 | <a name="input_managed"></a> [managed](#input\_managed) | Indicates whether it is a Red Hat managed or unmanaged (Customer hosted) OIDC Configuration. This value should not be updated, please create a new resource instead. | `bool` | `true` | no |
+| <a name="input_oidc_prefix"></a> [oidc\_prefix](#input\_oidc\_prefix) | Optional prefix for the OIDC resources (if you're using managed policies). Maximum 16 characters, must match pattern: ^[a-z][a-z0-9\-]+[a-z0-9]$ | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | List of AWS resource tags to apply. | `map(string)` | `null` | no |
 
 ## Outputs
