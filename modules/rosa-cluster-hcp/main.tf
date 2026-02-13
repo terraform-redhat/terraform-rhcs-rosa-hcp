@@ -47,8 +47,8 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   )
   cloud_region   = var.aws_region == null ? data.aws_region.current[0].region : var.aws_region
   aws_account_id = local.aws_account_id
-  // Billing ID must be empty for HCP GovCloud clusters
-  aws_billing_account_id = data.aws_partition.current.partition == "aws-us-gov" ? null : (
+  // Billing ID can be empty for HCP GovCloud clusters
+  aws_billing_account_id = (data.aws_partition.current.partition == "aws-us-gov" && var.aws_billing_account_id == null) ? null : (
     var.aws_billing_account_id == null || var.aws_billing_account_id == "" ?
     local.aws_account_id :
     var.aws_billing_account_id
