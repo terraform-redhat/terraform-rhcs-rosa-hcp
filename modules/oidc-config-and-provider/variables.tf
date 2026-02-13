@@ -22,12 +22,12 @@ variable "oidc_prefix" {
   default     = null
 
   validation {
-    condition     = var.oidc_prefix == null || length(var.oidc_prefix) <= 16
+    condition     = var.oidc_prefix == null ? true : length(var.oidc_prefix) <= 16
     error_message = "The oidc_prefix must be maximum 16 characters"
   }
 
   validation {
-    condition     = var.oidc_prefix == null || can(regex("^[a-z][a-z0-9\\-]+[a-z0-9]$", var.oidc_prefix))
+    condition     = var.oidc_prefix == null ? true : can(regex("^[a-z][a-z0-9\\-]+[a-z0-9]$", var.oidc_prefix))
     error_message = "The oidc_prefix must start with a lowercase letter, contain only lowercase letters/numbers/hyphens, and end with a lowercase letter or number. Pattern: ^[a-z][a-z0-9\\-]+[a-z0-9]$"
   }
 }
