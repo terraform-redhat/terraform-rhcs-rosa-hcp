@@ -58,6 +58,11 @@ output "path" {
   description = "The arn path for the account/operator roles as well as their policies."
 }
 
+output "trust_policy_external_id" {
+  value       = var.create_account_roles ? module.account_iam_resources[0].trust_policy_external_id : null
+  description = "External ID for trust policy condition in account roles"
+}
+
 ## Oidc Config and Provider module Outputs
 
 output "oidc_config_id" {

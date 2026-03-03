@@ -71,6 +71,7 @@ No modules.
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
 | <a name="input_shared_vpc_roles"></a> [shared\_vpc\_roles](#input\_shared\_vpc\_roles) | Mapping of shared vpc roles, available keys are [route53, vpce] | `map(string)` | <pre>{<br>  "route53": "",<br>  "vpce": ""<br>}</pre> | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Mapping of AWS resource tags to apply. | `map(string)` | `null` | no |
+| <a name="input_trust_policy_external_id"></a> [trust\_policy\_external\_id](#input\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles | `string` | `null` | no |
 
 ## Outputs
 
@@ -80,4 +81,5 @@ No modules.
 | <a name="output_account_roles_arn"></a> [account\_roles\_arn](#output\_account\_roles\_arn) | A map of Amazon Resource Names (ARNs) associated with the AWS IAM roles created. The key in the map represents the name of an AWS IAM role, while the corresponding value represents the associated Amazon Resource Name (ARN) of that role. |
 | <a name="output_path"></a> [path](#output\_path) | The arn path for the account/operator roles as well as their policies. |
 | <a name="output_shared_vpc_policy_attachments"></a> [shared\_vpc\_policy\_attachments](#output\_shared\_vpc\_policy\_attachments) | A list of Amazon Resource Names (ARNs) related to the shared VPC |
+| <a name="output_trust_policy_external_id"></a> [trust\_policy\_external\_id](#output\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->

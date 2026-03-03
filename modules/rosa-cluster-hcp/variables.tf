@@ -15,6 +15,12 @@ variable "path" {
   description = "The arn path for the account/operator roles as well as their policies. Must begin and end with '/'."
 }
 
+variable "trust_policy_external_id" {
+  type        = string
+  default     = null
+  description = "External ID for trust policy condition in account roles"
+}
+
 variable "openshift_version" {
   type        = string
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
@@ -364,16 +370,16 @@ variable "registry_config" {
       )
     )
   })
-  default = null
+  default     = null
   description = "Registry configuration for this cluster."
 
   validation {
     condition = var.registry_config == null ? true : (
       var.registry_config.registry_sources == null ? true : (
         !(
-          can(var.registry_config.registry_sources.allowed_registries) && 
+          can(var.registry_config.registry_sources.allowed_registries) &&
           length(coalesce(var.registry_config.registry_sources.allowed_registries, [])) > 0 &&
-          can(var.registry_config.registry_sources.blocked_registries) && 
+          can(var.registry_config.registry_sources.blocked_registries) &&
           length(coalesce(var.registry_config.registry_sources.blocked_registries, [])) > 0
         )
       )

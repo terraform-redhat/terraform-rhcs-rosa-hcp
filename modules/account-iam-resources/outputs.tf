@@ -17,3 +17,8 @@ output "shared_vpc_policy_attachments" {
   value       = jsondecode(time_sleep.account_iam_resources_wait.triggers["shared_vpc_policy_attachments"])
   description = "A list of Amazon Resource Names (ARNs) related to the shared VPC"
 }
+
+output "trust_policy_external_id" {
+  value       = time_sleep.account_iam_resources_wait.triggers["trust_policy_external_id"]
+  description = "External ID for trust policy condition in account roles"
+}

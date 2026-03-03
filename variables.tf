@@ -312,6 +312,12 @@ variable "permissions_boundary" {
   description = "The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters."
 }
 
+variable "trust_policy_external_id" {
+  type        = string
+  default     = null
+  description = "External ID for trust policy condition in account roles"
+}
+
 ##############################################################
 # Account Roles
 ##############################################################

@@ -19,10 +19,11 @@ module "account_iam_resources" {
   source = "./modules/account-iam-resources"
   count  = var.create_account_roles ? 1 : 0
 
-  account_role_prefix  = local.account_role_prefix
-  path                 = local.path
-  permissions_boundary = var.permissions_boundary
-  tags                 = var.tags
+  account_role_prefix      = local.account_role_prefix
+  path                     = local.path
+  permissions_boundary     = var.permissions_boundary
+  tags                     = var.tags
+  trust_policy_external_id = var.trust_policy_external_id
 }
 
 ############################
@@ -73,6 +74,7 @@ module "rosa_cluster_hcp" {
   installer_role_arn                = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
   support_role_arn                  = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
   worker_role_arn                   = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
+  trust_policy_external_id          = var.trust_policy_external_id
   oidc_config_id                    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_config_id : var.oidc_config_id
   aws_subnet_ids                    = var.aws_subnet_ids
   machine_cidr                      = var.machine_cidr
@@ -93,7 +95,7 @@ module "rosa_cluster_hcp" {
 
   ########
   # Cluster Admin User
-  ########  
+  ########
   create_admin_user          = var.create_admin_user
   admin_credentials_username = var.admin_credentials_username
   admin_credentials_password = var.admin_credentials_password
@@ -117,7 +119,7 @@ module "rosa_cluster_hcp" {
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
 
   ########
-  # Proxy 
+  # Proxy
   ########
   http_proxy              = var.http_proxy
   https_proxy             = var.https_proxy
@@ -125,7 +127,7 @@ module "rosa_cluster_hcp" {
   additional_trust_bundle = var.additional_trust_bundle
 
   #############
-  # Autoscaler 
+  # Autoscaler
   #############
   cluster_autoscaler_enabled         = var.cluster_autoscaler_enabled
   autoscaler_max_pod_grace_period    = var.autoscaler_max_pod_grace_period
@@ -134,7 +136,7 @@ module "rosa_cluster_hcp" {
   autoscaler_max_nodes_total         = var.autoscaler_max_nodes_total
 
   ##################
-  # default_ingress 
+  # default_ingress
   ##################
   default_ingress_listening_method = var.default_ingress_listening_method != "" ? (
     var.default_ingress_listening_method) : (
