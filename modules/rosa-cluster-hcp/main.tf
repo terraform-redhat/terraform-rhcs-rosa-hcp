@@ -21,8 +21,9 @@ locals {
         "arn:aws:iam::${local.aws_account_id}:role${local.path}${var.account_role_prefix}-HCP-ROSA-Worker-Role"
       ),
     },
-    operator_role_prefix = var.operator_role_prefix,
-    oidc_config_id       = var.oidc_config_id
+    operator_role_prefix     = var.operator_role_prefix,
+    oidc_config_id           = var.oidc_config_id,
+    trust_policy_external_id = var.trust_policy_external_id
   }
   aws_account_arn   = var.aws_account_arn == null ? data.aws_caller_identity.current[0].arn : var.aws_account_arn
   create_admin_user = var.create_admin_user
