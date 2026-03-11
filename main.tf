@@ -239,6 +239,18 @@ module "rhcs_hcp_image_mirrors" {
   mirrors         = each.value.mirrors
 }
 
+######################################
+# Additional control plane sec groups
+######################################
+module "rhcs_hcp_additional_controlplane_sg" {
+  source = "./modules/additional-cp-sg"
+  count  = var.aws_additional_control_plane_security_group_ids == null ? 0 : 1
+
+  aws_subnet_ids                                  = var.aws_subnet_ids[0]
+  aws_additional_control_plane_security_group_ids = var.aws_additional_control_plane_security_group_ids
+  cluster_id                                      = module.rosa_cluster_hcp.cluster_id
+}
+
 resource "null_resource" "validations" {
   lifecycle {
     precondition {

@@ -240,6 +240,20 @@ variable "aws_additional_compute_security_group_ids" {
 }
 
 ##############################################################
+# Additional Control Plane VPC endpoint sercurity groups
+##############################################################
+
+variable "aws_additional_control_plane_security_group_ids" {
+  type        = list(string)
+  default     = null
+  description = "The additional security group IDs to be added to the control plane VPC endpoint."
+  validation {
+    condition     = var.aws_additional_control_plane_security_group_ids == null || length(var.aws_additional_control_plane_security_group_ids) > 0
+    error_message = "Security group list cannot be empty."
+  }
+}
+
+##############################################################
 # Autoscaler resource variables
 ##############################################################
 
@@ -409,16 +423,16 @@ variable "registry_config" {
       )
     )
   })
-  default = null
+  default     = null
   description = "Registry configuration for this cluster."
 
   validation {
     condition = var.registry_config == null ? true : (
       var.registry_config.registry_sources == null ? true : (
         !(
-          can(var.registry_config.registry_sources.allowed_registries) && 
+          can(var.registry_config.registry_sources.allowed_registries) &&
           length(coalesce(var.registry_config.registry_sources.allowed_registries, [])) > 0 &&
-          can(var.registry_config.registry_sources.blocked_registries) && 
+          can(var.registry_config.registry_sources.blocked_registries) &&
           length(coalesce(var.registry_config.registry_sources.blocked_registries, [])) > 0
         )
       )
