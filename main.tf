@@ -244,7 +244,7 @@ module "rhcs_hcp_image_mirrors" {
 ######################################
 module "rhcs_hcp_additional_controlplane_sg" {
   source = "./modules/additional-cp-sg"
-  count  = var.aws_additional_control_plane_security_group_ids == null ? 0 : 1
+  count  = var.aws_additional_control_plane_security_group_ids == null || var.private == false ? 0 : 1
 
   aws_subnet_ids                                  = var.aws_subnet_ids[0]
   aws_additional_control_plane_security_group_ids = var.aws_additional_control_plane_security_group_ids
