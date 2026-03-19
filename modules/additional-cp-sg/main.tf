@@ -1,5 +1,5 @@
 data "aws_subnet" "aws_subnet_id" {
-  id = var.aws_subnet_ids
+  id = var.aws_subnet_id
 }
 
 data "aws_vpc_endpoint" "control_plane" {
