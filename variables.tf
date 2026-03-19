@@ -240,7 +240,7 @@ variable "aws_additional_compute_security_group_ids" {
 }
 
 ##############################################################
-# Additional Control Plane VPC endpoint sercurity groups
+# Additional Control Plane VPC endpoint security groups
 ##############################################################
 
 variable "aws_additional_control_plane_security_group_ids" {
