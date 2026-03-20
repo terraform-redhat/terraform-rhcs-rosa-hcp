@@ -387,7 +387,13 @@ variable "identity_providers" {
 variable "kubelet_configs" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [kubelet-configs sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+}
+
+variable "log_forwarders" {
+  type        = map(any)
+  default     = {}
+  description = "Provides a generic approach to add multiple log forwarders after the creation of the cluster. Each entry maps to one rhcs_log_forwarder. Specify exactly one of s3 or cloudwatch per entry, and at least one non-empty applications or groups list. For additional details, refer to the [log-forwarder sub-module](./modules/log-forwarder). Requires terraform-redhat/rhcs provider version that includes the rhcs_log_forwarder resource."
 }
 
 variable "image_mirrors" {

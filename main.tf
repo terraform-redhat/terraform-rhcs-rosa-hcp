@@ -242,6 +242,20 @@ module "rhcs_hcp_image_mirrors" {
 }
 
 ######################################
+# Multiple Log Forwarders block
+######################################
+module "rhcs_hcp_log_forwarder" {
+  source   = "./modules/log-forwarder"
+  for_each = var.log_forwarders
+
+  cluster_id   = module.rosa_cluster_hcp.cluster_id
+  s3           = try(each.value.s3, null)
+  cloudwatch   = try(each.value.cloudwatch, null)
+  applications = try(each.value.applications, null)
+  groups       = try(each.value.groups, null)
+}
+
+######################################
 # Additional control plane sec groups
 ######################################
 module "rhcs_hcp_additional_controlplane_sg" {
