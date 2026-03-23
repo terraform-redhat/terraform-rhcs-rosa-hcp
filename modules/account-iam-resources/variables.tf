@@ -36,3 +36,9 @@ variable "create_shared_vpc_policies" {
   type        = bool
   default     = false
 }
+
+variable "trust_policy_external_id" {
+  type        = string
+  default     = null
+  description = "External ID for trust policy condition in account roles"
+}

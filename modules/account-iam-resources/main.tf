@@ -7,14 +7,16 @@ locals {
       policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAInstallerPolicy"
       principal_type       = "AWS"
       principal_identifier = "arn:${data.aws_partition.current.partition}:iam::${data.rhcs_info.current.ocm_aws_account_id}:role/RH-Managed-OpenShift-Installer"
+      external_id          = var.trust_policy_external_id
     },
     {
-      role_name            = "HCP-ROSA-Support"
-      role_type            = "support"
-      policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSASRESupportPolicy"
-      principal_type       = "AWS"
+      role_name      = "HCP-ROSA-Support"
+      role_type      = "support"
+      policy_details = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSASRESupportPolicy"
+      principal_type = "AWS"
       // This is a SRE RH Support role which is used to assume this support role
       principal_identifier = data.rhcs_hcp_policies.all_policies.account_role_policies["sts_support_rh_sre_role"]
+      external_id          = null
     },
     {
       role_name            = "HCP-ROSA-Worker"
@@ -22,6 +24,7 @@ locals {
       policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAWorkerInstancePolicy"
       principal_type       = "Service"
       principal_identifier = "ec2.amazonaws.com"
+      external_id          = null
     },
   ]
   account_roles_count = length(local.account_roles_properties)
@@ -58,6 +61,16 @@ data "aws_iam_policy_document" "custom_trust_policy" {
     principals {
       type        = local.account_roles_properties[count.index].principal_type
       identifiers = [local.account_roles_properties[count.index].principal_identifier]
+    }
+
+    dynamic "condition" {
+      # Only set this condition if "trust_policy_external_id" is set
+      for_each = (local.account_roles_properties[count.index].external_id != null) ? [1] : []
+      content {
+        test     = "StringEquals"
+        variable = "sts:ExternalId"
+        values   = [local.account_roles_properties[count.index].external_id]
+      }
     }
   }
 }
@@ -149,5 +162,6 @@ resource "time_sleep" "account_iam_resources_wait" {
     account_role_prefix           = local.account_role_prefix_valid
     path                          = local.path
     shared_vpc_policy_attachments = local.route53_shared_role_arn != "" && local.vpce_shared_role_arn != "" ? jsonencode([aws_iam_role_policy_attachment.route53_policy_installer_account_role_attachment[0].policy_arn, aws_iam_role_policy_attachment.vpce_policy_installer_account_role_attachment[0].policy_arn]) : jsonencode([])
+    trust_policy_external_id      = var.trust_policy_external_id
   }
 }
