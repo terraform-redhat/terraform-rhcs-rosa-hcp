@@ -51,8 +51,8 @@ module "vpc" {
 # Bastion instance for connection to the cluster
 ############################
 module "bastion_host" {
-  source         = "../../modules/bastion-host"
-  prefix         = var.cluster_name
-  vpc_id         = module.vpc.vpc_id
-  subnet_ids     = [module.vpc.public_subnets[0]]
+  source     = "../../modules/bastion-host"
+  prefix     = var.cluster_name
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = [module.vpc.public_subnets[0]]
 }
