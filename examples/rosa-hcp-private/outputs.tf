@@ -4,7 +4,7 @@ output "bastion_host_public_ip" {
 }
 
 output "bastion_host_pem_path" {
-  value = module.bastion_host.bastion_host_pem_path
+  value       = module.bastion_host.bastion_host_pem_path
   description = "Bastion Host key file path"
 }
 
