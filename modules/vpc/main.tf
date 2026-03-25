@@ -1,5 +1,5 @@
 locals {
-  tags = var.tags == null ? {} : var.tags
+  tags               = var.tags == null ? {} : var.tags
   availability_zones = var.availability_zones != null ? var.availability_zones : slice(data.aws_availability_zones.available.names, 0, var.availability_zones_count)
 }
 
@@ -31,7 +31,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                   = join("-", [var.name_prefix, "subnet", "public${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/elb" = ""
     },
     local.tags,
@@ -49,7 +49,7 @@ resource "aws_subnet" "private_subnet" {
   availability_zone = local.availability_zones[count.index]
   tags = merge(
     {
-      "Name" = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
+      "Name"                            = join("-", [var.name_prefix, "subnet", "private${count.index + 1}", local.availability_zones[count.index]])
       "kubernetes.io/role/internal-elb" = ""
     },
     local.tags,
@@ -202,7 +202,7 @@ resource "aws_route_table_association" "private_route_table_association" {
 # This resource is used in order to add dependencies on all resources 
 # Any resource uses this VPC ID, must wait to all resources creation completion
 resource "time_sleep" "vpc_resources_wait" {
-  create_duration = "20s"
+  create_duration  = "20s"
   destroy_duration = "20s"
   triggers = {
     vpc_id                                           = aws_vpc.vpc.id
