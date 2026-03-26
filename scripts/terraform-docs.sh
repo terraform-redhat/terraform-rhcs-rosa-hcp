@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-
 terraform-docs version
 for d in . modules/* examples/*; do
   echo $d
