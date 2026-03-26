@@ -33,13 +33,14 @@ module "hcp" {
 Sub-modules included in this module:
 
 - account-iam-resource: Handles the provisioning of Identity and Access Management (IAM) resources required for managing access and permissions in the AWS account associated with the ROSA HCP cluster.
+- additional-cp-sg: Allows the association of an existing Virtual Private Cloud (VPC) Security Group to the Control-Plane PrivateLink Endpoint. Requires ROSA version 4.17.2 or later. 
 - idp: Responsible for configuring Identity Providers (IDPs) within the ROSA HCP cluster, faciliting seamless integration with external authentication system such as Github (GH), GitLab, Google, HTPasswd, LDAP and OpenID Connect (OIDC).
 - image-mirrors: Manages the configuration of image digest mirror sets for ROSA HCP clusters, enabling container image mirroring to redirect image pulls from source registries to mirror registries for zero-egress networking and improved performance.
 - machine-pool: Facilitates the management of machine pools within the ROSA HCP cluster, enabling users to scale resources and adjust specifications based on workload demands.
 - oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enabling secure authentication and access control mechanisms for operator roles.
 - operator-roles: Oversees the management of roles assigned to operators within the ROSA HCP cluster, enabling to perform required actions with appropriate permissions on the lifecyle of a cluster.
 - rosa-cluster-hcp: Handles the core configuration and provisioning of the ROSA HCP cluster, including cluster networking, security settings and other essential components.
-- vpc: Handles the configuration and provisioning of the Virtucal Private Cloud (VPC) infrastracture required for hosting the ROSA HCP cluster and it's associated resources.
+- vpc: Handles the configuration and provisioning of the Virtual Private Cloud (VPC) infrastracture required for hosting the ROSA HCP cluster and it's associated resources.
 
 The primary sub-modules responsible for ROSA HCP cluster creation includes optional configurations for setting up account roles, operator roles and OIDC config/provider. This comprehensive module handles the entire process of provisioning and configuring ROSA HCP clusters in your AWS environment.
 
