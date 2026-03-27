@@ -34,6 +34,7 @@ Sub-modules included in this module:
 
 - account-iam-resource: Handles the provisioning of Identity and Access Management (IAM) resources required for managing access and permissions in the AWS account associated with the ROSA HCP cluster.
 - idp: Responsible for configuring Identity Providers (IDPs) within the ROSA HCP cluster, faciliting seamless integration with external authentication system such as Github (GH), GitLab, Google, HTPasswd, LDAP and OpenID Connect (OIDC).
+- log-forwarder: Manages [`rhcs_log_forwarder`](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/log_forwarder) resources to forward cluster logs to Amazon S3 or Amazon CloudWatch.
 - image-mirrors: Manages the configuration of image digest mirror sets for ROSA HCP clusters, enabling container image mirroring to redirect image pulls from source registries to mirror registries for zero-egress networking and improved performance.
 - machine-pool: Facilitates the management of machine pools within the ROSA HCP cluster, enabling users to scale resources and adjust specifications based on workload demands.
 - oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enabling secure authentication and access control mechanisms for operator roles.
@@ -62,17 +63,17 @@ We recommend you install the following CLI tools:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.2 |
 
 ## Modules
 
@@ -83,6 +84,7 @@ We recommend you install the following CLI tools:
 | <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
 | <a name="module_rhcs_hcp_image_mirrors"></a> [rhcs\_hcp\_image\_mirrors](#module\_rhcs\_hcp\_image\_mirrors) | ./modules/image-mirrors | n/a |
 | <a name="module_rhcs_hcp_kubelet_configs"></a> [rhcs\_hcp\_kubelet\_configs](#module\_rhcs\_hcp\_kubelet\_configs) | ./modules/kubelet-configs | n/a |
+| <a name="module_rhcs_hcp_log_forwarder"></a> [rhcs\_hcp\_log\_forwarder](#module\_rhcs\_hcp\_log\_forwarder) | ./modules/log-forwarder | n/a |
 | <a name="module_rhcs_hcp_machine_pool"></a> [rhcs\_hcp\_machine\_pool](#module\_rhcs\_hcp\_machine\_pool) | ./modules/machine-pool | n/a |
 | <a name="module_rhcs_identity_provider"></a> [rhcs\_identity\_provider](#module\_rhcs\_identity\_provider) | ./modules/idp | n/a |
 | <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ./modules/rosa-cluster-hcp | n/a |
@@ -136,7 +138,8 @@ We recommend you install the following CLI tools:
 | <a name="input_ignore_machine_pools_deletion_error"></a> [ignore\_machine\_pools\_deletion\_error](#input\_ignore\_machine\_pools\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
 | <a name="input_image_mirrors"></a> [image\_mirrors](#input\_image\_mirrors) | Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
-| <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
+| <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [kubelet-configs sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
+| <a name="input_log_forwarders"></a> [log\_forwarders](#input\_log\_forwarders) | Provides a generic approach to add multiple log forwarders after the creation of the cluster. Each entry maps to one rhcs\_log\_forwarder. Specify exactly one of s3 or cloudwatch per entry, and at least one non-empty applications or groups list. For additional details, refer to the [log-forwarder sub-module](./modules/log-forwarder). Requires terraform-redhat/rhcs provider version that includes the rhcs\_log\_forwarder resource. | `map(any)` | `{}` | no |
 | <a name="input_machine_cidr"></a> [machine\_cidr](#input\_machine\_cidr) | Block of IP addresses used by OpenShift while installing the cluster, for example "10.0.0.0/16". | `string` | `null` | no |
 | <a name="input_machine_pools"></a> [machine\_pools](#input\_machine\_pools) | Provides a generic approach to add multiple machine pools after the creation of the cluster. This variable allows users to specify configurations for multiple machine pools in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [machine-pool sub-module](./modules/machine-pool). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
 | <a name="input_managed_oidc"></a> [managed\_oidc](#input\_managed\_oidc) | OIDC type managed or unmanaged oidc. Only active when create\_oidc also enabled. This value should not be updated, please create a new resource instead | `bool` | `true` | no |
