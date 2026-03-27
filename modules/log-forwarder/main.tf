@@ -25,7 +25,7 @@ resource "rhcs_log_forwarder" "this" {
           for app in coalesce(var.applications, []) : app
           if trimspace(app) != ""
         ]) > 0
-      ) || (
+        ) || (
         length([
           for grp in coalesce(var.groups, []) : grp
           if trimspace(grp.id) != ""

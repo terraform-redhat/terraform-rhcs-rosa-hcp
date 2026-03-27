@@ -55,12 +55,22 @@ variable "autoscaling" {
 
 variable "aws_node_pool" {
   type = object({
-    instance_type                 = string
-    tags                          = map(string)
-    additional_security_group_ids = optional(list(string))
+    instance_type                   = string
+    tags                            = map(string)
+    additional_security_group_ids   = optional(list(string))
+    capacity_reservation_id         = optional(string)
+    capacity_reservation_preference = optional(string)
   })
   nullable    = false
   description = "Configures aws settings for the pool."
+
+  validation {
+    condition = (
+      var.aws_node_pool.capacity_reservation_preference == null ||
+      contains(["none", "open", "capacity-reservations-only"], var.aws_node_pool.capacity_reservation_preference)
+    )
+    error_message = "capacity_reservation_preference must be one of: none, open, capacity-reservations-only."
+  }
 }
 
 variable "auto_repair" {
