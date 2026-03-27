@@ -37,13 +37,13 @@ module "mp" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.3 |
 
 ## Modules
 
@@ -61,7 +61,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_auto_repair"></a> [auto\_repair](#input\_auto\_repair) | Configures auto repair option for the pool. | `bool` | `true` | no |
 | <a name="input_autoscaling"></a> [autoscaling](#input\_autoscaling) | Configures autoscaling for the pool. | <pre>object({<br/>    enabled      = bool<br/>    min_replicas = number<br/>    max_replicas = number<br/>  })</pre> | <pre>{<br/>  "enabled": false,<br/>  "max_replicas": null,<br/>  "min_replicas": null<br/>}</pre> | no |
-| <a name="input_aws_node_pool"></a> [aws\_node\_pool](#input\_aws\_node\_pool) | Configures aws settings for the pool. | <pre>object({<br/>    instance_type                 = string<br/>    tags                          = map(string)<br/>    additional_security_group_ids = optional(list(string))<br/>  })</pre> | n/a | yes |
+| <a name="input_aws_node_pool"></a> [aws\_node\_pool](#input\_aws\_node\_pool) | Configures aws settings for the pool. | <pre>object({<br/>    instance_type                   = string<br/>    tags                            = map(string)<br/>    additional_security_group_ids   = optional(list(string))<br/>    capacity_reservation_id         = optional(string)<br/>    capacity_reservation_preference = optional(string)<br/>  })</pre> | n/a | yes |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_ignore_deletion_error"></a> [ignore\_deletion\_error](#input\_ignore\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
 | <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Name of the kubelet configs to attach to this machine pool. The kubelet configs must already exist | `string` | `null` | no |
