@@ -263,9 +263,7 @@ resource "null_resource" "validations" {
     }
     precondition {
       condition = ((length(var.aws_additional_control_plane_security_group_ids) >= 0 && var.private &&
-        (tonumber(split(".", var.openshift_version)[0]) > 4 ||
-          (tonumber(split(".", var.openshift_version)[0]) == 4 && tonumber(split(".", var.openshift_version)[1]) > 17) ||
-        (tonumber(split(".", var.openshift_version)[0]) == 4 && tonumber(split(".", var.openshift_version)[1]) == 17 && tonumber(split(".", var.openshift_version)[2]) > 2))) == true ||
+        tonumber(format("%03d%03d%03d", split(".", var.openshift_version)...)) >= 4017002) == true ||
         var.aws_additional_control_plane_security_group_ids == null ||
       var.private == false) == true
       error_message = "\"openshift_version\" must be 4.17.2 or later to add additional security group to Privatelink endpoint."
