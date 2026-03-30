@@ -256,6 +256,18 @@ module "rhcs_hcp_log_forwarder" {
   groups       = try(each.value.groups, null)
 }
 
+######################################
+# Additional control plane sec groups
+######################################
+module "rhcs_hcp_additional_controlplane_sg" {
+  source = "./modules/additional-cp-sg"
+  count  = var.aws_additional_control_plane_security_group_ids == null || var.private == false ? 0 : 1
+
+  aws_subnet_id                                   = var.aws_subnet_ids[0]
+  aws_additional_control_plane_security_group_ids = var.aws_additional_control_plane_security_group_ids
+  cluster_id                                      = module.rosa_cluster_hcp.cluster_id
+}
+
 resource "null_resource" "validations" {
   lifecycle {
     precondition {
@@ -265,6 +277,13 @@ resource "null_resource" "validations" {
     precondition {
       condition     = (var.create_oidc != true && var.oidc_config_id == null) == false
       error_message = "\"oidc_config_id\" mustn't be empty when oidc is pre-created (create_oidc != true)."
+    }
+    precondition {
+      condition = ((length(var.aws_additional_control_plane_security_group_ids) >= 0 && var.private &&
+        tonumber(format("%03d%03d%03d", split(".", var.openshift_version)...)) >= 4017002) == true ||
+        var.aws_additional_control_plane_security_group_ids == null ||
+      var.private == false) == true
+      error_message = "\"openshift_version\" must be 4.17.2 or later to add additional security group to Privatelink endpoint."
     }
   }
 }
