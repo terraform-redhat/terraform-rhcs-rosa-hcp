@@ -1,0 +1,45 @@
+---
+description: ROSA HCP guardrails — architecture, providers, versions, security, variables
+alwaysApply: true
+---
+
+# terraform-rhcs-rosa-hcp — Terraform & ROSA HCP
+
+This repository implements **ROSA with Hosted Control Plane (HCP)** only. Do not mix **ROSA Classic** patterns, resources, or variables from `terraform-rhcs-rosa-classic`.
+
+## Architecture
+
+- **HCP**: Control plane in Red Hat’s AWS account; worker nodes in the customer account; connectivity via PrivateLink. Comparison table: [AWS — ROSA architecture models](https://docs.aws.amazon.com/rosa/latest/userguide/rosa-architecture-models.html#rosa-architecture-differences).
+- **Provider source of truth**: [`terraform-redhat/rhcs`](https://github.com/terraform-redhat/terraform-provider-rhcs) — use registry schema/docs; do not invent attributes.
+
+## Model separation (guardrails)
+
+- Scope changes to **this repo** when editing here. Do not suggest Classic-only resources (e.g. `rhcs_cluster_rosa_classic`, non-HCP machine pools) in this codebase.
+- Shared submodules (e.g. `modules/idp`) may still differ by architecture — follow **this** repo’s `main.tf` and `versions.tf`.
+
+## Provider & version constraints
+
+- **Root `versions.tf`** must list the **minimum compatible** `terraform-redhat/rhcs` and `hashicorp/aws` versions for the **entire module tree** (root + all `modules/**`). Terraform merges provider constraints across the configuration; **root constraints must not be lower than any submodule’s declared floor** — if any submodule needs a higher floor, **raise the root constraint**.
+- Before adding an **AWS** resource or data source, confirm it exists in the **AWS provider version range** declared in `versions.tf`.
+- If a feature needs a **minimum OpenShift version**, document it in the variable `description` and README when relevant.
+
+## Submodules: AWS-only vs `rhcs`
+
+- Some submodules declare **only** `hashicorp/aws` (and sometimes `time`, `random`, etc.) — no `terraform-redhat/rhcs`. They are still part of **this HCP** module; **do not** introduce resources or patterns that apply **only** to **ROSA Classic** (not HCP).
+- **Do not** add `rhcs` resources to a submodule that is intentionally AWS-only unless the change truly requires the RHCS provider; follow that submodule’s existing `main.tf` and `versions.tf`.
+- **AWS** resources and data sources must be supported by the **AWS** provider version range in **root** and that submodule’s `versions.tf` (same floor policy as **Provider & version constraints**).
+- Adding or bumping **`required_providers`** in a submodule must stay consistent across the **module tree** — root `versions.tf` must reflect minimum compatible versions for providers used anywhere in the tree.
+
+## Security
+
+- Do not hardcode secrets or long-lived AWS keys in Terraform. Align with existing **`examples/`** and Red Hat guidance for STS, OIDC, and IRSA. Use **`sensitive`** where appropriate; avoid exposing secrets in outputs, state-adjacent logging, or ad-hoc debug prints.
+
+## Variables
+
+- Every variable: `type`, `description`, and `default` when optional — match tone and structure of existing `variables.tf`.
+- Use **`snake_case`** for names (Terraform convention). Prefer **validation** / **lifecycle precondition** for simple checks (null/empty/enum); let the provider enforce complex cross-field rules.
+
+## Procedures and commands
+
+- For operational workflow, commands, and test/doc procedures, follow **`CONTRIBUTING.md`**.
+- For agent process narrative, HashiCorp Terraform skills usage, and generic style/tests/refactors, follow **`AGENTS.md`**.
