@@ -44,6 +44,17 @@ Sub-modules included in this module:
 
 The primary sub-modules responsible for ROSA HCP cluster creation includes optional configurations for setting up account roles, operator roles and OIDC config/provider. This comprehensive module handles the entire process of provisioning and configuring ROSA HCP clusters in your AWS environment.
 
+## Testing
+
+Contributors are encouraged to add Terraform tests when introducing or substantially changing a submodule, so configuration stays aligned with provider behavior before changes merge.
+
+Two Makefile targets help with that:
+
+- **`make lint`** — Runs `terraform fmt -check -recursive` and [tflint](https://github.com/terraform-linters/tflint) across the root module and submodules so formatting and common Terraform issues are caught early.
+- **`make unit-tests`** — For each module directory that contains **`test/*.tftest.hcl`** files, runs `terraform init -backend=false` and `terraform test -test-directory=test` (requires **Terraform 1.6+**). If no matching files exist, the target succeeds without running tests. This is separate from **`make tests`**, which runs the legacy `tests.sh` script.
+
+Place tests under a **`test/`** directory beside the module’s `.tf` files (for example `modules/my-module/test/example.tftest.hcl`). You need the Terraform CLI and tflint on your PATH; `make lint` runs `tflint --init`, which may download plugins from [.tflint.hcl](.tflint.hcl).
+
 ## Pre-requisites
 
 * [Terraform CLI](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) (1.4.6+) must be installed.
@@ -62,7 +73,7 @@ We recommend you install the following CLI tools:
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.3 |
