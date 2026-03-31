@@ -1,0 +1,62 @@
+name: ✨ Feature
+description: Request a new capability, variable, output, or improvement for this ROSA HCP (RHCS) Terraform module.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This repo:** requests for **this Terraform module** (new or changed variables, outputs, composition, defaults, or module-level behavior).
+
+        **`rhcs` provider:** provider bugs, resource/data source behavior, schema, or issues reproducible without this module → open an issue in **[terraform-redhat/terraform-provider-rhcs](https://github.com/terraform-redhat/terraform-provider-rhcs)**.
+
+        Use **N/A** when a section does not apply.
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: |
+        Please search [open issues](https://github.com/terraform-redhat/terraform-rhcs-rosa-hcp/issues) first.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Problem or use case
+      description: |
+        Start with one clear line that could work as the issue title, then describe the gap, who it affects, and why it matters for module consumers.
+      value: |
+        ## Summary
+
+
+        ## Problem or gap
+
+
+        ## Desired outcome
+
+
+        ## Alternatives considered (optional)
+
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Terraform and module context (optional)
+      description: |
+        If it helps, paste `terraform version`, provider pins, and how you invoke the module today (redact secrets). Omit if not relevant.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Example configuration (optional)
+      description: |
+        Sketch how you would like to call the module or set variables (redact secrets).
+      render: hcl
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Links, references, or constraints. You can attach files by dragging them into this area.
+    validations:
+      required: false

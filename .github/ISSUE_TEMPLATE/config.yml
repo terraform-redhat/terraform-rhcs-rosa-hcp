@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: RHCS Terraform provider issues
+    url: https://github.com/terraform-redhat/terraform-provider-rhcs/issues
+    about: Provider bugs, resources, data sources, and schema — not this module.
+  - name: ROSA support
+    url: https://docs.aws.amazon.com/rosa/latest/userguide/rosa-support.html
+    about: Open AWS or Red Hat support cases for Red Hat OpenShift Service on AWS (ROSA).

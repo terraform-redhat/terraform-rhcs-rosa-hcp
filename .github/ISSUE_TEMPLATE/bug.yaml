@@ -1,0 +1,74 @@
+name: 🐞 Bug
+description: Report incorrect module behavior, crashes, or failed plan/apply for this ROSA HCP (RHCS) Terraform module.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This repo:** problems with **this Terraform module** (variables, outputs, composition, defaults, or module-specific behavior).
+
+        **`rhcs` provider:** provider bugs, resource/data source behavior, schema, or issues reproducible without this module → open an issue in **[terraform-redhat/terraform-provider-rhcs](https://github.com/terraform-redhat/terraform-provider-rhcs)**.
+
+        Please give enough context: what happened, impact on consumers, how to reproduce, and versions. Use **N/A** when a section does not apply.
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: |
+        Please search [open issues](https://github.com/terraform-redhat/terraform-rhcs-rosa-hcp/issues) first.
+      options:
+        - label: I have searched the existing issues
+          required: true
+        - label: Secrets and tokens are redacted from configs and logs below
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: |
+        Start **Description** with one clear line that could work as the issue title (scannable in issue lists), then root cause, scope, impact, and context for this module and its consumers.
+      value: |
+        ## Description
+
+
+        ## Current behavior
+
+
+        ## Expected behavior
+
+
+        ## Steps to reproduce
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Terraform and providers
+      description: |
+        Paste `terraform version`, relevant `required_providers` / provider versions from your **root** module (or a `.terraform.lock.hcl` excerpt), and this module’s **source** and **version** (registry tag, git ref, or local path).
+        This field is rendered as a shell block; you do not need backticks around the whole paste.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Preconditions and module configuration
+      description: |
+        Credentials, env vars (e.g. RHCS_TOKEN), cloud region, OCM/STS setup (redact secrets). Prefer a minimal `module` block and only variables needed to reproduce.
+      render: hcl
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Diagnostics
+      description: |
+        Output of `terraform validate` (and `terraform fmt -check` if you ran it), relevant `terraform plan` output or full errors, screenshots if useful. Use a [gist](https://gist.github.com/) for long logs.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Workarounds, things you already tried, links, or follow-ups. You can attach files by dragging them into this area.
+    validations:
+      required: false
