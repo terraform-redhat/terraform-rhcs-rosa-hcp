@@ -382,9 +382,69 @@ variable "kubelet_configs" {
 }
 
 variable "log_forwarders" {
-  type        = map(any)
+  type = map(object({
+    s3 = optional(object({
+      bucket_name   = string
+      bucket_prefix = optional(string)
+    }))
+    cloudwatch = optional(object({
+      log_group_name            = string
+      log_distribution_role_arn = string
+    }))
+    applications = optional(list(string))
+    groups = optional(list(object({
+      id      = string
+      version = optional(string)
+    })))
+  }))
   default     = {}
-  description = "Provides a generic approach to add multiple log forwarders after the creation of the cluster. Each entry maps to one rhcs_log_forwarder. Specify exactly one of s3 or cloudwatch per entry, and at least one non-empty applications or groups list. For additional details, refer to the [log-forwarder sub-module](./modules/log-forwarder). Requires terraform-redhat/rhcs provider version that includes the rhcs_log_forwarder resource."
+  description = "Provides a typed map to add multiple log forwarders after cluster creation. Each entry maps to one rhcs_log_forwarder and must specify exactly one destination (s3 or cloudwatch), plus at least one non-empty applications or groups entry. For additional details, refer to the [log-forwarder sub-module](./modules/log-forwarder). Requires terraform-redhat/rhcs provider version that includes the rhcs_log_forwarder resource."
+
+  validation {
+    condition = alltrue([
+      for _, lf in var.log_forwarders :
+      (try(lf.s3, null) != null) != (try(lf.cloudwatch, null) != null)
+    ])
+    error_message = "Each log_forwarders entry must specify exactly one destination: either s3 or cloudwatch."
+  }
+
+  validation {
+    condition = alltrue([
+      for _, lf in var.log_forwarders :
+      length([
+        for app in coalesce(try(lf.applications, null), []) : app
+        if trimspace(app) != ""
+      ]) > 0
+      ||
+      length([
+        for grp in coalesce(try(lf.groups, null), []) : grp
+        if trimspace(grp.id) != ""
+      ]) > 0
+    ])
+    error_message = "Each log_forwarders entry must include at least one non-empty value in applications or groups."
+  }
+
+  validation {
+    condition = alltrue([
+      for _, lf in var.log_forwarders :
+      length([
+        for app in coalesce(try(lf.applications, null), []) : app
+        if trimspace(app) != ""
+      ]) == length(coalesce(try(lf.applications, null), []))
+    ])
+    error_message = "Each log_forwarders.applications value must be non-empty (not blank or whitespace)."
+  }
+
+  validation {
+    condition = alltrue([
+      for _, lf in var.log_forwarders :
+      length([
+        for grp in coalesce(try(lf.groups, null), []) : grp
+        if trimspace(grp.id) != ""
+      ]) == length(coalesce(try(lf.groups, null), []))
+    ])
+    error_message = "Each log_forwarders.groups.id value must be non-empty (not blank or whitespace)."
+  }
 }
 
 variable "image_mirrors" {
