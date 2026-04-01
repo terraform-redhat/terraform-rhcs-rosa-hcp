@@ -364,9 +364,37 @@ variable "oidc_endpoint_url" {
 }
 
 variable "machine_pools" {
-  type        = map(any)
+  type = map(object({
+    name              = string
+    subnet_id         = string
+    openshift_version = string
+    aws_node_pool = object({
+      instance_type                   = string
+      tags                            = map(string)
+      additional_security_group_ids   = optional(list(string))
+      capacity_reservation_id         = optional(string)
+      capacity_reservation_preference = optional(string)
+    })
+    autoscaling = optional(object({
+      enabled      = bool
+      min_replicas = number
+      max_replicas = number
+    }))
+    replicas    = optional(number)
+    auto_repair = optional(bool)
+    taints = optional(list(object({
+      key           = string
+      value         = string
+      schedule_type = string
+    })))
+    labels                       = optional(map(string))
+    tuning_configs               = optional(list(string))
+    upgrade_acknowledgements_for = optional(string)
+    kubelet_configs              = optional(string)
+    ignore_deletion_error        = optional(bool)
+  }))
   default     = {}
-  description = "Provides a generic approach to add multiple machine pools after the creation of the cluster. This variable allows users to specify configurations for multiple machine pools in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [machine-pool sub-module](./modules/machine-pool). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+  description = "Provides a typed map to add multiple machine pools after cluster creation. Each key is an arbitrary label; each value aligns with the [machine-pool](./modules/machine-pool) submodule (required: name, subnet_id, openshift_version, aws_node_pool). Optional fields match that module's optional inputs; omit autoscaling to use a fixed replica count with autoscaling disabled."
 }
 
 variable "identity_providers" {
