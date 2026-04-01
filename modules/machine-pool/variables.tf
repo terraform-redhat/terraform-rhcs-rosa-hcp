@@ -65,9 +65,9 @@ variable "aws_node_pool" {
   description = "Configures aws settings for the pool."
 
   validation {
-    condition = (
-      var.aws_node_pool.capacity_reservation_preference == null ||
-      contains(["none", "open", "capacity-reservations-only"], var.aws_node_pool.capacity_reservation_preference)
+    condition = var.aws_node_pool.capacity_reservation_preference == null ? true : contains(
+      ["none", "open", "capacity-reservations-only"],
+      var.aws_node_pool.capacity_reservation_preference
     )
     error_message = "capacity_reservation_preference must be one of: none, open, capacity-reservations-only."
   }

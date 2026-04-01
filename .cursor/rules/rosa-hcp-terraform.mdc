@@ -38,6 +38,7 @@ This repository implements **ROSA with Hosted Control Plane (HCP)** only. Do not
 
 - Every variable: `type`, `description`, and `default` when optional — match tone and structure of existing `variables.tf`.
 - Use **`snake_case`** for names (Terraform convention). Prefer **validation** / **lifecycle precondition** for simple checks (null/empty/enum); let the provider enforce complex cross-field rules.
+- **Nullable values in `validation` conditions:** Do not pass a possibly-**`null`** expression into **`contains(...)`** (or similar functions that reject null). That can surface as **`Invalid value for "value" parameter: argument must not be null.`** during validation/plan. Use a **short-circuiting ternary** so `contains` runs only when the value is non-null, e.g. `var.example == null ? true : contains(["a", "b"], var.example)` — not `var.example == null || contains(..., var.example)`.
 - **Typed maps vs `map(any)`:** When a map’s values are the same logical object (e.g. keyed log forwarders, pools), prefer **`map(object({ ... }))`** with **`optional(...)`** for nullable blocks — not **`map(any)`** — so mixed entries (e.g. one key uses `s3`, another `cloudwatch`) type-check without “all map elements must have the same type”. Add root **`validation`** blocks for cross-field rules users hit early; child modules may keep **`lifecycle` precondition** as a second line of defense.
 
 ## Procedures and commands
