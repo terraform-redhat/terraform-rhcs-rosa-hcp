@@ -33,12 +33,14 @@ This repository implements **ROSA with Hosted Control Plane (HCP)** only. Do not
 ## Security
 
 - Do not hardcode secrets or long-lived AWS keys in Terraform. Align with existing **`examples/`** and Red Hat guidance for STS, OIDC, and IRSA. Use **`sensitive`** where appropriate; avoid exposing secrets in outputs, state-adjacent logging, or ad-hoc debug prints.
+- **Outputs:** If a submodule output is **`sensitive = true`**, any **root** (or parent) output that passes it through (e.g. **`value = module.child.output_name`**) must also use **`sensitive = true`**. Terraform requires this when the value is or derives from sensitive data; keep child and parent aligned (e.g. **`cluster_admin_username`** alongside **`cluster_admin_password`**).
 
 ## Variables
 
 - Every variable: `type`, `description`, and `default` when optional — match tone and structure of existing `variables.tf`.
 - Use **`snake_case`** for names (Terraform convention). Prefer **validation** / **lifecycle precondition** for simple checks (null/empty/enum); let the provider enforce complex cross-field rules.
 - **Nullable values in `validation` conditions:** Do not pass a possibly-**`null`** expression into **`contains(...)`** (or similar functions that reject null). That can surface as **`Invalid value for "value" parameter: argument must not be null.`** during validation/plan. Use a **short-circuiting ternary** so `contains` runs only when the value is non-null, e.g. `var.example == null ? true : contains(["a", "b"], var.example)` — not `var.example == null || contains(..., var.example)`.
+- **Import-safe `count` / `for_each`:** Avoid boolean **`count`** / **`for_each`** conditions that depend **only** on a **resource or data source attribute** that can be **`null`** in partial state (e.g. immediately after **`terraform import`** before refresh). Terraform requires **`true` or `false`**; **`null`** triggers **`The condition value is null. Conditions must either be true or false.`** Prefer driving **`count` / `for_each` from `var.*`** only. 
 - **Typed maps vs `map(any)`:** When a map’s values are the same logical object (e.g. keyed log forwarders, pools), prefer **`map(object({ ... }))`** with **`optional(...)`** for nullable blocks — not **`map(any)`** — so mixed entries (e.g. one key uses `s3`, another `cloudwatch`) type-check without “all map elements must have the same type”. Add root **`validation`** blocks for cross-field rules users hit early; child modules may keep **`lifecycle` precondition** as a second line of defense.
 
 ## Procedures and commands
