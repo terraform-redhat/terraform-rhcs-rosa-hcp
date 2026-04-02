@@ -68,6 +68,34 @@ run "capres_id_is_null" {
   }
 }
 
+# Explicit null for optional capacity_reservation_preference: variable validation must allow it (no contains(null)).
+run "capacity_reservation_preference_explicit_null_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type                   = "m5.xlarge"
+      tags                            = {}
+      capacity_reservation_preference = null
+    }
+  }
+
+  # Planned resource may mark this attribute unknown; input var is known and proves validation accepted null.
+  assert {
+    condition     = var.aws_node_pool.capacity_reservation_preference == null
+    error_message = "Expected explicit null capacity_reservation_preference on aws_node_pool (optional field)."
+  }
+}
+
 run "capres_preference_is_defined_by_provider" {
   command = plan
 
