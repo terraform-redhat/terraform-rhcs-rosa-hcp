@@ -59,6 +59,29 @@ tf-validate:
 tests:
 	sh tests.sh
 
+# Terraform unit tests (distinct from `make tests`, which runs tests.sh).
+# for each module under modules, check if tests directory exists and run tests.
+.PHONY: unit-tests
+unit-tests:
+	@set -e; \
+	for submodule in modules/*; do \
+	  echo "== $$submodule =="; \
+	  cd $$submodule/tests 2> /dev/null || continue; \
+	  echo "== running tests for $$submodule =="; \
+	  (cd .. && terraform init -backend=false -input=false && terraform test ); \
+	  cd ../../..; \
+	done
+
+# fmt -check and tflint across root and submodules. tflint --recursive does not
+# apply root .tflint.hcl rule blocks to child dirs; --disable-rule avoids failing
+# on undeclared optional providers (random/tls/local/http/time) until pinned.
+.PHONY: lint
+lint:
+	terraform fmt -check -recursive
+	@command -v tflint >/dev/null 2>&1 || { echo "tflint not found; see https://github.com/terraform-linters/tflint"; exit 1; }
+	tflint --init
+	tflint --recursive --disable-rule=terraform_required_providers
+
 .PHONY: dev-environment
 dev-environment:
 	find . -type f -name "versions.tf" -exec sed -i -e "s/terraform-redhat\/rhcs/terraform.local\/local\/rhcs/g" -- {} +

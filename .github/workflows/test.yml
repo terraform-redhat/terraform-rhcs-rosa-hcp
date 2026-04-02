@@ -1,0 +1,24 @@
+name: Terraform test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - uses: hashicorp/setup-terraform@v4.0.0
+        with:
+          terraform_wrapper: false
+
+      - uses: terraform-linters/setup-tflint@v6.2.2
+
+      - name: Lint
+        run: make lint
+
+      - name: Terraform unit tests
+        run: make unit-tests
