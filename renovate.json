@@ -1,0 +1,43 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+      "config:recommended",
+      "customManagers:dockerfileVersions"
+    ],
+    "packageRules": [
+      {
+        "description": "Terraform providers in the root versions.tf",
+        "matchPaths": ["versions.tf"],
+        "rangeStrategy": "bump",
+        "matchDatasources": ["terraform-provider"],
+        "groupName": "Terraform Providers",
+        "groupSlug": "tf-providers",
+        "labels": ["ok-to-test"],
+        "commitMessagePrefix": "chore(deps): ",
+        "automerge": false
+      },
+      {
+        "description": "Ignore Terraform submodule versions.tf files",
+        "matchManagers": ["terraform"],
+        "matchPaths": ["**/versions.tf"],
+        "excludePaths": ["versions.tf"],
+        "enabled": false
+      },
+      {
+        "description": "Group GitHub Actions updates to avoid many CI pull requests",
+        "matchManagers": ["github-actions"],
+        "groupName": "GitHub Actions Dependencies",
+        "groupSlug": "gh-actions",
+        "automerge": false
+      },
+      {
+        "description": "Terraform modules grouped by source",
+        "matchDatasources": ["terraform-module"],
+        "groupName": "terraform modules",
+        "groupSlug": "tf-modules",
+        "labels": ["ok-to-test"],
+        "commitMessagePrefix": "chore(deps): ",
+        "automerge": false
+      }
+    ]
+  }
