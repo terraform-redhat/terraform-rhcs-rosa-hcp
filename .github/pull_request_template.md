@@ -76,6 +76,7 @@ For details, see: ./CONTRIBUTING.md
 Examples: variable rename/removal, output rename/removal, default value change, resource behavior changes, provider/version requirement changes. -->
 
 ## Developer Verification Checklist
+- [ ] **AWS-only changes:** If this PR is mainly **AWS-only** (no `rhcs` resources/variables), I linked **official Red Hat or cited ROSA HCP documentation** that supports reference alignment, or I explained why the change still belongs in-repo per **Module scope (AWS-only vs core HCP)** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
 - [ ] I checked if this affects terraform-rhcs-rosa-classic and submitted (or already submitted) a companion PR when needed.
 - [ ] Commit subject/title follows `[JIRA-TICKET] | [TYPE]: <MESSAGE>`.
 - [ ] PR description clearly explains both **what** changed and **why**.
