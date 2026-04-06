@@ -30,6 +30,11 @@ output "cluster_domain" {
   description = "The DNS domain of cluster."
 }
 
+output "cluster_channel" {
+  value       = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel
+  description = "The Y-stream channel for the cluster version, for example 'stable-4.16'."
+}
+
 output "cluster_current_version" {
   value       = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.current_version
   description = "The currently running version of OpenShift on the cluster, for example '4.11.0'."

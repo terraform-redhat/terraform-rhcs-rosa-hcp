@@ -32,6 +32,8 @@ mock_provider "rhcs" {
     defaults = {
       id                       = "rhcs-fake-cluster-id"
       wait_for_create_complete = null
+      channel                  = "stable-4.21"
+      channel_group            = "stable"
     }
   }
 
@@ -82,5 +84,87 @@ run "plan_default_ingress_count_when_wait_for_create_complete_false" {
   assert {
     condition     = length(rhcs_hcp_default_ingress.default_ingress) == 0
     error_message = "rhcs_hcp_default_ingress.default_ingress must have count 0 when var.wait_for_create_complete is false."
+  }
+}
+
+# channel variable validation: cannot be used together with version_channel_group.
+run "both_channel_and_version_channel_group_fails" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    channel               = "stable-4.16"
+    version_channel_group = "stable"
+  }
+
+  expect_failures = [
+    var.channel,
+  ]
+}
+
+# Valid plan when only channel is set.
+run "valid_plan_with_only_channel" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    channel = "stable-4.16"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel == "stable-4.16"
+    error_message = "rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel must be 'stable-4.16' when only channel is set."
+  }
+}
+
+# Valid plan when only version_channel_group is set.
+run "valid_plan_with_only_version_channel_group" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    version_channel_group = "stable"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group == "stable"
+    error_message = "rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group must be 'stable' when only version_channel_group is set."
+  }
+}
+
+# Valid plan when both channel and version_channel_group are null (API defaults).
+run "valid_plan_with_both_null" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    channel               = null
+    version_channel_group = null
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel == "stable-4.21"
+    error_message = "rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel must be 'stable-4.21' (API default) when both channel and version_channel_group are null."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group == "stable"
+    error_message = "rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group must be 'stable' (API default) when both channel and version_channel_group are null."
   }
 }
