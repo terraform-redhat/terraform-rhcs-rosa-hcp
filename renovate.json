@@ -4,6 +4,7 @@
       "config:recommended",
       "customManagers:dockerfileVersions"
     ],
+    "minimumReleaseAge": "3 days",
     "packageRules": [
       {
         "description": "Terraform providers in the root versions.tf",
