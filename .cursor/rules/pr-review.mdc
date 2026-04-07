@@ -1,0 +1,15 @@
+---
+description: PR review for Terraform changes in terraform-rhcs-rosa-hcp — HCP-only, provider/schema alignment, breaking changes, tests
+alwaysApply: false
+---
+
+# Pull request review (Terraform — this repo)
+
+When the user asks to **review a PR**, **review the diff**, or assess **breaking changes** for **terraform-rhcs-rosa-hcp**:
+
+1. Follow **ROSA HCP only** — see [`rosa-hcp-terraform.mdc`](./rosa-hcp-terraform.mdc). Do not recommend ROSA Classic–only resources here.
+2. Use the **terraform-pr-reviewer** subagent defined in [`reviewer.md`](../agents/reviewer.md) when a dedicated, read-only review pass is appropriate (large diffs, risk-focused review, or when the user names that agent).
+3. Ground findings in [`AGENTS.md`](../../AGENTS.md), [`CONTRIBUTING.md`](../../CONTRIBUTING.md), and **registry docs** for **`terraform-redhat/rhcs`** / **`hashicorp/aws`** at the versions declared in **`versions.tf`**.
+4. If the user provides a **PR URL**, try to **fetch** description/comments/plan text when tools allow; otherwise review from **local diff** only.
+5. Prefer **evidence-based** flags (diff lines, plan snippets, schema links) over generic warnings. Keep **Findings** to **one line per issue**, respect **per-heading and total caps**, and **do not** repeat full remediation that belongs in **Action items** — see **Response format** in [`reviewer.md`](../agents/reviewer.md).
+6. **Action items** should include a **file path** on each item and **line** and/or **HCL block name** when reliable — see **Response format** in [`reviewer.md`](../agents/reviewer.md) (line numbers are **revision-specific**).

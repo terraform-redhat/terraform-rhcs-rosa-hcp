@@ -9,8 +9,15 @@ This repository is the **ROSA HCP** Terraform module. The sibling **ROSA Classic
 | [`.cursor/rules/`](.cursor/rules/) | Hard, stable guardrails (architecture boundaries, provider/version constraints, variable conventions, credentials/secrets) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Command and procedure authority (fmt, verify, docs generation, test execution) |
 | This file | Process narrative, security expectations, and decision workflow for agents |
+| [`.cursor/agents/reviewer.md`](.cursor/agents/reviewer.md) | **PR review subagent** (`terraform-pr-reviewer`): read-only Terraform PR / diff review for this HCP module |
 
 Thin entrypoints [`CLAUDE.md`](CLAUDE.md) and [`GEMINI.md`](GEMINI.md) only point here so we do not duplicate content.
+
+## Pull request reviews
+
+For **PR review**, **breaking-change analysis**, or **risk-focused** passes on Terraform/HCL changes, **delegate to the `terraform-pr-reviewer` subagent** ([`.cursor/agents/reviewer.md`](.cursor/agents/reviewer.md)). It is configured **`readonly: true`** and aligned with **HCP-only** rules in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
+
+Contributors often **cannot attach a live `terraform plan`**; use the **git diff**, any **plan text pasted in the PR**, or a **PR URL** (fetch when possible). Optional context rule: [`.cursor/rules/pr-review.mdc`](.cursor/rules/pr-review.mdc). Optional slash command: [`.cursor/commands/review-pr.md`](.cursor/commands/review-pr.md).
 
 ## HashiCorp Terraform skills
 
