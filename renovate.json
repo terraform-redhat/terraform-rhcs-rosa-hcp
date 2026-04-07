@@ -4,6 +4,7 @@
     "config:recommended",
     "customManagers:dockerfileVersions"
   ],
+  "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
