@@ -50,7 +50,7 @@ Useful skills for this codebase:
 **Agent-oriented checks** when editing Terraform, **`examples/`**, and tests:
 
 - Do **not** hardcode secrets, API keys, or long-lived AWS access keys in Terraform, examples, or tests. Prefer patterns in existing **`examples/`** and Red Hat documentation (STS, OIDC, IRSA, short-lived credentials).
-- Use **`sensitive`** on variables and outputs where values must not appear in logs or casual `terraform show` output; avoid echoing secrets in `local` values used only for debugging.
+- Use **`sensitive`** on variables and outputs where values must not appear in logs or casual `terraform show` output; avoid echoing secrets in `local` values used only for debugging. Passthrough outputs (**`module.*` → root output**) must match submodule sensitivity—see **Security** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
 - Do not add logging, outputs, or comments that expose credentials or session tokens.
 
 ## Critical Module Guardrails
@@ -73,5 +73,7 @@ When asked to add a feature, the agent should follow this internal loop:
 New features should include a new `.tftest.hcl` file or an update to an existing one when module behavior changes.
 
 Use mocks for AWS and RHCS resources to verify logic without requiring live credentials.
+
+When module behavior branches on a **boolean variable** (e.g. **`count = var.x ? 1 : 0`**), prefer **more than one `run` block** (or clearly separated scenarios) so **both** outcomes are covered—typically **`true` / `count = 1`** and **`false` / `count = 0`**—not only the default or “happy” path. That avoids regressions where the positive case passes but the opt-out path breaks.
 
 For exact commands and pass/fail criteria, follow **`CONTRIBUTING.md`**.
