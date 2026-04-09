@@ -1,5 +1,5 @@
 ---
-description: ROSA HCP guardrails — architecture, providers, versions, security, variables
+description: ROSA HCP guardrails — architecture, module scope, providers, versions, security, variables
 alwaysApply: true
 ---
 
@@ -29,6 +29,22 @@ This repository implements **ROSA with Hosted Control Plane (HCP)** only. Do not
 - **Do not** add `rhcs` resources to a submodule that is intentionally AWS-only unless the change truly requires the RHCS provider; follow that submodule’s existing `main.tf` and `versions.tf`.
 - **AWS** resources and data sources must be supported by the **AWS** provider version range in **root** and that submodule’s `versions.tf` (same floor policy as **Provider & version constraints**).
 - Adding or bumping **`required_providers`** in a submodule must stay consistent across the **module tree** — root `versions.tf` must reflect minimum compatible versions for providers used anywhere in the tree.
+
+## Module scope (AWS-only vs core HCP)
+
+The tree includes **AWS-only** pieces (VPC, IAM, endpoints, etc.) that exist to run **ROSA HCP** in the customer account. Not every AWS pattern belongs in this repository.
+
+**In scope — expand or add AWS-only configuration when all of the following hold:**
+
+- **Reference-aligned:** The pattern is **standard for ROSA HCP**, part of the **reference architecture**, and **called out in official Red Hat documentation** (or in AWS documentation where Red Hat explicitly ties HCP to that AWS behavior).
+- **High misconfiguration risk:** Users are **likely to get it wrong** if they implement it themselves (availability, security, or cluster lifecycle impact).
+- **Sustainable:** It is **reasonable to test and support** (e.g. `terraform test`, examples, and docs) without unbounded optional surface area.
+
+**Out of scope — do not expand the module for:**
+
+- **Optional AWS** shapes that **vary widely by customer**, are **not** reference architecture, and are **not** documented in official Red Hat (or cited HCP-specific) docs. Prefer **examples**, documented patterns, or **user-owned** Terraform composed alongside this module.
+
+PRs that are **primarily AWS-only** should **link** the relevant official documentation so reviewers can confirm reference alignment.
 
 ## Security
 
