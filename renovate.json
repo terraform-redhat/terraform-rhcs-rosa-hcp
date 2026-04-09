@@ -9,7 +9,7 @@
   "packageRules": [
     {
       "description": "Terraform providers and version in the root versions.tf",
-      "ignorePaths": ["**/modules/**", "**/examples/**"]
+      "ignorePaths": ["**/modules/**", "**/examples/**"],
       "rangeStrategy": "bump",
       "matchManagers": ["terraform"],
       "matchDepTypes": ["required_provider", "required_version"],
