@@ -8,17 +8,11 @@
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
-      "description": "Ignore Terraform submodule versions.tf files",
-      "matchManagers": ["terraform"],
-      "matchFileNames": ["**/versions.tf"],
-      "enabled": false
-    },
-    {
-      "description": "Terraform providers in the root versions.tf",
-      "matchFileNames": ["versions.tf"],
+      "description": "Terraform providers and version in the root versions.tf",
+      "ignorePaths": ["**/modules/**", "**/examples/**"]
       "rangeStrategy": "bump",
       "matchManagers": ["terraform"],
-      "matchDatasources": ["terraform-provider"],
+      "matchDepTypes": ["required_provider", "required_version"],
       "groupName": "Terraform Providers",
       "groupSlug": "tf-providers",
       "labels": ["ok-to-test"],
@@ -35,7 +29,7 @@
     {
       "description": "Terraform modules grouped by source",
       "matchManagers": ["terraform"],
-      "matchDatasources": ["terraform-module"],
+      "matchDepTypes": ["module"],
       "groupName": "Terraform Modules",
       "groupSlug": "tf-modules",
       "labels": ["ok-to-test"],
