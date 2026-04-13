@@ -12,6 +12,7 @@
   "tekton": {
     "schedule": ["at any time"]
   },
+  "labels": ["ok-to-test"],
   "packageRules": [
     {
       "description": "Terraform providers and version in the root versions.tf",
@@ -21,7 +22,6 @@
       "matchFileNames": ["versions.tf"],
       "groupName": "Terraform Providers",
       "groupSlug": "tf-providers",
-      "labels": ["ok-to-test"],
       "commitMessagePrefix": "chore(deps): ",
       "automerge": false
     },
@@ -37,7 +37,6 @@
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions Dependencies",
       "groupSlug": "gh-actions",
-      "labels": ["ok-to-test"],
       "commitMessagePrefix": "chore(deps): ",
       "automerge": false
     },
@@ -48,7 +47,6 @@
       "matchFileNames": ["modules/**"],
       "groupName": "Terraform Modules",
       "groupSlug": "tf-modules",
-      "labels": ["ok-to-test"],
       "commitMessagePrefix": "chore(deps): ",
       "rangeStrategy": "bump",
       "automerge": false
