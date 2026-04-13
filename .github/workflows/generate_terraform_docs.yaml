@@ -8,7 +8,7 @@ on:
 jobs:
   docs:
     # Only run if the PR was opened by Renovate
-    if: startsWith(github.head_ref, 'renovate/')
+    if: startsWith(github.head_ref, 'konflux/mintmaker/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
