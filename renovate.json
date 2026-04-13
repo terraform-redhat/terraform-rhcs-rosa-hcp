@@ -6,6 +6,12 @@
   ],
   "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 0,
+  "reviewersFromCodeOwners": true,
+  "tekton": {
+    "schedule": ["at any time"]
+  },
   "packageRules": [
     {
       "description": "Terraform providers and version in the root versions.tf",
