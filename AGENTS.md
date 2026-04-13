@@ -2,6 +2,18 @@
 
 This repository is the **ROSA HCP** Terraform module. The sibling **ROSA Classic** module is [`terraform-rhcs-rosa-classic`](https://github.com/terraform-redhat/terraform-rhcs-rosa-classic) — do not mix architectures.
 
+## Domain Guidelines
+
+Detailed, domain-specific playbooks for AI agents working in this codebase:
+
+- [Security](docs/security-guidelines.md) — STS/IAM architecture, OIDC configuration, sensitive value handling, security groups, shared VPC trust, encryption
+- [Error Handling](docs/error-handling-guidelines.md) — Validation patterns, null-safe validation, lifecycle preconditions, error messages
+- [Testing](docs/testing-guidelines.md) — Test structure, mock providers, run blocks, assertions, expect_failures, boolean branch coverage
+- [Integration](docs/integration-guidelines.md) — IDP integration, OIDC configuration, AWS service integration, log forwarding, validation patterns
+- [Module Design](docs/terraform-module-design-guidelines.md) — Module organization, variable design, typed maps, count vs for_each, time_sleep patterns
+- [Provider Usage](docs/terraform-provider-usage-guidelines.md) — Provider constraints, RHCS resources, multiplicity patterns, time_sleep, sensitive outputs
+- [Style Conventions](docs/terraform-style-conventions-guidelines.md) — Formatting, naming, file organization, validation, testing, pre-PR checklist
+
 ## Where rules live
 
 | File | Purpose |
