@@ -1,0 +1,29 @@
+name: Generate terraform docs
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  docs:
+    # Only run if the PR was opened by Renovate
+    if: startsWith(github.head_ref, 'renovate/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          # Fetch the head of the PR specifically to allow pushing back
+          ref: ${{ github.head_ref }}
+
+      - name: Render terraform docs and push changes
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "true"
+          git-commit-message: "OCM-00000 | docs: update terraform-docs after deps bump"
