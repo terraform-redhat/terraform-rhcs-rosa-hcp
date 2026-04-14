@@ -200,3 +200,135 @@ We recommend you install the following CLI tools:
 | <a name="output_path"></a> [path](#output\_path) | The arn path for the account/operator roles as well as their policies. |
 | <a name="output_trust_policy_external_id"></a> [trust\_policy\_external\_id](#output\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.3 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0.0 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.3 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_account_iam_resources"></a> [account\_iam\_resources](#module\_account\_iam\_resources) | ./modules/account-iam-resources | n/a |
+| <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ./modules/oidc-config-and-provider | n/a |
+| <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
+| <a name="module_rhcs_hcp_additional_controlplane_sg"></a> [rhcs\_hcp\_additional\_controlplane\_sg](#module\_rhcs\_hcp\_additional\_controlplane\_sg) | ./modules/additional-cp-sg | n/a |
+| <a name="module_rhcs_hcp_image_mirrors"></a> [rhcs\_hcp\_image\_mirrors](#module\_rhcs\_hcp\_image\_mirrors) | ./modules/image-mirrors | n/a |
+| <a name="module_rhcs_hcp_kubelet_configs"></a> [rhcs\_hcp\_kubelet\_configs](#module\_rhcs\_hcp\_kubelet\_configs) | ./modules/kubelet-configs | n/a |
+| <a name="module_rhcs_hcp_log_forwarder"></a> [rhcs\_hcp\_log\_forwarder](#module\_rhcs\_hcp\_log\_forwarder) | ./modules/log-forwarder | n/a |
+| <a name="module_rhcs_hcp_machine_pool"></a> [rhcs\_hcp\_machine\_pool](#module\_rhcs\_hcp\_machine\_pool) | ./modules/machine-pool | n/a |
+| <a name="module_rhcs_identity_provider"></a> [rhcs\_identity\_provider](#module\_rhcs\_identity\_provider) | ./modules/idp | n/a |
+| <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ./modules/rosa-cluster-hcp | n/a |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [null_resource.validations](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [rhcs_dns_domain.dns_domain](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/dns_domain) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_role_prefix"></a> [account\_role\_prefix](#input\_account\_role\_prefix) | User-defined prefix for all generated AWS resources (default "account-role-<random>") | `string` | `null` | no |
+| <a name="input_additional_trust_bundle"></a> [additional\_trust\_bundle](#input\_additional\_trust\_bundle) | A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store. | `string` | `null` | no |
+| <a name="input_admin_credentials_password"></a> [admin\_credentials\_password](#input\_admin\_credentials\_password) | Admin password that is created with the cluster. The password must contain at least 14 characters (ASCII-standard) without whitespaces including uppercase letters, lowercase letters, and numbers or symbols. | `string` | `null` | no |
+| <a name="input_admin_credentials_username"></a> [admin\_credentials\_username](#input\_admin\_credentials\_username) | Admin username that is created with the cluster. auto generated username - "cluster-admin" | `string` | `null` | no |
+| <a name="input_autoscaler_max_node_provision_time"></a> [autoscaler\_max\_node\_provision\_time](#input\_autoscaler\_max\_node\_provision\_time) | Maximum time cluster-autoscaler waits for node to be provisioned. | `string` | `null` | no |
+| <a name="input_autoscaler_max_nodes_total"></a> [autoscaler\_max\_nodes\_total](#input\_autoscaler\_max\_nodes\_total) | Maximum number of nodes in all node groups. Cluster autoscaler will not grow the cluster beyond this number. | `number` | `null` | no |
+| <a name="input_autoscaler_max_pod_grace_period"></a> [autoscaler\_max\_pod\_grace\_period](#input\_autoscaler\_max\_pod\_grace\_period) | Gives pods graceful termination time before scaling down. | `number` | `null` | no |
+| <a name="input_autoscaler_pod_priority_threshold"></a> [autoscaler\_pod\_priority\_threshold](#input\_autoscaler\_pod\_priority\_threshold) | To allow users to schedule 'best-effort' pods, which shouldn't trigger Cluster Autoscaler actions, but only run when there are spare resources available. | `number` | `null` | no |
+| <a name="input_aws_additional_allowed_principals"></a> [aws\_additional\_allowed\_principals](#input\_aws\_additional\_allowed\_principals) | The additional allowed principals to use when installing the cluster. | `list(string)` | `null` | no |
+| <a name="input_aws_additional_compute_security_group_ids"></a> [aws\_additional\_compute\_security\_group\_ids](#input\_aws\_additional\_compute\_security\_group\_ids) | The additional security group IDs to be added to the default worker machine pool. | `list(string)` | `null` | no |
+| <a name="input_aws_additional_control_plane_security_group_ids"></a> [aws\_additional\_control\_plane\_security\_group\_ids](#input\_aws\_additional\_control\_plane\_security\_group\_ids) | The additional security group IDs to be added to the control plane VPC endpoint. | `list(string)` | `null` | no |
+| <a name="input_aws_availability_zones"></a> [aws\_availability\_zones](#input\_aws\_availability\_zones) | The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones | `list(string)` | `[]` | no |
+| <a name="input_aws_billing_account_id"></a> [aws\_billing\_account\_id](#input\_aws\_billing\_account\_id) | The AWS billing account identifier where all resources are billed. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
+| <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The Subnet IDs to use when installing the cluster. | `list(string)` | n/a | yes |
+| <a name="input_base_dns_domain"></a> [base\_dns\_domain](#input\_base\_dns\_domain) | Base DNS domain name previously reserved, e.g. '1vo8.p3.openshiftapps.com'. | `string` | `null` | no |
+| <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available' | `bool` | `false` | no |
+| <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
+| <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
+| <a name="input_create_account_roles"></a> [create\_account\_roles](#input\_create\_account\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
+| <a name="input_create_admin_user"></a> [create\_admin\_user](#input\_create\_admin\_user) | To create cluster admin user with default username `cluster-admin` and generated password. It will be ignored if `admin_credentials_username` or `admin_credentials_password` is set. (default: false) | `bool` | `null` | no |
+| <a name="input_create_dns_domain_reservation"></a> [create\_dns\_domain\_reservation](#input\_create\_dns\_domain\_reservation) | Creates reserves a dns domain domain for the cluster. This value will be created by the install step if not pre created via this configuration. | `bool` | `false` | no |
+| <a name="input_create_oidc"></a> [create\_oidc](#input\_create\_oidc) | Create the oidc resources. This value should not be updated, please create a new resource instead or utilize the submodule to create a new oidc config | `bool` | `false` | no |
+| <a name="input_create_operator_roles"></a> [create\_operator\_roles](#input\_create\_operator\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
+| <a name="input_default_ingress_listening_method"></a> [default\_ingress\_listening\_method](#input\_default\_ingress\_listening\_method) | Listening Method for ingress. Options are ["internal", "external"]. Default is "external". When empty is set based on private variable. | `string` | `""` | no |
+| <a name="input_destroy_timeout"></a> [destroy\_timeout](#input\_destroy\_timeout) | Maximum duration in minutes to allow for destroying resources. (Default: 60 minutes) | `number` | `null` | no |
+| <a name="input_disable_waiting_in_destroy"></a> [disable\_waiting\_in\_destroy](#input\_disable\_waiting\_in\_destroy) | Disable addressing cluster state in the destroy resource. Default value is false, and so a `destroy` will wait for the cluster to be deleted. | `bool` | `null` | no |
+| <a name="input_domain_prefix"></a> [domain\_prefix](#input\_domain\_prefix) | Creates a domain\_prefix for your ROSA cluster. Defaults to a random string if not set | `string` | `null` | no |
+| <a name="input_ec2_metadata_http_tokens"></a> [ec2\_metadata\_http\_tokens](#input\_ec2\_metadata\_http\_tokens) | Should cluster nodes use both v1 and v2 endpoints or just v2 endpoint of EC2 Instance Metadata Service (IMDS). Available since OpenShift 4.11.0. | `string` | `"optional"` | no |
+| <a name="input_etcd_encryption"></a> [etcd\_encryption](#input\_etcd\_encryption) | Add etcd encryption. By default etcd data is encrypted at rest. This option configures etcd encryption on top of existing storage encryption. | `bool` | `null` | no |
+| <a name="input_etcd_kms_key_arn"></a> [etcd\_kms\_key\_arn](#input\_etcd\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
+| <a name="input_external_auth_providers_enabled"></a> [external\_auth\_providers\_enabled](#input\_external\_auth\_providers\_enabled) | Enable external auth providers on the cluster. | `bool` | `null` | no |
+| <a name="input_host_prefix"></a> [host\_prefix](#input\_host\_prefix) | Subnet prefix length to assign to each individual node. For example, if host prefix is set to "23", then each node is assigned a /23 subnet out of the given CIDR. | `number` | `null` | no |
+| <a name="input_http_proxy"></a> [http\_proxy](#input\_http\_proxy) | A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http. | `string` | `null` | no |
+| <a name="input_https_proxy"></a> [https\_proxy](#input\_https\_proxy) | A proxy URL to use for creating HTTPS connections outside the cluster. | `string` | `null` | no |
+| <a name="input_identity_providers"></a> [identity\_providers](#input\_identity\_providers) | Provides a generic approach to add multiple identity providers after the creation of the cluster. This variable allows users to specify configurations for multiple identity providers in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/idp). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
+| <a name="input_ignore_machine_pools_deletion_error"></a> [ignore\_machine\_pools\_deletion\_error](#input\_ignore\_machine\_pools\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
+| <a name="input_image_mirrors"></a> [image\_mirrors](#input\_image\_mirrors) | Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
+| <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
+| <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [kubelet-configs sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string. | `map(any)` | `{}` | no |
+| <a name="input_log_forwarders"></a> [log\_forwarders](#input\_log\_forwarders) | Provides a typed map to add multiple log forwarders after cluster creation. Each entry maps to one rhcs\_log\_forwarder and must specify exactly one destination (s3 or cloudwatch), plus at least one non-empty applications or groups entry. For additional details, refer to the [log-forwarder sub-module](./modules/log-forwarder). Requires terraform-redhat/rhcs provider version that includes the rhcs\_log\_forwarder resource. | <pre>map(object({<br/>    s3 = optional(object({<br/>      bucket_name   = string<br/>      bucket_prefix = optional(string)<br/>    }))<br/>    cloudwatch = optional(object({<br/>      log_group_name            = string<br/>      log_distribution_role_arn = string<br/>    }))<br/>    applications = optional(list(string))<br/>    groups = optional(list(object({<br/>      id      = string<br/>      version = optional(string)<br/>    })))<br/>  }))</pre> | `{}` | no |
+| <a name="input_machine_cidr"></a> [machine\_cidr](#input\_machine\_cidr) | Block of IP addresses used by OpenShift while installing the cluster, for example "10.0.0.0/16". | `string` | `null` | no |
+| <a name="input_machine_pools"></a> [machine\_pools](#input\_machine\_pools) | Provides a typed map to add multiple machine pools after cluster creation. Each key is an arbitrary label; each value aligns with the [machine-pool](./modules/machine-pool) submodule (required: name, subnet\_id, openshift\_version, aws\_node\_pool). Optional fields match that module's optional inputs; omit autoscaling to use a fixed replica count with autoscaling disabled. | <pre>map(object({<br/>    name              = string<br/>    subnet_id         = string<br/>    openshift_version = string<br/>    aws_node_pool = object({<br/>      instance_type                   = string<br/>      tags                            = map(string)<br/>      additional_security_group_ids   = optional(list(string))<br/>      capacity_reservation_id         = optional(string)<br/>      capacity_reservation_preference = optional(string)<br/>    })<br/>    autoscaling = optional(object({<br/>      enabled      = bool<br/>      min_replicas = number<br/>      max_replicas = number<br/>    }))<br/>    replicas    = optional(number)<br/>    auto_repair = optional(bool)<br/>    taints = optional(list(object({<br/>      key           = string<br/>      value         = string<br/>      schedule_type = string<br/>    })))<br/>    labels                       = optional(map(string))<br/>    tuning_configs               = optional(list(string))<br/>    upgrade_acknowledgements_for = optional(string)<br/>    kubelet_configs              = optional(string)<br/>    ignore_deletion_error        = optional(bool)<br/>  }))</pre> | `{}` | no |
+| <a name="input_managed_oidc"></a> [managed\_oidc](#input\_managed\_oidc) | OIDC type managed or unmanaged oidc. Only active when create\_oidc also enabled. This value should not be updated, please create a new resource instead | `bool` | `true` | no |
+| <a name="input_no_proxy"></a> [no\_proxy](#input\_no\_proxy) | A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. | `string` | `null` | no |
+| <a name="input_oidc_config_id"></a> [oidc\_config\_id](#input\_oidc\_config\_id) | The unique identifier associated with users authenticated through OpenID Connect (OIDC) within the ROSA cluster. If create\_oidc is false this attribute is required. | `string` | `null` | no |
+| <a name="input_oidc_endpoint_url"></a> [oidc\_endpoint\_url](#input\_oidc\_endpoint\_url) | Registered OIDC configuration issuer URL, added as the trusted relationship to the operator roles. Valid only when create\_oidc is false. | `string` | `null` | no |
+| <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | n/a | yes |
+| <a name="input_operator_role_prefix"></a> [operator\_role\_prefix](#input\_operator\_role\_prefix) | User-defined prefix for generated AWS operator policies. Use "account-role-prefix" in case no value provided. | `string` | `null` | no |
+| <a name="input_path"></a> [path](#input\_path) | The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
+| <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | The ARN of the policy that is used to set the permissions boundary for the IAM roles in STS clusters. | `string` | `""` | no |
+| <a name="input_pod_cidr"></a> [pod\_cidr](#input\_pod\_cidr) | Block of IP addresses from which Pod IP addresses are allocated, for example "10.128.0.0/14". | `string` | `null` | no |
+| <a name="input_private"></a> [private](#input\_private) | Restrict master API endpoint and application routes to direct, private connectivity. (default: false) | `bool` | `false` | no |
+| <a name="input_properties"></a> [properties](#input\_properties) | User defined properties. | `map(string)` | `null` | no |
+| <a name="input_registry_config"></a> [registry\_config](#input\_registry\_config) | Registry configuration for this cluster. | <pre>object({<br/>    additional_trusted_ca = optional(map(string))<br/>    allowed_registries_for_import = optional(<br/>      list(<br/>        object(<br/>          {<br/>            domain_name = optional(string)<br/>            insecure    = optional(bool)<br/>          }<br/>        )<br/>      )<br/>    )<br/>    platform_allowlist_id = optional(string)<br/>    registry_sources = optional(<br/>      object(<br/>        {<br/>          allowed_registries  = optional(list(string))<br/>          blocked_registries  = optional(list(string))<br/>          insecure_registries = optional(list(string))<br/>        }<br/>      )<br/>    )<br/>  })</pre> | `null` | no |
+| <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of worker nodes to provision. This attribute is applicable solely when autoscaling is disabled. Single zone clusters need at least 2 nodes, multizone clusters need at least 3 nodes. Hosted clusters require that the number of worker nodes be a multiple of the number of private subnets. (default: 2) | `number` | `null` | no |
+| <a name="input_service_cidr"></a> [service\_cidr](#input\_service\_cidr) | Block of IP addresses for services, for example "172.30.0.0/16". | `string` | `null` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute. | `map(string)` | `null` | no |
+| <a name="input_trust_policy_external_id"></a> [trust\_policy\_external\_id](#input\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles | `string` | `null` | no |
+| <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `string` | `null` | no |
+| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Desired channel group of the version [stable, candidate, fast, nightly]. | `string` | `"stable"` | no |
+| <a name="input_wait_for_create_complete"></a> [wait\_for\_create\_complete](#input\_wait\_for\_create\_complete) | Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true) | `bool` | `true` | no |
+| <a name="input_wait_for_std_compute_nodes_complete"></a> [wait\_for\_std\_compute\_nodes\_complete](#input\_wait\_for\_std\_compute\_nodes\_complete) | Wait until the initial set of machine pools to be available. The waiter has a timeout of 60 minutes. (default: true) | `bool` | `true` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_account_role_prefix"></a> [account\_role\_prefix](#output\_account\_role\_prefix) | The prefix used for all generated AWS resources. |
+| <a name="output_account_roles_arn"></a> [account\_roles\_arn](#output\_account\_roles\_arn) | A map of Amazon Resource Names (ARNs) associated with the AWS IAM roles created. The key in the map represents the name of an AWS IAM role, while the corresponding value represents the associated Amazon Resource Name (ARN) of that role. |
+| <a name="output_cluster_admin_password"></a> [cluster\_admin\_password](#output\_cluster\_admin\_password) | The password of the admin user. |
+| <a name="output_cluster_admin_username"></a> [cluster\_admin\_username](#output\_cluster\_admin\_username) | The username of the admin user. |
+| <a name="output_cluster_api_url"></a> [cluster\_api\_url](#output\_cluster\_api\_url) | The URL of the API server. |
+| <a name="output_cluster_console_url"></a> [cluster\_console\_url](#output\_cluster\_console\_url) | The URL of the console. |
+| <a name="output_cluster_current_version"></a> [cluster\_current\_version](#output\_cluster\_current\_version) | The currently running version of OpenShift on the cluster, for example '4.11.0'. |
+| <a name="output_cluster_domain"></a> [cluster\_domain](#output\_cluster\_domain) | The DNS domain of cluster. |
+| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | Unique identifier of the cluster. |
+| <a name="output_cluster_state"></a> [cluster\_state](#output\_cluster\_state) | The state of the cluster. |
+| <a name="output_image_mirror_ids"></a> [image\_mirror\_ids](#output\_image\_mirror\_ids) | A map of image mirror names to their unique identifiers. |
+| <a name="output_oidc_config_id"></a> [oidc\_config\_id](#output\_oidc\_config\_id) | The unique identifier associated with users authenticated through OpenID Connect (OIDC) generated by this OIDC config. |
+| <a name="output_oidc_endpoint_url"></a> [oidc\_endpoint\_url](#output\_oidc\_endpoint\_url) | Registered OIDC configuration issuer URL, generated by this OIDC config. |
+| <a name="output_operator_role_prefix"></a> [operator\_role\_prefix](#output\_operator\_role\_prefix) | Prefix used for generated AWS operator policies. |
+| <a name="output_operator_roles_arn"></a> [operator\_roles\_arn](#output\_operator\_roles\_arn) | List of Amazon Resource Names (ARNs) for all operator roles created. |
+| <a name="output_path"></a> [path](#output\_path) | The arn path for the account/operator roles as well as their policies. |
+| <a name="output_trust_policy_external_id"></a> [trust\_policy\_external\_id](#output\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles |
+<!-- END_TF_DOCS -->
