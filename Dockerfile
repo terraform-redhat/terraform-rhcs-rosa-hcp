@@ -12,7 +12,7 @@ RUN curl -sL "https://mirror.openshift.com/pub/cgw/rosa/latest/rosa-linux.tar.gz
     tar xfvz rosa.tar.gz --no-same-owner && mv rosa /usr/local/bin/rosa && rm rosa.tar.gz
 # Added terraform-docs following the instructions here: https://terraform-docs.io/user-guide/installation/
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs extractVersion=^v(?<version>.*)$
-ARG TERRAFORM_DOCS_VERSION=0.21.0
+ARG TERRAFORM_DOCS_VERSION=0.22.0
 RUN curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-$(uname)-amd64.tar.gz && \
     tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && \
     mv terraform-docs /usr/local/bin/terraform-docs && rm terraform-docs.tar.gz
