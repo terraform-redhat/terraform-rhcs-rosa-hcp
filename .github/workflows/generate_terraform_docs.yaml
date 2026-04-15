@@ -18,11 +18,12 @@ jobs:
         with:
           client-id: ${{ vars.REDHAT_GITHUB_APP_CLIENT_ID }}
           private-key: ${{ secrets.REDHAT_GITHUB_APP_PRIVATE_KEY }}
+          permission-contents: write
 
       - name: Checkout
         uses: actions/checkout@v6.0.2
         with:
-          # Installation token (not GITHUB_TOKEN) so fetch/push are as the GitHub App
+          # Installation token (not GITHUB_TOKEN) so git operations are as the GitHub App
           token: ${{ steps.app-token.outputs.token }}
           ref: ${{ github.head_ref }}
 
@@ -37,22 +38,21 @@ jobs:
           rm -f terraform-docs.tar.gz
           terraform-docs version
 
-      - name: Get GitHub App User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+      # Commits are created via the GitHub Git Database API (not git commit) so GitHub can
+      # attribute and verify them for the authenticated GitHub App installation.
+      - name: Render terraform docs and push changes
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Render terraform docs and push changes
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.head_ref }}
+          COMMIT_MESSAGE: "OCM-00000 | docs: update terraform-docs after deps bump"
         run: |
           set -euo pipefail
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
           make terraform-docs
-          git add -A
-          if git diff --staged --quiet; then
+          files=()
+          while IFS= read -r -d '' f; do files+=("$f"); done < <(git ls-files -z -m -o --exclude-standard)
+          if [ "${#files[@]}" -eq 0 ]; then
             echo "No terraform-docs changes to commit."
-          else
-            git commit -m "OCM-00000 | docs: update terraform-docs after deps bump"
-            git push origin "HEAD:${{ github.head_ref }}"
+            exit 0
           fi
+          bash scripts/github-app-single-commit.sh "${files[@]}"
