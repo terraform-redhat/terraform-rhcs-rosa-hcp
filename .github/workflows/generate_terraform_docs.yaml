@@ -19,12 +19,27 @@ jobs:
           # Fetch the head of the PR specifically to allow pushing back
           ref: ${{ github.head_ref }}
 
+      - name: Install terraform-docs
+        run: |
+          set -euo pipefail
+          TERRAFORM_DOCS_VERSION="$(grep -E '^ARG TERRAFORM_DOCS_VERSION=' Dockerfile | cut -d= -f2)"
+          curl -sSLo ./terraform-docs.tar.gz "https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64.tar.gz"
+          tar -xzf terraform-docs.tar.gz terraform-docs
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/terraform-docs
+          rm -f terraform-docs.tar.gz
+          terraform-docs version
+
       - name: Render terraform docs and push changes
-        uses: terraform-docs/gh-actions@v1.4.1
-        with:
-          working-dir: .
-          output-file: README.md
-          output-method: replace
-          git-push: "true"
-          git-commit-message: "OCM-00000 | docs: update terraform-docs after deps bump"
-          config-file: ".terraform-docs.yml"
+        run: |
+          set -euo pipefail
+          make terraform-docs
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No terraform-docs changes to commit."
+          else
+            git commit -m "OCM-00000 | docs: update terraform-docs after deps bump"
+            git push origin "HEAD:${{ github.head_ref }}"
+          fi
