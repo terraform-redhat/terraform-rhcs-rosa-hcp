@@ -24,7 +24,7 @@ jobs:
         with:
           working-dir: .
           output-file: README.md
-          output-method: inject
+          output-method: replace
           git-push: "true"
           git-commit-message: "OCM-00000 | docs: update terraform-docs after deps bump"
           config-file: .terraform-docs.yml
