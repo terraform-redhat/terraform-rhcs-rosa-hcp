@@ -7,16 +7,23 @@ on:
 
 jobs:
   docs:
-    # Only run if the PR was opened by Renovate
+    # Mintmaker / Konflux dependency update PRs
     if: startsWith(github.head_ref, 'konflux/mintmaker/')
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
+      - uses: actions/create-github-app-token@v3.1.1
+        id: app-token
+        with:
+          client-id: ${{ vars.REDHAT_GITHUB_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REDHAT_GITHUB_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v6.0.2
         with:
-          # Fetch the head of the PR specifically to allow pushing back
+          # Installation token (not GITHUB_TOKEN) so fetch/push are as the GitHub App
+          token: ${{ steps.app-token.outputs.token }}
           ref: ${{ github.head_ref }}
 
       - name: Install terraform-docs
@@ -30,12 +37,18 @@ jobs:
           rm -f terraform-docs.tar.gz
           terraform-docs version
 
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
       - name: Render terraform docs and push changes
         run: |
           set -euo pipefail
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
           make terraform-docs
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git add -A
           if git diff --staged --quiet; then
             echo "No terraform-docs changes to commit."
