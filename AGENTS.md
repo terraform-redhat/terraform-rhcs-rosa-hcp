@@ -62,7 +62,6 @@ When **`trivy config`** reports a **misconfiguration** (check IDs like **`AWS-01
 1. **Prefer fixing** the HCL/Dockerfile (least privilege, encryption, IMDSv2, non-root user, etc.).
 2. If an ignore is required, add **`#trivy:ignore:<id>`** on the line **immediately above** the Terraform resource or Dockerfile instruction, with a **short `#` comment** on the same line or the line above explaining why (narrow scope).
 3. Use **`.trivyignore`** only when inline suppression is not possible — one ID per line with a **`#` justification** above each.
-4. **Dockerfile `DS-0002`:** Inline `#trivy:ignore` is not reliably applied by Trivy for this rule; prefer **`USER` with a non-root account** after root-only install steps (see root `Dockerfile`).
 
 ## Critical Module Guardrails
 
