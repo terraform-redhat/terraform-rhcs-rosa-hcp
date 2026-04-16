@@ -1,0 +1,5 @@
+# Misconfiguration IDs to skip — see https://trivy.dev/latest/docs/configuration/filtering/
+# Prefer `#trivy:ignore:<ID>` on Terraform resources; use this file when required (e.g. Dockerfile).
+
+# Root Dockerfile: tooling image installs yum/terraform/aws/rosa/terraform-docs as root; no non-root USER by design.
+DS-0002
