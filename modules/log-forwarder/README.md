@@ -57,14 +57,14 @@ module "cluster_logs_cloudwatch" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.2 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.2 |
 
 ## Modules
@@ -74,13 +74,13 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [rhcs_log_forwarder.this](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/log_forwarder) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_applications"></a> [applications](#input\_applications) | List of additional applications to forward logs for. At least one of applications or groups must be non-empty (provider requirement). | `list(string)` | `null` | no |
 | <a name="input_cloudwatch"></a> [cloudwatch](#input\_cloudwatch) | CloudWatch destination for log forwarding. Mutually exclusive with s3. See rhcs\_log\_forwarder resource documentation. | <pre>object({<br/>    log_group_name            = string<br/>    log_distribution_role_arn = string<br/>  })</pre> | `null` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
@@ -90,6 +90,6 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_id"></a> [id](#output\_id) | Unique identifier of the log forwarder. |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->

@@ -10,7 +10,7 @@ The operator roles and installer account role must exist so that it is possible 
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
@@ -18,13 +18,13 @@ The operator roles and installer account role must exist so that it is possible 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_hosted-zones"></a> [hosted-zones](#module\_hosted-zones) | ./hosted-zones | n/a |
 | <a name="module_route53-role"></a> [route53-role](#module\_route53-role) | ./route53-role | n/a |
 | <a name="module_subnets-share"></a> [subnets-share](#module\_subnets-share) | ./subnets-share | n/a |
@@ -33,13 +33,13 @@ The operator roles and installer account role must exist so that it is possible 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [time_sleep.shared_resources_propagation](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_account_roles_prefix"></a> [account\_roles\_prefix](#input\_account\_roles\_prefix) | Prefix used to compute installer account role | `string` | n/a | yes |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The cluster's name for which shared resources are created. It is used for the hosted zone domain. | `string` | n/a | yes |
 | <a name="input_ingress_private_hosted_zone_base_domain"></a> [ingress\_private\_hosted\_zone\_base\_domain](#input\_ingress\_private\_hosted\_zone\_base\_domain) | The base domain that must be used for hosted zone creation. | `string` | n/a | yes |
@@ -54,7 +54,7 @@ The operator roles and installer account role must exist so that it is possible 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_hcp_internal_communication_private_hosted_zone_arn"></a> [hcp\_internal\_communication\_private\_hosted\_zone\_arn](#output\_hcp\_internal\_communication\_private\_hosted\_zone\_arn) | HCP Internal Communication Private Hosted Zone ARN |
 | <a name="output_hcp_internal_communication_private_hosted_zone_id"></a> [hcp\_internal\_communication\_private\_hosted\_zone\_id](#output\_hcp\_internal\_communication\_private\_hosted\_zone\_id) | HCP Internal Communication Private Hosted Zone ID |
 | <a name="output_ingress_private_hosted_zone_arn"></a> [ingress\_private\_hosted\_zone\_arn](#output\_ingress\_private\_hosted\_zone\_arn) | Ingress Private Hosted Zone ARN |
