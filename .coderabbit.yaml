@@ -1,0 +1,120 @@
+---
+# CodeRabbit — terraform-rhcs-rosa-hcp (ROSA HCP only)
+# https://docs.coderabbit.ai/
+# Canonical policy: .cursor/rules/rosa-hcp-terraform.mdc, AGENTS.md,
+#   CONTRIBUTING.md (avoid duplicating long rule text here).
+
+language: en-US
+early_access: false
+
+reviews:
+  profile: chill
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    ignore_title_keywords:
+      - WIP
+      - "Do Not Merge"
+
+  path_filters:
+    - "!**/.terraform/**"
+    - "!**/terraform.tfstate*"
+
+  path_instructions:
+    - path: "**/*.tf"
+      instructions: |
+        **ROSA HCP only** — not ROSA Classic (see terraform-rhcs-rosa-classic).
+        **rhcs** registry schemas are authoritative; do not invent attributes.
+        Root **versions.tf** sets minimum **rhcs** / **aws** / other providers
+        for the **entire** tree; raise root when any submodule raises a floor.
+        AWS-only work must match **Module scope** in
+        .cursor/rules/rosa-hcp-terraform.mdc. Variables: snake_case;
+        **sensitive** on secrets; no long-lived keys in HCL. Finer points
+        (validation, import-safe count/for_each): see **AGENTS.md** and
+        .cursor/rules.
+
+    - path: "modules/**"
+      instructions: |
+        Submodule changes affect root, **examples/**, and downstream users.
+
+        1. **Breaking changes:** No silent renames/retypes of variables or
+           outputs; migration plan or explicit PR callout (AGENTS.md).
+
+        2. **Provider floor:** **required_providers** changes → update root
+           **versions.tf** for the whole module tree.
+
+        3. **IAM / STS / OIDC / IRSA:** Least privilege; link non-obvious
+           cross-account or shared-VPC patterns to official ROSA HCP docs.
+
+        4. **Ordering:** IAM/STS eventual consistency — **depends_on** /
+           waits / preconditions where immediate effect is assumed.
+
+        5. **Tests / examples:** Update **modules/*/tests/*.tftest.hcl** and
+           keep **make verify** green for touched **examples/**.
+
+        6. **modules/rosa-cluster-hcp:** **rhcs_cluster_rosa_hcp** (and
+           related rhcs resources) — match provider docs; document minimum
+           OpenShift version for version-gated features.
+
+        7. **modules/shared-vpc-resources:** RAM, endpoints, IAM trust per
+           shared VPC docs; prefer narrow bindings over broad IAM.
+
+    - path: "examples/**/*.tf"
+      instructions: |
+        **make verify** (init + validate per example) must stay passing.
+        No embedded credentials; follow existing auth patterns.
+
+    - path: "**/*.tftest.hcl"
+      instructions: |
+        Per **CONTRIBUTING.md** / **AGENTS.md**: mocks where the repo does;
+        branch on booleans → cover both outcomes. Tests live under
+        **modules/<name>/tests/** (see **make unit-tests** / README).
+
+    - path: "scripts/**"
+      instructions: |
+        No secret leakage. Behavior must stay aligned with **CONTRIBUTING.md**
+        (fmt, terraform-docs, verify-gen, verify).
+
+    - path: ".github/workflows/**"
+      instructions: |
+        CI changes affect every PR: keep **make verify**, lint, and doc
+        generation behavior consistent with **CONTRIBUTING.md**; avoid
+        weakening checks without an explicit rationale in the PR.
+
+  abort_on_close: true
+  auto_title_placeholder: "@coderabbitai"
+
+  tools:
+    trivy:
+      enabled: true
+    checkov:
+      enabled: true
+    hadolint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    tflint:
+      enabled: true
+    yamllint:
+      enabled: true
+    markdownlint:
+      enabled: false
+    golangci-lint:
+      enabled: false
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto

@@ -16,3 +16,7 @@ ARG TERRAFORM_DOCS_VERSION=0.22.0
 RUN curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-$(uname)-amd64.tar.gz && \
     tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && \
     mv terraform-docs /usr/local/bin/terraform-docs && rm terraform-docs.tar.gz
+# Installers above run as root; run default container process as non-root (Trivy DS-0002).
+RUN useradd -r -u 10001 -m -d /home/moduleuser moduleuser && \
+    chown -R moduleuser:moduleuser /app
+USER moduleuser
