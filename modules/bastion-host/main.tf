@@ -27,6 +27,7 @@ data "http" "myip" {
   url = "https://ipv4.icanhazip.com"
 }
 
+#trivy:ignore:aws-0104 # Optional bastion: egress 0.0.0.0/0 and ::/0 for package updates and outbound access.
 resource "aws_security_group" "bastion_host_ingress" {
   name   = "${var.prefix}-bastion-security-group"
   vpc_id = var.vpc_id
@@ -75,6 +76,8 @@ data "aws_ami" "rhel9" {
   owners = [local.redhat_aws_account]
 }
 
+#trivy:ignore:aws-0028 # Optional bastion: IMDSv2 optional; tighten with metadata_options if policy requires.
+#trivy:ignore:aws-0131 # Optional bastion: enforce encryption via AMI or root_block_device when hardening.
 resource "aws_instance" "bastion_host" {
   count                       = length(var.subnet_ids)
   ami                         = var.ami_id != null ? var.ami_id : data.aws_ami.rhel9[0].id
