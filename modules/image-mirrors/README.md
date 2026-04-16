@@ -21,14 +21,14 @@ module "imagemirror" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.2 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.2 |
 
 ## Modules
@@ -38,13 +38,13 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [rhcs_image_mirror.image_mirror](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/image_mirror) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_mirrors"></a> [mirrors](#input\_mirrors) | List of mirror registry hostnames. | `list(string)` | n/a | yes |
 | <a name="input_source_registry"></a> [source\_registry](#input\_source\_registry) | The source registry hostname. | `string` | n/a | yes |
@@ -53,6 +53,6 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_image_mirror_id"></a> [image\_mirror\_id](#output\_image\_mirror\_id) | The unique identifier of the image mirror. |
 <!-- END_AUTOMATED_TF_DOCS_BLOCK -->

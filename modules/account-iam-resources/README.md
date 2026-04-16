@@ -23,7 +23,7 @@ module "account_iam_resources" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
@@ -33,7 +33,7 @@ module "account_iam_resources" {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.8 |
@@ -46,7 +46,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_policy.route53_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.vpce_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.account_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -64,7 +64,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_account_role_prefix"></a> [account\_role\_prefix](#input\_account\_role\_prefix) | Prefix to be used when creating the account roles | `string` | `"tf-acc"` | no |
 | <a name="input_create_shared_vpc_policies"></a> [create\_shared\_vpc\_policies](#input\_create\_shared\_vpc\_policies) | Signals to create the shared vpc policies, it might not be needed if created through another step | `bool` | `false` | no |
 | <a name="input_path"></a> [path](#input\_path) | (Optional) The arn path for the account/operator roles as well as their policies. Must begin and end with '/'. | `string` | `"/"` | no |
@@ -76,7 +76,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_account_role_prefix"></a> [account\_role\_prefix](#output\_account\_role\_prefix) | The prefix used for all generated AWS resources. |
 | <a name="output_account_roles_arn"></a> [account\_roles\_arn](#output\_account\_roles\_arn) | A map of Amazon Resource Names (ARNs) associated with the AWS IAM roles created. The key in the map represents the name of an AWS IAM role, while the corresponding value represents the associated Amazon Resource Name (ARN) of that role. |
 | <a name="output_path"></a> [path](#output\_path) | The arn path for the account/operator roles as well as their policies. |

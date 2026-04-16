@@ -20,14 +20,14 @@ module "kubeletconfig" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
 
 ## Modules
@@ -37,13 +37,13 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [rhcs_kubeletconfig.rosa_kubeletconfig](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/kubeletconfig) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Name of the KubeletConfig. | `string` | n/a | yes |
 | <a name="input_pod_pids_limit"></a> [pod\_pids\_limit](#input\_pod\_pids\_limit) | Sets the requested podPidsLimit to be applied as part of the custom KubeletConfig. | `number` | `null` | no |

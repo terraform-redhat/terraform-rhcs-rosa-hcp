@@ -31,14 +31,14 @@ resource "random_password" "password" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.6.2 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.6.2 |
 
 ## Modules
@@ -48,7 +48,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [rhcs_identity_provider.github_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
 | [rhcs_identity_provider.gitlab_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
 | [rhcs_identity_provider.google_identity_provider](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/identity_provider) | resource |
@@ -59,7 +59,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_github_idp_ca"></a> [github\_idp\_ca](#input\_github\_idp\_ca) | Path to PEM-encoded certificate file to use when making requests to the server (optional). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
 | <a name="input_github_idp_client_id"></a> [github\_idp\_client\_id](#input\_github\_idp\_client\_id) | Client identifier issued by Github (required). Valid only to Github Identity Provider (idp\_type=github) | `string` | `null` | no |
