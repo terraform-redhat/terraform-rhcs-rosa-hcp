@@ -93,22 +93,24 @@ reviews:
   auto_title_placeholder: "@coderabbitai"
 
   tools:
-    trivy:
-      enabled: true
     checkov:
       enabled: true
+    gitleaks:
+      enabled: true
+    golangci-lint:
+      enabled: false
     hadolint:
       enabled: true
+    markdownlint:
+      enabled: false
     shellcheck:
       enabled: true
     tflint:
       enabled: true
+    trivy:
+      enabled: true
     yamllint:
       enabled: true
-    markdownlint:
-      enabled: false
-    golangci-lint:
-      enabled: false
 
 chat:
   auto_reply: true
