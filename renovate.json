@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "customManagers:dockerfileVersions"
+    "customManagers:dockerfileVersions",
+    ":gitSignOff"
   ],
   "dependencyDashboard": true,
   "minimumReleaseAge": "3 days",
