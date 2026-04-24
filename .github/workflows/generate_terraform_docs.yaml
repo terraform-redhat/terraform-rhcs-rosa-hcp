@@ -54,6 +54,6 @@ jobs:
             echo "No terraform-docs changes to commit."
             exit 0
           fi
-	  echo "Starting the commit"
+          echo "Starting the commit"
           bash scripts/github-app-single-commit.sh "${files[@]}"
           cat github-app-single-commit.out
