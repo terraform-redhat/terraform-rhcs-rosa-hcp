@@ -15,7 +15,7 @@ log() {
 : "${BRANCH:?BRANCH is required}"
 : "${COMMIT_MESSAGE:?COMMIT_MESSAGE is required}"
 
-COMMIT_MESSAGE+=$'\n\n'"Signed-off-by: $(git config --get user.name) <$(git config --get user.email)>"
+COMMIT_MESSAGE+=$'\n\n'"Signed-off-by: terraform-redhat-bot <126015336+red-hat-[bot]@users.noreply.github.com>"
 
 if [ "$#" -lt 1 ]; then
   log "error: no file paths passed"
