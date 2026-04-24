@@ -56,3 +56,4 @@ jobs:
             exit 0
           fi
           bash scripts/github-app-single-commit.sh "${files[@]}"
+	  cat github-app-single-commit.out

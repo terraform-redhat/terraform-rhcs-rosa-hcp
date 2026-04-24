@@ -9,13 +9,15 @@
 set -euo pipefail
 
 log() {
-  echo "[github-app-single-commit] $*" >&2
+  echo "[github-app-single-commit] $*" >> ./github-app-single-commit.out
 }
 
 : "${GH_TOKEN:?GH_TOKEN is required}"
 : "${REPOSITORY:?REPOSITORY is required}"
 : "${BRANCH:?BRANCH is required}"
 : "${COMMIT_MESSAGE:?COMMIT_MESSAGE is required}"
+
+COMMIT_MESSAGE+=$'\n\n'"Signed-off-by: $(git config --get user.name) <$(git config --get user.email)>"
 
 if [ "$#" -lt 1 ]; then
   log "error: no file paths passed"
