@@ -6,8 +6,6 @@
 # Usage: GH_TOKEN, REPOSITORY (owner/name), BRANCH, COMMIT_MESSAGE must be set.
 # Remaining arguments: paths of files to include (repo-relative), readable from CWD.
 
-set -euo pipefail
-
 log() {
   echo "[github-app-single-commit] $*" >> ./github-app-single-commit.out
 }

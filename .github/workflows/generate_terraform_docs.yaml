@@ -47,7 +47,6 @@ jobs:
           BRANCH: ${{ github.head_ref }}
           COMMIT_MESSAGE: "OCM-00000 | docs: update terraform-docs after deps bump"
         run: |
-          set -euo pipefail
           make terraform-docs
           files=()
           while IFS= read -r -d '' f; do files+=("$f"); done < <(git ls-files -z -m -o --exclude-standard)
@@ -55,5 +54,6 @@ jobs:
             echo "No terraform-docs changes to commit."
             exit 0
           fi
+	  echo "Starting the commit"
           bash scripts/github-app-single-commit.sh "${files[@]}"
-	  cat github-app-single-commit.out
+          cat github-app-single-commit.out
