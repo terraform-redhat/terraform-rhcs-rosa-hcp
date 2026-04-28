@@ -77,7 +77,7 @@ We recommend you install the following CLI tools:
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.14.9 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.41.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.4 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.6 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.7 |
 
 ## Providers
 
@@ -85,7 +85,7 @@ We recommend you install the following CLI tools:
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.41.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.2.4 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.6 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.7 |
 
 ## Modules
 
@@ -130,6 +130,7 @@ We recommend you install the following CLI tools:
 | <a name="input_aws_billing_account_id"></a> [aws\_billing\_account\_id](#input\_aws\_billing\_account\_id) | The AWS billing account identifier where all resources are billed. If no information is provided, the data will be retrieved from the currently connected account. | `string` | `null` | no |
 | <a name="input_aws_subnet_ids"></a> [aws\_subnet\_ids](#input\_aws\_subnet\_ids) | The Subnet IDs to use when installing the cluster. | `list(string)` | n/a | yes |
 | <a name="input_base_dns_domain"></a> [base\_dns\_domain](#input\_base\_dns\_domain) | Base DNS domain name previously reserved, e.g. '1vo8.p3.openshiftapps.com'. | `string` | `null` | no |
+| <a name="input_channel"></a> [channel](#input\_channel) | Y-stream specific channel for the cluster version (e.g., 'stable-4.16'). This parameter specifies the upgrade path for the cluster. Cannot be used together with 'version\_channel\_group'. | `string` | `null` | no |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available' | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
 | <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
@@ -174,7 +175,7 @@ We recommend you install the following CLI tools:
 | <a name="input_tags"></a> [tags](#input\_tags) | Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute. | `map(string)` | `null` | no |
 | <a name="input_trust_policy_external_id"></a> [trust\_policy\_external\_id](#input\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles | `string` | `null` | no |
 | <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `string` | `null` | no |
-| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Desired channel group of the version [stable, candidate, fast, nightly]. | `string` | `"stable"` | no |
+| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Desired channel group of the version [stable, candidate, fast, nightly]. Cannot be used together with 'channel'. | `string` | `null` | no |
 | <a name="input_wait_for_create_complete"></a> [wait\_for\_create\_complete](#input\_wait\_for\_create\_complete) | Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true) | `bool` | `true` | no |
 | <a name="input_wait_for_std_compute_nodes_complete"></a> [wait\_for\_std\_compute\_nodes\_complete](#input\_wait\_for\_std\_compute\_nodes\_complete) | Wait until the initial set of machine pools to be available. The waiter has a timeout of 60 minutes. (default: true) | `bool` | `true` | no |
 
@@ -187,6 +188,7 @@ We recommend you install the following CLI tools:
 | <a name="output_cluster_admin_password"></a> [cluster\_admin\_password](#output\_cluster\_admin\_password) | The password of the admin user. |
 | <a name="output_cluster_admin_username"></a> [cluster\_admin\_username](#output\_cluster\_admin\_username) | The username of the admin user. |
 | <a name="output_cluster_api_url"></a> [cluster\_api\_url](#output\_cluster\_api\_url) | The URL of the API server. |
+| <a name="output_cluster_channel"></a> [cluster\_channel](#output\_cluster\_channel) | The Y-stream channel for the cluster version, for example 'stable-4.16'. |
 | <a name="output_cluster_console_url"></a> [cluster\_console\_url](#output\_cluster\_console\_url) | The URL of the console. |
 | <a name="output_cluster_current_version"></a> [cluster\_current\_version](#output\_cluster\_current\_version) | The currently running version of OpenShift on the cluster, for example '4.11.0'. |
 | <a name="output_cluster_domain"></a> [cluster\_domain](#output\_cluster\_domain) | The DNS domain of cluster. |

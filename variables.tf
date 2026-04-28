@@ -16,8 +16,19 @@ variable "openshift_version" {
 
 variable "version_channel_group" {
   type        = string
-  default     = "stable"
-  description = "Desired channel group of the version [stable, candidate, fast, nightly]."
+  default     = null
+  description = "Desired channel group of the version [stable, candidate, fast, nightly]. Cannot be used together with 'channel'."
+}
+
+variable "channel" {
+  type        = string
+  default     = null
+  description = "Y-stream specific channel for the cluster version (e.g., 'stable-4.16'). This parameter specifies the upgrade path for the cluster. Cannot be used together with 'version_channel_group'."
+
+  validation {
+    condition     = var.channel == null || var.version_channel_group == null
+    error_message = "The 'channel' and 'version_channel_group' parameters cannot be used together. Please specify only one."
+  }
 }
 
 variable "oidc_config_id" {
