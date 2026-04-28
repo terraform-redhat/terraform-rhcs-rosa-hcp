@@ -10,8 +10,6 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     ./aws/install -i /usr/local/aws-cli -b /usr/local/bin && rm awscliv2.zip && rm -r aws/
 RUN curl -sL "https://mirror.openshift.com/pub/cgw/rosa/latest/rosa-linux.tar.gz" -o "rosa.tar.gz" && \
     tar xfvz rosa.tar.gz --no-same-owner && mv rosa /usr/local/bin/rosa && rm rosa.tar.gz
-# Added terraform-docs following the instructions here: https://terraform-docs.io/user-guide/installation/
-# renovate: datasource=github-releases depName=terraform-docs/terraform-docs extractVersion=^v(?<version>.*)$
 ARG TERRAFORM_DOCS_VERSION=0.22.0
 RUN curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-$(uname)-amd64.tar.gz && \
     tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && \

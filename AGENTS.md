@@ -53,6 +53,16 @@ Useful skills for this codebase:
 - Use **`sensitive`** on variables and outputs where values must not appear in logs or casual `terraform show` output; avoid echoing secrets in `local` values used only for debugging. Passthrough outputs (**`module.*` → root output**) must match submodule sensitivity—see **Security** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
 - Do not add logging, outputs, or comments that expose credentials or session tokens.
 
+## Trivy (IaC misconfiguration)
+
+Repo config: root **`trivy.yaml`** (severity, scanners, skips; includes **`examples/`**). CodeRabbit may run Trivy when enabled in **`.coderabbit.yaml`**. References: [Trivy config file](https://trivy.dev/latest/docs/references/configuration/config-file/), [filtering / ignores](https://trivy.dev/latest/docs/configuration/filtering/).
+
+When **`trivy config`** reports a **misconfiguration** (check IDs like **`AWS-0104`**, **`DS-0002`** — not CVE vulnerability rows from **`trivy fs`** vuln scans):
+
+1. **Prefer fixing** the HCL/Dockerfile (least privilege, encryption, IMDSv2, non-root user, etc.).
+2. If an ignore is required, add **`#trivy:ignore:<id>`** on the line **immediately above** the Terraform resource or Dockerfile instruction, with a **short `#` comment** on the same line or the line above explaining why (narrow scope).
+3. Use **`.trivyignore`** only when inline suppression is not possible — one ID per line with a **`#` justification** above each.
+
 ## Critical Module Guardrails
 
 - Breaking Changes: Do NOT change existing variable names or types without a migration plan (refactor-module skill).

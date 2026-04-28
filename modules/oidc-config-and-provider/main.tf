@@ -18,6 +18,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   thumbprint_list = [rhcs_rosa_oidc_config.oidc_config.thumbprint]
 }
 
+#trivy:ignore:aws-0132 # Unmanaged OIDC: discovery bucket; default SSE-S3; CMK optional for this pattern.
 resource "aws_s3_bucket" "s3_bucket" {
   count  = var.managed ? 0 : 1
   bucket = rhcs_rosa_oidc_config_input.oidc_input[count.index].bucket_name
@@ -27,6 +28,8 @@ resource "aws_s3_bucket" "s3_bucket" {
   })
 }
 
+#trivy:ignore:aws-0087 # Unmanaged OIDC: public bucket policy required for issuer discovery (GetObject).
+#trivy:ignore:aws-0093 # Unmanaged OIDC: allow public policy attachment for discovery objects.
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   count  = var.managed ? 0 : 1
   bucket = aws_s3_bucket.s3_bucket[count.index].id
