@@ -71,6 +71,7 @@ module "rosa_cluster_hcp" {
   operator_role_prefix              = var.create_operator_roles ? module.operator_roles[0].operator_role_prefix : local.operator_role_prefix
   openshift_version                 = var.openshift_version
   version_channel_group             = var.version_channel_group
+  channel                           = var.channel
   installer_role_arn                = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Installer"] : local.sts_roles.installer_role_arn
   support_role_arn                  = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Support"] : local.sts_roles.support_role_arn
   worker_role_arn                   = var.create_account_roles ? module.account_iam_resources[0].account_roles_arn["HCP-ROSA-Worker"] : local.sts_roles.worker_role_arn
