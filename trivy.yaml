@@ -1,0 +1,34 @@
+---
+# Trivy — static IaC misconfiguration for this ROSA HCP Terraform module repo.
+# Used with `trivy config --config trivy.yaml .` and by CodeRabbit when Trivy
+# is enabled (see .coderabbit.yaml). Scans root, modules/**, examples/**, and
+# Dockerfile. Prefer inline `#trivy:ignore:<ID>` on the flagged resource (see
+# AGENTS.md); repo-wide `.trivyignore` only as a last resort.
+#
+# https://trivy.dev/latest/docs/references/configuration/config-file/
+# https://trivy.dev/latest/docs/configuration/filtering/
+# Parser WARNs about missing var values are normal for modules without tfvars.
+
+# Match CodeRabbit chill-style signal; suppress MEDIUM/LOW/UNKNOWN noise.
+severity:
+  - CRITICAL
+  - HIGH
+
+scan:
+  skip-dirs:
+    - "**/.terraform"
+  # No Terraform plan JSON/snapshot inputs; no tfvars (consumer-supplied).
+  skip-files:
+    - "**/*.tfvars"
+    - "**/*.tfvars.json"
+    - "**/*.auto.tfvars"
+    - "**/*.auto.tfvars.json"
+  # IaC misconfiguration only — not vuln DB scans on lockfiles / container SBOM.
+  scanners:
+    - misconfig
+
+misconfiguration:
+  # Static Terraform HCL + root Dockerfile only (no plan-derived scans).
+  scanners:
+    - terraform
+    - dockerfile
