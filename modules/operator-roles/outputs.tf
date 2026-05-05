@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "operator_role_prefix" {
   value       = time_sleep.role_resources_propagation.triggers["operator_role_prefix"]
   description = "Prefix used for generated AWS operator policies."

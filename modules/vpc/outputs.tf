@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "private_subnets" {
   value       = sort(aws_subnet.private_subnet[*].id)
   description = "List of private subnets created this this AWS VPC"

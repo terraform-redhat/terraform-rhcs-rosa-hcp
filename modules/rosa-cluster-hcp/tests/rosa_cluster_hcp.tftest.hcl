@@ -1,3 +1,6 @@
+// Copyright Red Hat
+// SPDX-License-Identifier: Apache-2.0
+
 # rhcs_hcp_default_ingress count follows var.wait_for_create_complete only (see main.tf).
 # Driving count from resource attributes that can be null after import caused:
 # "The condition value is null. Conditions must either be true or false."
