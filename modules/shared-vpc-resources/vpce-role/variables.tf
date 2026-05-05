@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 variable "name_prefix" {
   type        = string
   description = "The prefix applied to all AWS creations."

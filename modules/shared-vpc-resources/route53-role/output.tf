@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "role_name" {
   description = "Route53 Role name"
   value       = time_sleep.route53_role_propagation.triggers["role_name"]

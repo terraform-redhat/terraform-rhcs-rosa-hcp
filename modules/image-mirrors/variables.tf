@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 // Required
 variable "cluster_id" {
   description = "Identifier of the cluster."

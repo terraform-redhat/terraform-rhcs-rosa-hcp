@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 #### Ingress hosted zone
 resource "aws_route53_zone" "ingress_private_hosted_zone" {
   name = "rosa.${var.cluster_name}.${var.ingress_private_hosted_zone_base_domain}"

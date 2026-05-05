@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 variable "aws_subnet_id" {
   type        = string
   description = "ROSA cluster subnet ID. Used to retrieve VPC ID the subnet belongs to."
