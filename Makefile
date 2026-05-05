@@ -109,3 +109,13 @@ terraform-docs:
 change-module-version:
 	find ./examples -type f -name '*.tf' -exec sed -i 's^source\s*= "\.\./\.\./"^source = "terraform-redhat/rosa-hcp/rhcs"\n  version = "${MODULE_VERSION}"^g' -- {} +
 	find ./examples -type f -name '*.tf' -exec sed -E -i 's^source\s*= "\.\./\.\./modules/([^"]+)"^source = "terraform-redhat/rosa-hcp/rhcs//modules/\1"\n  version = "${MODULE_VERSION}"^g' -- {} +
+
+.PHONY: license-check
+license-check:
+	@echo "Checking for missing license headers..."
+	@bash scripts/add-license-header.sh -check
+
+.PHONY: license-add
+license-add:
+	@echo "Adding license headers to files..."
+	@bash scripts/add-license-header.sh

@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 locals {
   account_roles_prefix    = var.account_roles_prefix
   installer_role_name     = substr("${local.account_roles_prefix}-HCP-ROSA-Installer-Role", 0, 64)

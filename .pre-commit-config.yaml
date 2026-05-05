@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/google/addlicense
+    rev: v1.2.0
+    hooks:
+      - id: addlicense
+        name: Add license headers
+        args:
+          - -c
+          - ROSA Authors
+          - -l
+          - apache
+          - -y
+          - ""
+          - -s=only
+          - -ignore
+          - "**/*.md"
+          - -ignore
+          - "**/*.yaml"
+          - -ignore
+          - "**/*.yml"
+          - -ignore
+          - "**/*.toml"
+          - -ignore
+          - "**/Dockerfile"
+          - -ignore
+          - ".tflint.hcl"

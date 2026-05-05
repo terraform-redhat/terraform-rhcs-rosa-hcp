@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 resource "aws_iam_role" "route53_role" {
   name                 = substr("${var.name_prefix}-shared-route53-role", 0, 64)
   permissions_boundary = var.permission_boundary

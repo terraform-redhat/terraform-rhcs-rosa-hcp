@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 data "aws_subnet" "aws_subnet_id" {
   id = var.aws_subnet_id
 }

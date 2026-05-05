@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 variable "cluster_name" {
   type        = string
   description = "The cluster's name for which shared resources are created. It is used for the hosted zone domain."

@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 variable "account_role_prefix" {
   type        = string
   description = "Prefix to be used when creating the account roles"

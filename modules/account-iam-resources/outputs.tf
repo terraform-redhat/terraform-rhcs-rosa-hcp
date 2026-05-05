@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "account_role_prefix" {
   value       = time_sleep.account_iam_resources_wait.triggers["account_role_prefix"]
   description = "The prefix used for all generated AWS resources."

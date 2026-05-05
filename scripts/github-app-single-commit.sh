@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 # Create a single commit on a branch using the GitHub REST Git Database API.
 # Intended for automation authenticated with a GitHub App installation token so
 # commits can show as verified for the app (see GitHub docs on API-created commits).
