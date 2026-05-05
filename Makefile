@@ -119,3 +119,7 @@ license-check:
 license-add:
 	@echo "Adding license headers to files..."
 	@bash scripts/add-license-header.sh
+
+.PHONY: commits/check
+commits/check:
+	@./hack/commit-msg-verify.sh

@@ -7,7 +7,7 @@ This repository is the **ROSA HCP** Terraform module. The sibling **ROSA Classic
 | File | Purpose |
 |------|--------|
 | [`.cursor/rules/`](.cursor/rules/) | Hard, stable guardrails (architecture boundaries, provider/version constraints, variable conventions, credentials/secrets) |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Command and procedure authority (fmt, verify, docs generation, test execution) |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Command and procedure authority (fmt, verify, docs generation, test execution, commit format, changelog automation) |
 | This file | Process narrative, security expectations, and decision workflow for agents |
 
 Thin entrypoints [`CLAUDE.md`](CLAUDE.md) and [`GEMINI.md`](GEMINI.md) only point here so we do not duplicate content.

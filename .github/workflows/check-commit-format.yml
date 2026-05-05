@@ -1,0 +1,22 @@
+# following the contribution guide this check enforces the commit format
+# [JIRA-TICKET] | [TYPE][(scope)][!]: <MESSAGE>
+name: 'Validate Commit Messages'
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  parse-commit-messages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+      - name: Validate Commit Message(s)
+        env:
+          PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PULL_PULL_SHA: ${{ github.event.pull_request.head.sha }}
+          PULL_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: make commits/check
