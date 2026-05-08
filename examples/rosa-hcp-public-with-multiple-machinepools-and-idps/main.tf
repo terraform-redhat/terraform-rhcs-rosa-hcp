@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 locals {
   account_role_prefix  = "${var.cluster_name}-account"
   operator_role_prefix = "${var.cluster_name}-operator"

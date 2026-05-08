@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 
 set -e
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs

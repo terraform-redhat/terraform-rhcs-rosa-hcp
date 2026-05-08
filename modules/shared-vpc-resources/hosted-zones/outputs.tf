@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "ingress_private_hosted_zone_arn" {
   description = "Ingress Private Hosted Zone ARN"
   value       = aws_route53_zone.ingress_private_hosted_zone.arn

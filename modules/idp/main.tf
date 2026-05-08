@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 resource "rhcs_identity_provider" "github_identity_provider" {
   count = lower(var.idp_type) == "github" ? 1 : 0
 

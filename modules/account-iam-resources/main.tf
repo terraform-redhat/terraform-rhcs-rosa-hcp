@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 locals {
   path = coalesce(var.path, "/")
   account_roles_properties = [

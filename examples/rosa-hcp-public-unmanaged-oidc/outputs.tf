@@ -1,3 +1,6 @@
+# Copyright Red Hat
+# SPDX-License-Identifier: Apache-2.0
+
 output "cluster_id" {
   value       = module.hcp.cluster_id
   description = "Unique identifier of the cluster."
