@@ -33,22 +33,22 @@
   ],
   "packageRules": [
     {
-      "description": "Terraform providers and version in the root versions.tf",
+      "description": "Terraform providers in the root versions.tf",
       "rangeStrategy": "bump",
-      "matchManagers": [
-        "terraform"
-      ],
-      "matchDepTypes": [
-        "required_provider",
-        "required_version"
-      ],
-      "matchFileNames": [
-        "versions.tf"
-      ],
+      "matchManagers": ["terraform"],
+      "matchDepTypes": ["required_provider"],
+      "matchFileNames": ["versions.tf"],
       "groupName": "Terraform Providers",
       "groupSlug": "tf-providers",
       "commitMessagePrefix": "chore(deps): ",
       "automerge": false
+    },
+    {
+      "description": "Do not auto-bump minimum Terraform core (root module required_version); change deliberately (OCM-24461)",
+      "matchManagers": ["terraform"],
+      "matchDepTypes": ["required_version"],
+      "matchFileNames": ["versions.tf"],
+      "enabled": false
     },
     {
       "description": "Terraform providers and version in modules are disabled",
