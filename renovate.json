@@ -11,13 +11,20 @@
   "prHourlyLimit": 0,
   "reviewersFromCodeOwners": true,
   "tekton": {
-    "schedule": ["at any time"]
+    "schedule": [
+      "at any time"
+    ]
   },
-  "labels": ["ok-to-test"],
-  "regexManagers": [
+  "labels": [
+    "ok-to-test"
+  ],
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "Manage bumping the version of the common bash library",
-      "fileMatch": ["scripts/terraform-docs.sh$"],
+      "managerFilePatterns": [
+        "/scripts/terraform-docs.sh$/"
+      ],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?VERSION=(?<currentValue>.*)\\s"
       ],
@@ -28,9 +35,16 @@
     {
       "description": "Terraform providers and version in the root versions.tf",
       "rangeStrategy": "bump",
-      "matchManagers": ["terraform"],
-      "matchDepTypes": ["required_provider", "required_version"],
-      "matchFileNames": ["versions.tf"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepTypes": [
+        "required_provider",
+        "required_version"
+      ],
+      "matchFileNames": [
+        "versions.tf"
+      ],
       "groupName": "Terraform Providers",
       "groupSlug": "tf-providers",
       "commitMessagePrefix": "chore(deps): ",
@@ -38,14 +52,23 @@
     },
     {
       "description": "Terraform providers and version in modules are disabled",
-      "matchManagers": ["terraform"],
-      "matchDepTypes": ["required_provider", "required_version"],
-      "matchFileNames": ["modules/**/versions.tf"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepTypes": [
+        "required_provider",
+        "required_version"
+      ],
+      "matchFileNames": [
+        "modules/**/versions.tf"
+      ],
       "enabled": false
     },
     {
       "description": "Group GitHub Actions updates to avoid many CI pull requests",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "GitHub Actions Dependencies",
       "groupSlug": "gh-actions",
       "commitMessagePrefix": "chore(deps): ",
@@ -53,9 +76,15 @@
     },
     {
       "description": "Terraform modules grouped by source",
-      "matchManagers": ["terraform"],
-      "matchDepTypes": ["module"],
-      "matchFileNames": ["modules/**"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepTypes": [
+        "module"
+      ],
+      "matchFileNames": [
+        "modules/**"
+      ],
       "groupName": "Terraform Modules",
       "groupSlug": "tf-modules",
       "commitMessagePrefix": "chore(deps): ",
