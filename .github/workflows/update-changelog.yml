@@ -55,7 +55,7 @@ jobs:
 
       - name: Generate changelog
         if: steps.check-commits.outputs.commit_count != '0'
-        uses: orhun/git-cliff-action@v4.7.1
+        uses: orhun/git-cliff-action@v4.8.0
         id: git-cliff
         with:
           config: cliff.toml
@@ -63,7 +63,7 @@ jobs:
 
       - name: Create PR with changelog
         if: steps.check-commits.outputs.commit_count != '0'
-        uses: peter-evans/create-pull-request@v8.1.0
+        uses: peter-evans/create-pull-request@v8.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: changelog-${{ github.ref_name }}
