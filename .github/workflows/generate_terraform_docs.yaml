@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/create-github-app-token@v3.1.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.1.1
         id: app-token
         with:
           client-id: ${{ vars.REDHAT_GITHUB_APP_CLIENT_ID }}
@@ -21,7 +21,7 @@ jobs:
           permission-contents: write
 
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Installation token (not GITHUB_TOKEN) so git operations are as the GitHub App
           token: ${{ steps.app-token.outputs.token }}
