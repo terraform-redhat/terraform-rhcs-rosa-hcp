@@ -72,12 +72,12 @@ gitleaks: $(GITLEAKS)
 # Intended single OpenShift Prow presubmit after openshift/release switches from verify + verify-gen.
 .PHONY: pre-push-checks
 pre-push-checks: tools
-	@$(MAKE) --no-print-directory verify
-	@$(MAKE) --no-print-directory verify-gen
-	@$(MAKE) --no-print-directory lint
-	@$(MAKE) --no-print-directory unit-tests
 	@$(MAKE) --no-print-directory license-check
 	@$(MAKE) --no-print-directory docs-lint
+	@$(MAKE) --no-print-directory verify-gen
+	@$(MAKE) --no-print-directory unit-tests
+	@$(MAKE) --no-print-directory lint
+	@$(MAKE) --no-print-directory verify
 
 # Prow today (until consolidated): verify-format → make verify, verify-gen → make verify-gen.
 # https://github.com/openshift/release/tree/master/ci-operator/config/terraform-redhat/terraform-rhcs-rosa-hcp

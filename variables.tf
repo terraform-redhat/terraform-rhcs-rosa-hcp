@@ -397,6 +397,7 @@ variable "machine_pools" {
       additional_security_group_ids   = optional(list(string))
       capacity_reservation_id         = optional(string)
       capacity_reservation_preference = optional(string)
+      node_drain_grace_period         = optional(number)
     })
     autoscaling = optional(object({
       enabled      = bool
