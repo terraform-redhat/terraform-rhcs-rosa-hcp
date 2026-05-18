@@ -37,7 +37,9 @@ Useful skills for this codebase:
 ## Provider & versions
 
 - [`terraform-redhat/rhcs`](https://github.com/terraform-redhat/terraform-provider-rhcs) defines resource schemas — mirror them in variables and docs.
-- Root **`versions.tf`** = effective minimum **rhcs** and **aws** for **all** submodules; bump root when any submodule needs a newer provider.
+- Root **`versions.tf`** declares the minimum **Terraform CLI** (currently **>= 1.5.7**) and the minimum **rhcs** and **aws** providers for **all** submodules.
+- To prevent technical debt, Renovate automatically opens Pull Requests to bump these root constraints whenever a new provider version is released, keeping our baseline continuously updated.
+- Submodule **`terraform test`** files under **`modules/*/tests/`** may use **`mock_provider`** and require a **newer** Terraform CLI than the module minimum (see **`CONTRIBUTING.md`**); CI runs tests with a pinned current release.
 
 ## Architecture reference
 
