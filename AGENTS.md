@@ -43,7 +43,7 @@ Useful skills for this codebase:
 
 ## Architecture reference
 
-- [AWS — ROSA vs HCP vs Classic](https://docs.aws.amazon.com/rosa/latest/userguide/rosa-architecture-models.html#rosa-architecture-differences)
+- [AWS — ROSA, HCP, and Classic comparison](https://docs.aws.amazon.com/rosa/latest/userguide/rosa-architecture-models.html#rosa-architecture-differences)
 
 ## Security
 
@@ -51,7 +51,7 @@ Useful skills for this codebase:
 
 **Agent-oriented checks** when editing Terraform, **`examples/`**, and tests:
 
-- Do **not** hardcode secrets, API keys, or long-lived AWS access keys in Terraform, examples, or tests. Prefer patterns in existing **`examples/`** and Red Hat documentation (STS, OIDC, IRSA, short-lived credentials).
+- Do **not** hard code secrets, API keys, or long-lived AWS access keys in Terraform, examples, or tests. Prefer patterns in existing **`examples/`** and Red Hat documentation (STS, OIDC, IRSA, short-lived credentials).
 - Use **`sensitive`** on variables and outputs where values must not appear in logs or casual `terraform show` output; avoid echoing secrets in `local` values used only for debugging. Passthrough outputs (**`module.*` → root output**) must match submodule sensitivity—see **Security** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
 - Do not add logging, outputs, or comments that expose credentials or session tokens.
 
@@ -68,11 +68,11 @@ When **`trivy config`** reports a **misconfiguration** (check IDs like **`AWS-01
 ## Critical Module Guardrails
 
 - Breaking Changes: Do NOT change existing variable names or types without a migration plan (refactor-module skill).
-- HCP Specifics: Always verify if a feature is supported in HCP vs. Classic. If the `rhcs` resource type does not include `_hcp`, double-check the provider docs.
+- HCP Specifics: Always verify if a feature is supported in HCP compared to Classic. If the `rhcs` resource type does not include `_hcp`, double-check the provider docs.
 
 ## Module scope (AWS-only configuration)
 
-Not every AWS resource belongs in this repo. **When to add or expand AWS-only modules** vs leaving configuration to users is defined in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc) — section **Module scope (AWS-only vs core HCP)**. Favor **reference-documented**, **error-prone-if-DIY**, and **testable** patterns; defer **optional, customer-variable** AWS glue that official docs do not prescribe.
+Not every AWS resource belongs in this repo. **When to add or expand AWS-only modules** compared to leaving configuration to users is defined in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc) — section **`Module scope (AWS-only vs core HCP)`**. Favor **reference-documented**, **error-prone-if-DIY**, and **testable** patterns; defer **optional, customer-variable** AWS glue that official docs do not prescribe.
 
 ## Workflow Logic for Agents
 
@@ -80,7 +80,7 @@ When asked to add a feature, the agent should follow this internal loop:
 
 1. Verify Provider Support: Check the provider schema/docs for the version range in root versions.tf.
 2. Check versions.tf: Does this require a provider bump? If yes, modify the root versions.tf first.
-3. **Module scope:** For new or expanded **AWS-only** behavior, confirm it meets **Module scope (AWS-only vs core HCP)** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc); prefer examples or user-owned Terraform when docs do not support in-repo ownership.
+3. **Module scope:** For new or expanded **AWS-only** behavior, confirm it meets **Module scope (AWS-only compared to core HCP)** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc); prefer examples or user-owned Terraform when docs do not support in-repo ownership.
 4. Variable Standard: Add variables using the description / type / default order. Ensure descriptions match the upstream provider docs.
 5. Docs and tests: apply the required commands and verification steps from **`CONTRIBUTING.md`**.
 6. Security: follow **Security** above (canonical rules in `.cursor/rules` first, then the agent-oriented bullets).

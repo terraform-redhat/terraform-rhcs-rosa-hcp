@@ -107,7 +107,7 @@ ENHANCEMENTS:
    * 'ack_for' variable should be a string
  * Chores
    * Add 'hunterkepley' to OWNERS file + add `idea/*` to gitignore
-   * Fix readme typo
+   * Fix readme typographical error
 
 ## 1.6.5 (24 Oct, 2024)
 
@@ -115,7 +115,7 @@ ENHANCEMENTS:
  * Bug fixes
    * Sort subnet ids output
  * Chores
-   * Fix readme typo
+   * Fix readme typographical error
 
 ## 1.6.4 (03 Oct, 2024)
 
