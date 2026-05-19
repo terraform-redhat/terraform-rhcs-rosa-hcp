@@ -1,3 +1,24 @@
+SHELL := bash
+
+LOCALBIN ?= $(CURDIR)/bin
+LOCALBIN_ABS := $(abspath $(LOCALBIN))
+RUN_CHECKS_SCRIPT := ./hack/run-checks.sh
+VALE_VERSION ?= v3.14.1
+
+ifeq ($(shell go env GOOS 2>/dev/null),windows)
+	BIN_EXT=.exe
+else
+	BIN_EXT=
+endif
+
+VALE := $(LOCALBIN)/vale$(BIN_EXT)
+
+$(LOCALBIN):
+	mkdir -p "$(LOCALBIN)"
+
+$(VALE): | $(LOCALBIN)
+	CGO_ENABLED=1 GOBIN="$(LOCALBIN_ABS)" go install github.com/errata-ai/vale/v3/cmd/vale@$(VALE_VERSION)
+
 ######################
 # Define a variable for the Terraform examples directory
 TERRAFORM_DIR := examples/rosa-hcp-public-with-byo-vpc-byo-iam-byo-oidc
@@ -123,3 +144,33 @@ license-add:
 .PHONY: commits/check
 commits/check:
 	@./hack/commit-msg-verify.sh
+
+.PHONY: vale
+vale: $(VALE)
+
+.PHONY: docs-lint
+docs-lint: $(VALE)
+	@echo "Note: README and module docs are generated with 'make terraform-docs'; fix descriptions in *.tf, then run 'make verify-gen'."
+	@docs=$$(find . -name '*.md' \
+		-not -path './.vale/*' \
+		-not -path '*/.terraform/*' \
+		-not -path './.terraform-docs-cache/*' \
+		-not -path './bin/*'); \
+	if [ -z "$$docs" ]; then \
+		echo "No Markdown files found for docs-lint"; \
+		exit 1; \
+	fi; \
+	"$(VALE)" --minAlertLevel=error $$docs
+
+.PHONY: basic-checks
+basic-checks:
+	@$(RUN_CHECKS_SCRIPT) basic
+
+.PHONY: run-checks
+run-checks:
+	@$(RUN_CHECKS_SCRIPT) $(filter-out $@,$(MAKECMDGOALS))
+
+RUN_CHECKS_PASSTHROUGH_ARGS := basic --dry-run --list-steps -h --help
+.PHONY: $(RUN_CHECKS_PASSTHROUGH_ARGS)
+$(RUN_CHECKS_PASSTHROUGH_ARGS):
+	@:

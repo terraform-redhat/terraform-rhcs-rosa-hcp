@@ -41,4 +41,7 @@ addlicense ${CHECK_MODE} \
     -ignore "**/*.toml" \
     -ignore "**/Dockerfile" \
     -ignore ".tflint.hcl" \
+    -ignore "**/.terraform/**" \
+    -ignore "**/.terraform.lock.hcl" \
+    -ignore "bin/**" \
     .

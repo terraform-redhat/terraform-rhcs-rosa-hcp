@@ -1,6 +1,9 @@
 # terraform-docs.sh pinned binary cache (version from Dockerfile)
 .terraform-docs-cache/
 
+# Local tool binaries (for example Vale installed via make docs-lint)
+/bin/
+
 # Local .terraform directories
 **/.terraform/*
 **/.terraform.lock.hcl

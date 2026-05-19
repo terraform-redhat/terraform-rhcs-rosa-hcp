@@ -209,7 +209,7 @@ variable "destroy_timeout" {
 variable "upgrade_acknowledgements_for" {
   type        = string
   default     = null
-  description = "Indicates acknowledgement of agreements required to upgrade the cluster version between minor versions (e.g. a value of \"4.12\" indicates acknowledgement of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before)."
+  description = "Indicates acknowledgment of agreements required to upgrade the cluster version between minor versions (e.g. a value of \"4.12\" indicates acknowledgment of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before)."
 }
 
 variable "external_auth_providers_enabled" {
@@ -347,7 +347,7 @@ variable "account_role_prefix" {
 ##############################################################
 
 variable "create_oidc" {
-  description = "Create the oidc resources. This value should not be updated, please create a new resource instead or utilize the submodule to create a new oidc config"
+  description = "Create the oidc resources. This value should not be updated, please create a new resource instead or use the submodule to create a new oidc config"
   type        = bool
   default     = false
 }
@@ -417,13 +417,13 @@ variable "machine_pools" {
 variable "identity_providers" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple identity providers after the creation of the cluster. This variable allows users to specify configurations for multiple identity providers in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [idp sub-module](./modules/idp). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+  description = "Provides a generic approach to add multiple identity providers after the creation of the cluster. This variable allows users to specify configurations for multiple identity providers in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables used, refer to the [idp sub-module](./modules/idp). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
 variable "kubelet_configs" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [kubelet-configs sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+  description = "Provides a generic approach to add multiple kubelet configs after the creation of the cluster. This variable allows users to specify configurations for multiple kubelet configs in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables used, refer to the [kubelet-configs sub-module](./modules/kubelet-configs). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
 variable "log_forwarders" {
@@ -495,7 +495,7 @@ variable "log_forwarders" {
 variable "image_mirrors" {
   type        = map(any)
   default     = {}
-  description = "Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+  description = "Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables used, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
 variable "ignore_machine_pools_deletion_error" {

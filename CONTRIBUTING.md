@@ -8,7 +8,7 @@ This repo is **ROSA HCP** only. The sibling **ROSA Classic** module is [`terrafo
 
 | Location | Purpose |
 |----------|---------|
-| [`.cursor/rules/`](.cursor/rules/) | Hard guardrails in `.mdc` files (always-on in Cursor): HCP vs Classic, provider/version constraints, variables, security baseline |
+| [`.cursor/rules/`](.cursor/rules/) | Hard guardrails in `.mdc` files (always-on in Cursor): HCP compared to Classic, provider/version constraints, variables, security baseline |
 | [`AGENTS.md`](AGENTS.md) | Skills, workflow, security (agent checks), testing expectations; commands live in **`CONTRIBUTING.md`**; canonical guardrails in **`.cursor/rules/`** |
 | [`CLAUDE.md`](CLAUDE.md), [`GEMINI.md`](GEMINI.md) | One-line pointers to [`AGENTS.md`](AGENTS.md) (names match Claude Code / Gemini CLI defaults) |
 
@@ -19,9 +19,18 @@ This repo is **ROSA HCP** only. The sibling **ROSA Classic** module is [`terrafo
 1. **Format** — `terraform fmt -recursive` (or format only dirs you changed).
 2. **Validate** — `make verify` (runs `terraform init` + `validate` in each `examples/*` directory). Fix failures in examples you touch or that your change breaks.
 3. **Docs** — If you changed variables, outputs, modules, or root wiring: run `make verify-gen` (runs `terraform-docs` via [`scripts/terraform-docs.sh`](scripts/terraform-docs.sh), then [`scripts/verify-gen.sh`](scripts/verify-gen.sh) to ensure README inject blocks are committed).
-4. **Module tests** — If a submodule under `modules/<name>/tests/` has `*.tftest.hcl`, run `terraform init -backend=false && terraform test` from `modules/<name>/`.
-5. **Provider** — Treat [`terraform-redhat/rhcs`](https://github.com/terraform-redhat/terraform-provider-rhcs) as the source of truth: mirror its schemas in variables and docs. Add `validation` / `precondition` only to echo the provider’s required fields and allowed values (fail fast); do not duplicate or tighten rules the provider already enforces.
-6. **Module scope (AWS-only)** — If the change adds or expands **AWS-only** configuration (no `rhcs` surface), confirm it matches **Module scope (AWS-only vs core HCP)** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc). In the PR, **link official Red Hat or cited ROSA HCP documentation** that supports shipping it in-repo, or explain why an exception is justified.
+4. **Module tests** — If a submodule under `modules/<name>/tests/` has `*.tftest.hcl`, run `terraform init -backend=false && terraform test` from `modules/<name>/`, or run `make unit-tests` for all modules with tests.
+5. **Documentation lint** — `make docs-lint` runs the pinned [Vale](https://docs.vale.sh/) CLI with Red Hat documentation styles (see [`.vale.ini`](.vale.ini)). Building Vale uses `CGO_ENABLED=1` and requires a C compiler toolchain on the first install.
+6. **Provider** — Treat [`terraform-redhat/rhcs`](https://github.com/terraform-redhat/terraform-provider-rhcs) as the source of truth: mirror its schemas in variables and docs. Add `validation` / `precondition` only to echo the provider’s required fields and allowed values (fail fast); do not duplicate or tighten rules the provider already enforces.
+7. **Module scope (AWS-only)** — If the change adds or expands **AWS-only** configuration (no `rhcs` surface), confirm it matches **`Module scope (AWS-only vs core HCP)`** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc). In the PR, **link official Red Hat or cited ROSA HCP documentation** that supports shipping it in-repo, or explain why an exception is justified.
+
+Run the full local verification flow (same steps planned for CI) with:
+
+```shell
+make basic-checks
+```
+
+`make basic-checks` runs `verify`, `verify-gen`, `lint`, `unit-tests`, `license-check`, and `docs-lint` in order (fail-fast). Use `make run-checks -- basic --list-steps` or `--dry-run` to inspect the sequence without running it.
 
 ## Commit format
 
