@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.9"
 
   required_providers {
     aws = {
@@ -10,7 +10,7 @@ terraform {
       version = ">= 5.38.0"
     }
     rhcs = {
-      version = ">= 1.7.2"
+      version = ">= 1.7.7"
       source  = "terraform-redhat/rhcs"
     }
   }
