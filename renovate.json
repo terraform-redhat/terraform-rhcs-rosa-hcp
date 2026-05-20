@@ -22,23 +22,66 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Manage bumping the version of the common bash library",
+      "description": "Makefile pre-push-checks CLI tool versions",
       "managerFilePatterns": [
-        "/scripts/terraform-docs.sh$/"
+        "/Makefile$/"
       ],
       "matchStrings": [
-        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*?VERSION=(?<currentValue>.*)\\s"
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+(?<indent>\\S+)_VERSION \\?= (?<currentValue>\\S+)"
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Dockerfile ARG tool versions",
+      "managerFilePatterns": [
+        "/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }
   ],
   "packageRules": [
     {
+      "description": "Makefile CLI tool versions (addlicense, terraform-docs, tflint, vale, checkov, gitleaks)",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "Makefile"
+      ],
+      "groupName": "Makefile pre-push tools",
+      "groupSlug": "makefile-pre-push-tools",
+      "commitMessagePrefix": "chore(deps): ",
+      "automerge": false
+    },
+    {
+      "description": "CI Dockerfile (UBI base, ROSA CLI)",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "Dockerfile"
+      ],
+      "groupName": "CI client image",
+      "groupSlug": "ci-client-image",
+      "commitMessagePrefix": "chore(deps): ",
+      "automerge": false
+    },
+    {
       "description": "Terraform providers in the root versions.tf",
       "rangeStrategy": "bump",
-      "matchManagers": ["terraform"],
-      "matchDepTypes": ["required_provider"],
-      "matchFileNames": ["versions.tf"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepTypes": [
+        "required_provider"
+      ],
+      "matchFileNames": [
+        "versions.tf"
+      ],
       "groupName": "Terraform Providers",
       "groupSlug": "tf-providers",
       "commitMessagePrefix": "chore(deps): ",
@@ -46,9 +89,15 @@
     },
     {
       "description": "Do not auto-bump minimum Terraform core (root module required_version); change deliberately (OCM-24461)",
-      "matchManagers": ["terraform"],
-      "matchDepTypes": ["required_version"],
-      "matchFileNames": ["versions.tf"],
+      "matchManagers": [
+        "terraform"
+      ],
+      "matchDepTypes": [
+        "required_version"
+      ],
+      "matchFileNames": [
+        "versions.tf"
+      ],
       "enabled": false
     },
     {

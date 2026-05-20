@@ -49,12 +49,12 @@ The primary sub-modules responsible for ROSA HCP cluster creation includes optio
 
 Contributors are encouraged to add Terraform tests when introducing or substantially changing a submodule, so configuration stays aligned with provider behavior before changes merge.
 
-Two Makefile targets help with that:
+Before opening a PR, run **`make pre-push-checks`** (or the individual targets below). That flow is the intended single merge gate for OpenShift Prow once `openshift/release` is updated.
 
 - **`make lint`** — Runs `terraform fmt -check -recursive` and [tflint](https://github.com/terraform-linters/tflint) across the root module and submodules so formatting and common Terraform issues are caught early.
-- **`make unit-tests`** — For each module directory that contains **`test/*.tftest.hcl`** files, runs `terraform init -backend=false` and `terraform test -test-directory=test` (requires **Terraform 1.6+**). If no matching files exist, the target succeeds without running tests. This is separate from **`make tests`**, which runs the legacy `tests.sh` script.
+- **`make unit-tests`** — For each submodule that contains **`modules/<name>/tests/*.tftest.hcl`**, runs `terraform init -backend=false` and `terraform test` from `modules/<name>/` (requires **Terraform 1.6+**). If no matching files exist, the target succeeds without running tests. This is separate from **`make tests`**, which runs the legacy `tests.sh` script.
 
-Place tests under a **`test/`** directory beside the module’s `.tf` files (for example `modules/my-module/test/example.tftest.hcl`). You need the Terraform CLI and tflint on your PATH; `make lint` runs `tflint --init`, which may download plugins from [.tflint.hcl](.tflint.hcl).
+Place tests under **`modules/<name>/tests/`** (for example `modules/my-module/tests/example.tftest.hcl`). You need the Terraform CLI and tflint on your PATH; `make lint` runs `tflint --init`, which may download plugins from [.tflint.hcl](.tflint.hcl).
 
 ## Pre-requisites
 

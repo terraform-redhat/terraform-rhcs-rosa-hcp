@@ -80,6 +80,6 @@ reviews:
     tflint:
       enabled: true
     trivy:
-      enabled: true
+      enabled: false
     yamllint:
       enabled: true

@@ -28,15 +28,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install terraform-docs
-        run: |
-          set -euo pipefail
-          TERRAFORM_DOCS_VERSION="$(grep -E '^ARG TERRAFORM_DOCS_VERSION=' Dockerfile | cut -d= -f2)"
-          curl -sSLo ./terraform-docs.tar.gz "https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64.tar.gz"
-          tar -xzf terraform-docs.tar.gz terraform-docs
-          chmod +x terraform-docs
-          sudo mv terraform-docs /usr/local/bin/terraform-docs
-          rm -f terraform-docs.tar.gz
-          terraform-docs version
+        run: make terraform-docs-bin
 
       # Commits are created via the GitHub Git Database API (not git commit) so GitHub can
       # attribute and verify them for the authenticated GitHub App installation.
