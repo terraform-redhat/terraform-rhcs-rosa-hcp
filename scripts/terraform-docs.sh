@@ -5,7 +5,7 @@
 
 set -e
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs
-TERRAFORM_DOCS_VERSION=v0.22.0
+TERRAFORM_DOCS_VERSION=v0.24.0
 BINARY=terraform-docs
 set +e
 INSTALLED_TERRADOCS_VERSION="$(terraform-docs --version 2> /dev/null | head -1 | cut -d' ' -f3)"
