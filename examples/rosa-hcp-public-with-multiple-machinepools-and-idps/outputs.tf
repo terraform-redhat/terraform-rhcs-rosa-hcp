@@ -42,16 +42,16 @@ output "operator_roles_arn" {
 }
 
 output "password" {
-  value     = resource.random_password.password
+  value     = random_password.password.result
   sensitive = true
 }
 
 output "client_id" {
-  value     = resource.random_password.client_id
+  value     = random_password.client_id.result
   sensitive = true
 }
 
 output "client_secret" {
-  value     = resource.random_password.client_secret
+  value     = random_password.client_secret.result
   sensitive = true
 }

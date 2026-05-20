@@ -55,15 +55,33 @@ Useful skills for this codebase:
 - Use **`sensitive`** on variables and outputs where values must not appear in logs or casual `terraform show` output; avoid echoing secrets in `local` values used only for debugging. Passthrough outputs (**`module.*` → root output**) must match submodule sensitivity—see **Security** in [`.cursor/rules/rosa-hcp-terraform.mdc`](.cursor/rules/rosa-hcp-terraform.mdc).
 - Do not add logging, outputs, or comments that expose credentials or session tokens.
 
-## Trivy (IaC misconfiguration)
+## CI client Dockerfile (Prow)
 
-Repo config: root **`trivy.yaml`** (severity, scanners, skips; includes **`examples/`**). CodeRabbit may run Trivy when enabled in **`.coderabbit.yaml`**. References: [Trivy config file](https://trivy.dev/latest/docs/references/configuration/config-file/), [filtering / ignores](https://trivy.dev/latest/docs/configuration/filtering/).
+The root **`Dockerfile`** builds the **OpenShift Prow** client image (`terraform-rhcs-rosa-hcp-clients`). Treat it as a **minimal supply-chain surface**: include **only** what presubmit jobs in [`openshift/release`](https://github.com/openshift/release/tree/master/ci-operator/config/terraform-redhat/terraform-rhcs-rosa-hcp) need today (`make verify`, `make verify-gen`, `make run-example`, and the tools behind `make pre-push-checks`). The image pins the newest Terraform release (`TERRAFORM_VERSION`); module minimum compatibility is enforced separately by GitHub Actions **`verify-min-terraform.yml`** (see **`CONTRIBUTING.md`**).
 
-When **`trivy config`** reports a **misconfiguration** (check IDs like **`AWS-0104`**, **`DS-0002`** — not CVE vulnerability rows from **`trivy fs`** vuln scans):
+When changing the Dockerfile:
 
-1. **Prefer fixing** the HCL/Dockerfile (least privilege, encryption, IMDSv2, non-root user, etc.).
-2. If an ignore is required, add **`#trivy:ignore:<id>`** on the line **immediately above** the Terraform resource or Dockerfile instruction, with a **short `#` comment** on the same line or the line above explaining why (narrow scope).
-3. Use **`.trivyignore`** only when inline suppression is not possible — one ID per line with a **`#` justification** above each.
+- **Minimize attack surface** — prefer **`ubi-minimal`** with a **pinned** minor tag (not `:latest`); do not add OS packages, compilers, or CLIs “for convenience” without a job that uses them. The client image runs as **root** so Prow/ci-operator can write to the mounted repo workspace (`make verify`, `make verify-gen`); do not add a non-root `USER` without coordinating `openshift/release` workspace ownership.
+- **Pin versions** — base image, AWS CLI, ROSA CLI, Terraform, and Makefile tools; use **`# renovate:`** comments and existing patterns (`hack/install-release-tool.sh` release binaries, not `go install`, unless unavoidable). AWS CLI zips are verified with **`gpg --verify`** against **`hack/aws-cli-public-key.asc`** and the matching **`.sig`** from `awscli.amazonaws.com` ([install guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)). ROSA **`rosa-linux.tar.gz`** is verified with **`sha256sum -c`** against **`sha256sum.txt`** from `https://mirror.openshift.com/pub/cgw/rosa/<ROSA_VERSION>/`.
+- **Avoid bloat** — the image is tool-heavy (Terraform, AWS CLI, ROSA, lint binaries); do not grow it with extra runtimes, caches, or unrelated utilities. Prefer release tarballs over full language SDKs in the final image.
+- **Security scans** — `make security-check` is separate from `make pre-push-checks`; fix findings or document narrow suppressions per the **Gitleaks** and **Checkov** sections below.
+
+## Gitleaks (secret detection)
+
+Repo config: root **`.gitleaks.toml`** (extends default rules; allowlists `*.tftest` harness placeholders and `bin/` / `.terraform/` caches). Install with `make security-check-bin` or `make gitleaks`. `make security-check` runs **`gitleaks detect --no-git`** (current tree only, not git history) before Checkov. References: [Gitleaks README](https://github.com/gitleaks/gitleaks/blob/master/README.md).
+
+When **`make security-check`** reports a Gitleaks finding, treat it as a real secret risk unless the match is a documented mock in test code covered by the allowlist. Do not commit credentials, tokens, or kubeconfigs; rotate anything that was exposed.
+
+## Checkov (Terraform security)
+
+Repo config: root **`checkov.yaml`** (framework, skip paths, **HIGH**/**CRITICAL** hard-fail). Install with `make security-check-bin`. `hack/install-release-tool.sh` verifies each Checkov zip against **`hack/checksums/checkov-<version>.sha256sums`** (upstream releases do not ship checksums — refresh that file when **`CHECKOV_VERSION`** changes). `make security-check` passes **`--skip-download`** so Checkov does not call Prisma Cloud (no `BC_API_KEY` required). **`modules/rosa-cluster-hcp/main.tf`** is skipped because Checkov cannot parse its multiline lifecycle preconditions (Terraform **`make verify`** still validates it). References: [Checkov CLI](https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html).
+
+When **`make security-check`** reports a finding (check IDs like **`CKV_AWS_*`**, **`CKV2_AWS_*`**):
+
+1. **Prefer fixing** the HCL (least privilege, encryption, IMDSv2, etc.).
+2. If a skip is required, add **`#checkov:skip=<CKV_ID>:<reason>`** on the line **immediately above** the flagged resource, with a short justification (narrow scope).
+3. Use **`skip-check`** entries in **`checkov.yaml`** only when inline suppression is not possible — one ID per entry with a comment explaining why.
+4. **Remove stale suppressions** — when code or Checkov no longer reports a check, delete the matching `#checkov:skip` comment or **`checkov.yaml`** `skip-check` entry so drift does not hide new findings.
 
 ## Critical Module Guardrails
 
@@ -93,4 +111,4 @@ Use mocks for AWS and RHCS resources to verify logic without requiring live cred
 
 When module behavior branches on a **boolean variable** (e.g. **`count = var.x ? 1 : 0`**), prefer **more than one `run` block** (or clearly separated scenarios) so **both** outcomes are covered—typically **`true` / `count = 1`** and **`false` / `count = 0`**—not only the default or “happy” path. That avoids regressions where the positive case passes but the opt-out path breaks.
 
-For exact commands and pass/fail criteria, follow **`CONTRIBUTING.md`**.
+Before opening a PR, `make pre-push-checks` must pass locally; see **`CONTRIBUTING.md`** for commands and pass/fail criteria.
