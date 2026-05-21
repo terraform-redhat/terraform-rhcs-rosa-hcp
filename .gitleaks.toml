@@ -14,4 +14,8 @@ description = "Terraform CLI test configs may contain mock tokens/placeholders."
 paths = [
   # e.g. modules/*/tests/*.tftest.hcl
   '''\.tftest''',
+  # Pinned CLI binaries and Terraform/plugin caches (not source secrets)
+  '''(?:^|/)bin/''',
+  '''(?:^|/)\.terraform(?:/|$)''',
+  '''(?:^|/)\.terraform-docs-cache(?:/|$)''',
 ]

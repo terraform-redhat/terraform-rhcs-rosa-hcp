@@ -1,0 +1,19 @@
+# Checkov — Terraform static analysis for this ROSA HCP module repo.
+# Used with `make security-check` (scans examples/, modules/* except rosa-cluster-hcp, root *.tf).
+# modules/rosa-cluster-hcp is excluded in the Makefile: Checkov cannot parse its lifecycle preconditions.
+# Prefer inline `#checkov:skip=<CKV_ID>:<reason>` on the flagged resource (see AGENTS.md);
+# repo-wide skip entries in this file only as a last resort.
+#
+# https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html
+
+framework:
+  - terraform
+compact: true
+skip-path:
+  - .terraform
+  - bin
+  - .terraform-docs-cache
+  - "**/.terraform/**"
+hard-fail-on:
+  - HIGH
+  - CRITICAL

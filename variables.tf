@@ -256,7 +256,7 @@ variable "aws_additional_control_plane_security_group_ids" {
   default     = null
   description = "The additional security group IDs to be added to the control plane VPC endpoint."
   validation {
-    condition     = var.aws_additional_control_plane_security_group_ids == null || length(var.aws_additional_control_plane_security_group_ids) > 0
+    condition     = var.aws_additional_control_plane_security_group_ids == null ? true : length(var.aws_additional_control_plane_security_group_ids) > 0
     error_message = "Security group list cannot be empty."
   }
 }

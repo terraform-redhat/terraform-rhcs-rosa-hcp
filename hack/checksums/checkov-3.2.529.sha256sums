@@ -1,0 +1,6 @@
+# Pinned SHA256 for bridgecrewio/checkov GitHub release zips (upstream does not publish checksums).
+# Recorded from https://github.com/bridgecrewio/checkov/releases/tag/3.2.529 — update this file when CHECKOV_VERSION changes.
+84b837a42d647711d066b7acf89e6ccadbb15b3977a6f7cde552d860faec01b7  checkov_linux_X86_64.zip
+fff55b064eadfc14ce35da9b9744dedf82fb50c25447076149480ad92c06a6a9  checkov_linux_arm64.zip
+e9b1f27e297f029dc52295d940c94225dc333252b21ae05f86a6bd7ab8599d85  checkov_darwin_X86_64.zip
+992095a9db88078b088b6dc74b123e6be9b1d98c18c201e68d90c00fae628cd7 checkov_windows_X86_64.zip
