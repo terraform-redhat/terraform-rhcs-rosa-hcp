@@ -88,7 +88,6 @@
       ],
       "groupName": "Terraform Modules",
       "groupSlug": "tf-modules",
-      "commitMessagePrefix": "chore(deps): ",
       "rangeStrategy": "bump",
       "automerge": false
     }
