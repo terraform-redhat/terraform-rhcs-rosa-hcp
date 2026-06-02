@@ -83,7 +83,6 @@ Examples: variable rename/removal, output rename/removal, default value change, 
 - [ ] Relevant Jira/GitHub issues and related PRs are linked.
 - [ ] Tests were added/updated where appropriate.
 - [ ] I manually tested the change.
-- [ ] `make verify` passes.
-- [ ] `make verify-gen` passes.
+- [ ] `make pre-push-checks` passes (or each step: `verify`, `verify-gen`, `lint`, `unit-tests`, `license-check`, `docs-lint`).
 - [ ] Documentation was added/updated where appropriate (see `make terraform-docs`).
 - [ ] Any risk, limitation, or follow-up work is documented.

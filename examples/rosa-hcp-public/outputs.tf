@@ -42,6 +42,6 @@ output "operator_roles_arn" {
 }
 
 output "password" {
-  value     = resource.random_password.password
+  value     = random_password.password.result
   sensitive = true
 }

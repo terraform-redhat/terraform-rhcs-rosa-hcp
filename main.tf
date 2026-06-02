@@ -282,10 +282,11 @@ resource "null_resource" "validations" {
       error_message = "\"oidc_config_id\" mustn't be empty when oidc is pre-created (create_oidc != true)."
     }
     precondition {
-      condition = ((length(var.aws_additional_control_plane_security_group_ids) >= 0 && var.private &&
-        tonumber(format("%03d%03d%03d", split(".", var.openshift_version)...)) >= 4017002) == true ||
-        var.aws_additional_control_plane_security_group_ids == null ||
-      var.private == false) == true
+      condition = (
+        var.aws_additional_control_plane_security_group_ids == null
+        || var.private == false
+        || tonumber(format("%03d%03d%03d", split(".", var.openshift_version)[0], split(".", var.openshift_version)[1], split(".", var.openshift_version)[2])) >= 4017002
+      )
       error_message = "\"openshift_version\" must be 4.17.2 or later to add additional security group to Privatelink endpoint."
     }
   }
