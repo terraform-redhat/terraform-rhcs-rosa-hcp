@@ -8,7 +8,7 @@ RUN microdnf install -y tar gzip unzip make git which shadow-utils gnupg2 && \
     microdnf clean all
 # Prow / integration client image: newest Terraform (TERRAFORM_VERSION). Module minimum compatibility is checked in GitHub Actions verify-min-terraform.yml.
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=semver
-ARG TERRAFORM_VERSION=1.15.4
+ARG TERRAFORM_VERSION=1.15.5
 RUN curl -fsSL -o /etc/yum.repos.d/hashicorp.repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo && \
     microdnf install -y "terraform-${TERRAFORM_VERSION}" && \
     microdnf clean all && \
@@ -27,7 +27,7 @@ RUN set -euo pipefail; \
     rm -rf awscliv2.zip awscliv2.sig aws/; \
     aws --version
 # renovate: datasource=github-releases depName=openshift/rosa versioning=semver
-ARG ROSA_VERSION=1.2.62
+ARG ROSA_VERSION=1.2.63
 # SHA256 from mirror sha256sum.txt (https://mirror.openshift.com/pub/cgw/rosa/<version>/)
 RUN set -euo pipefail; \
     rosa_mirror="https://mirror.openshift.com/pub/cgw/rosa/${ROSA_VERSION}"; \
