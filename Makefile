@@ -90,13 +90,17 @@ verify:
 	done
 
 .PHONY: verify-gen
-verify-gen: terraform-docs
-	scripts/verify-gen.sh
+verify-gen: $(TERRAFORM_DOCS)
+	@TERRAFORM_DOCS_BIN="$(TERRAFORM_DOCS)" TERRAFORM_DOCS_VERSION="$(TERRAFORM_DOCS_VERSION)" bash scripts/verify-gen.sh
 
 .PHONY: lint
 lint: $(TFLINT)
 	terraform fmt -check -recursive
-	terraform init -backend=false -input=false
+	@set -euo pipefail; \
+	rm -rf .terraform .terraform.lock.hcl; \
+	tmp=$$(mktemp -d); \
+	TF_DATA_DIR="$$tmp" terraform init -backend=false -input=false; \
+	ln -sfn "$$tmp" .terraform
 	"$(TFLINT)" --init
 	"$(TFLINT)" --recursive \
 		--minimum-failure-severity=error \
