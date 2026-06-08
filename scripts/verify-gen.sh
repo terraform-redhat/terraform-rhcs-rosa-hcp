@@ -31,8 +31,6 @@ if [[ "$(<"$before")" != "$(<"$after")" ]]; then
   exit 1
 fi
 
-# terraform-docs may invoke Terraform and leave a read-only .terraform at repo root;
-# lint runs root terraform init next and needs a writable tree (Prow/ci-operator).
 rm -rf .terraform .terraform.lock.hcl
 find modules examples -type d -name .terraform -prune -exec rm -rf {} +
 
