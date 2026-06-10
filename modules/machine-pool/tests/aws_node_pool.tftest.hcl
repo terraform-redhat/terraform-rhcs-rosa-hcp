@@ -13,6 +13,7 @@ mock_provider "rhcs" {
     defaults = {
       aws_node_pool = {
         capacity_reservation_preference = "defined_by_provider"
+        node_drain_grace_period         = null
       }
     }
   }
@@ -151,5 +152,85 @@ run "apply_with_capres_preference" {
   assert {
     condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.capacity_reservation_preference == "none"
     error_message = "Setup run should have capacity_reservation_preference = 'none'."
+  }
+}
+
+# Test that invalid node_drain_grace_period > 10080 fails validation
+run "invalid_node_drain_grace_period_fails" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type           = "m5.xlarge"
+      tags                    = {}
+      node_drain_grace_period = 10081
+    }
+  }
+
+  expect_failures = [
+    var.aws_node_pool,
+  ]
+}
+
+# Test that valid node_drain_grace_period (60 minutes) passes validation and wires through to the resource
+run "valid_node_drain_grace_period_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type           = "m5.xlarge"
+      tags                    = {}
+      node_drain_grace_period = 60
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.node_drain_grace_period == 60
+    error_message = "Expected node_drain_grace_period to be wired through to rhcs_hcp_machine_pool as 60."
+  }
+}
+
+# Test that null node_drain_grace_period passes validation and wires through to the resource as null
+run "node_drain_grace_period_null_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.with_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type           = "m5.xlarge"
+      tags                    = {}
+      node_drain_grace_period = null
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.node_drain_grace_period == null
+    error_message = "Expected null node_drain_grace_period to be wired through to rhcs_hcp_machine_pool as null."
   }
 }

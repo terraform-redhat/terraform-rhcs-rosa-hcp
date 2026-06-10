@@ -63,6 +63,7 @@ variable "aws_node_pool" {
     additional_security_group_ids   = optional(list(string))
     capacity_reservation_id         = optional(string)
     capacity_reservation_preference = optional(string)
+    node_drain_grace_period         = optional(number)
   })
   nullable    = false
   description = "Configures aws settings for the pool."
@@ -73,6 +74,22 @@ variable "aws_node_pool" {
       var.aws_node_pool.capacity_reservation_preference
     )
     error_message = "capacity_reservation_preference must be one of: none, open, capacity-reservations-only."
+  }
+
+  validation {
+    condition = var.aws_node_pool.node_drain_grace_period == null ? true : (
+      var.aws_node_pool.node_drain_grace_period >= 0 &&
+      var.aws_node_pool.node_drain_grace_period <= 10080
+    )
+    error_message = "node_drain_grace_period must be between 0 and 10080 minutes (7 days)."
+  }
+  validation {
+    condition     = var.aws_node_pool.node_drain_grace_period == null ? true : tonumber(var.aws_node_pool.node_drain_grace_period) == floor(var.aws_node_pool.node_drain_grace_period)
+    error_message = "node_drain_grace_period value should be an integer (minutes)"
+  }
+  validation {
+    condition     = var.aws_node_pool.node_drain_grace_period == null ? true : var.aws_node_pool.node_drain_grace_period >= 0
+    error_message = "node_drain_grace_period value should be a positive integer (minutes)"
   }
 }
 
