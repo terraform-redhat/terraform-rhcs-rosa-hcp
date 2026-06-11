@@ -2,7 +2,7 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 WORKDIR /app
 COPY . /app
-RUN yum update -y && yum install -y yum-utils shadow-utils unzip tar make git && \
+RUN yum update -y && yum install -y yum-utils shadow-utils unzip tar make git python3-pip && \
     yum clean all && \
     rm -rf /var/cache/yum
 # Prow / integration client image: newest Terraform (TERRAFORM_VERSION). Module minimum compatibility is checked in GitHub Actions verify-min-terraform.yml.
