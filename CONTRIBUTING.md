@@ -60,6 +60,9 @@ Allowed `TYPE` values:
 - `ci`: Continuous integration changes
 - `perf`: Performance improvements
 
+[!IMPORTANT]
+DCO Sign-off Required: Every commit must include a Developer Certificate of Origin (DCO) sign-off line (Signed-off-by: Name <email>). Use git commit -s when committing.
+
 CI validates commit messages on pull requests targeting `main` with:
 
 - `.github/workflows/check-commit-format.yml`
