@@ -3,6 +3,9 @@
 
 locals {
   path = coalesce(var.path, "/")
+  trust_policy_external_id = (
+    var.trust_policy_external_id != null && var.trust_policy_external_id != ""
+  ) ? var.trust_policy_external_id : null
   account_roles_properties = [
     {
       role_name            = "HCP-ROSA-Installer"
@@ -10,7 +13,7 @@ locals {
       policy_details       = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAInstallerPolicy"
       principal_type       = "AWS"
       principal_identifier = "arn:${data.aws_partition.current.partition}:iam::${data.rhcs_info.current.ocm_aws_account_id}:role/RH-Managed-OpenShift-Installer"
-      external_id          = var.trust_policy_external_id
+      external_id          = local.trust_policy_external_id
     },
     {
       role_name      = "HCP-ROSA-Support"
@@ -19,7 +22,7 @@ locals {
       principal_type = "AWS"
       // This is a SRE RH Support role which is used to assume this support role
       principal_identifier = data.rhcs_hcp_policies.all_policies.account_role_policies["sts_support_rh_sre_role"]
-      external_id          = null
+      external_id          = local.trust_policy_external_id
     },
     {
       role_name            = "HCP-ROSA-Worker"
@@ -165,6 +168,6 @@ resource "time_sleep" "account_iam_resources_wait" {
     account_role_prefix           = local.account_role_prefix_valid
     path                          = local.path
     shared_vpc_policy_attachments = local.route53_shared_role_arn != "" && local.vpce_shared_role_arn != "" ? jsonencode([aws_iam_role_policy_attachment.route53_policy_installer_account_role_attachment[0].policy_arn, aws_iam_role_policy_attachment.vpce_policy_installer_account_role_attachment[0].policy_arn]) : jsonencode([])
-    trust_policy_external_id      = var.trust_policy_external_id
+    trust_policy_external_id      = local.trust_policy_external_id
   }
 }
