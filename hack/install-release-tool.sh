@@ -126,32 +126,47 @@ case "$tool" in
     ;;
 
   checkov)
-    # bridgecrewio/checkov GitHub releases do not publish checksum files; verify against
-    # repo-pinned hack/checksums/checkov-<version>.sha256sums instead.
-    case "${os}_${arch}" in
-      linux_amd64) asset="checkov_linux_X86_64.zip" ;;
-      linux_arm64) asset="checkov_linux_arm64.zip" ;;
-      darwin_amd64) asset="checkov_darwin_X86_64.zip" ;;
-      windows_amd64) asset="checkov_windows_X86_64.zip" ;;
-      *)
-        echo "Unsupported platform for checkov: ${os}_${arch}" >&2
-        exit 1
-        ;;
-    esac
-    url="https://github.com/bridgecrewio/checkov/releases/download/${version}/${asset}"
-    checksums_file="${script_dir}/checksums/checkov-${version}.sha256sums"
     dest_bin="${dest_dir}/checkov"
+    # Linux release zips are PyInstaller bundles that require GLIBC >= 2.38; UBI9/RHEL9 (glibc 2.34) cannot run them.
+    if [ "$os" = "linux" ]; then
+      if ! command -v pip3 >/dev/null 2>&1; then
+        echo "pip3 is required to install checkov on Linux (GitHub release zip requires GLIBC >= 2.38)." >&2
+        exit 1
+      fi
+      lib_dir="${dest_dir}/.checkov-lib"
+      rm -rf "$lib_dir"
+      pip3 install --no-cache-dir --target "$lib_dir" "checkov==${version}"
+      cat >"$dest_bin" <<WRAP
+#!/usr/bin/env bash
+export PYTHONPATH="${lib_dir}:\${PYTHONPATH:-}"
+exec python3 -m checkov.main "\$@"
+WRAP
+      chmod +x "$dest_bin"
+    else
+      # bridgecrewio/checkov GitHub releases do not publish checksum files; verify against
+      # repo-pinned hack/checksums/checkov-<version>.sha256sums instead.
+      case "${os}_${arch}" in
+        darwin_amd64) asset="checkov_darwin_X86_64.zip" ;;
+        windows_amd64) asset="checkov_windows_X86_64.zip" ;;
+        *)
+          echo "Unsupported platform for checkov: ${os}_${arch}" >&2
+          exit 1
+          ;;
+      esac
+      url="https://github.com/bridgecrewio/checkov/releases/download/${version}/${asset}"
+      checksums_file="${script_dir}/checksums/checkov-${version}.sha256sums"
 
-    if [ ! -f "${checksums_file}" ]; then
-      echo "Missing pinned checksums: ${checksums_file}" >&2
-      echo "bridgecrewio/checkov releases do not publish upstream checksum files; add SHA256 sums for each platform zip when bumping CHECKOV_VERSION (see CONTRIBUTING.md)." >&2
-      exit 1
+      if [ ! -f "${checksums_file}" ]; then
+        echo "Missing pinned checksums: ${checksums_file}" >&2
+        echo "bridgecrewio/checkov releases do not publish upstream checksum files; add SHA256 sums for each platform zip when bumping CHECKOV_VERSION (see CONTRIBUTING.md)." >&2
+        exit 1
+      fi
+
+      curl -fsSL -o "${tmp}/${asset}" "$url"
+      sha256_verify "${tmp}/${asset}" "${checksums_file}"
+      unzip -o "${tmp}/${asset}" -d "$tmp"
+      install -m 0755 "${tmp}/dist/checkov" "$dest_bin"
     fi
-
-    curl -fsSL -o "${tmp}/${asset}" "$url"
-    sha256_verify "${tmp}/${asset}" "${checksums_file}"
-    unzip -o "${tmp}/${asset}" -d "$tmp"
-    install -m 0755 "${tmp}/dist/checkov" "$dest_bin"
     ;;
 
   gitleaks)
