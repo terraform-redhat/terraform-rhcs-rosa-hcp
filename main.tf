@@ -121,6 +121,7 @@ module "rosa_cluster_hcp" {
   replicas                                  = var.replicas
   compute_machine_type                      = var.compute_machine_type
   aws_availability_zones                    = var.aws_availability_zones
+  worker_disk_size                          = var.worker_disk_size
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids
 
   ########

@@ -247,6 +247,12 @@ variable "aws_availability_zones" {
   description = "The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones"
 }
 
+variable "worker_disk_size" {
+  type        = number
+  default     = null
+  description = "Default worker machine pool root disk size in GiB (e.g., 300, 400, 500). Leave null to use platform default."
+}
+
 variable "aws_additional_compute_security_group_ids" {
   type        = list(string)
   default     = null

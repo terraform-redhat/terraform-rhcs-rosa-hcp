@@ -313,6 +313,20 @@ variable "aws_availability_zones" {
   description = "The AWS availability zones where instances of the default worker machine pool are deployed. Leave empty for the installer to pick availability zones"
 }
 
+variable "worker_disk_size" {
+  type        = number
+  default     = null
+  description = "Worker node root disk size in GiB."
+
+  validation {
+    condition = var.worker_disk_size == null ? true : (
+      var.worker_disk_size > 0 &&
+      floor(var.worker_disk_size) == var.worker_disk_size
+    )
+    error_message = "worker_disk_size must be a positive whole number (GiB)."
+  }
+}
+
 variable "aws_additional_compute_security_group_ids" {
   type        = list(string)
   default     = null

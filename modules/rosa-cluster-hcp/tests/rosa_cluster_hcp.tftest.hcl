@@ -225,3 +225,41 @@ run "invalid_channel_three_part_version" {
     var.channel,
   ]
 }
+
+# worker_disk_size passthrough: null value (platform default).
+run "worker_disk_size_null" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    worker_disk_size = null
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.worker_disk_size == null
+    error_message = "worker_disk_size must be null when set to null (platform default)."
+  }
+}
+
+# worker_disk_size passthrough: explicit value (400 GiB).
+run "worker_disk_size_explicit" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    worker_disk_size = 400
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.worker_disk_size == 400
+    error_message = "worker_disk_size must be 400 when explicitly set to 400."
+  }
+}
