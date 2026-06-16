@@ -55,6 +55,7 @@ resource "random_password" "password" {
 module "vpc" {
   source = "../../modules/vpc"
 
-  name_prefix              = var.cluster_name
-  availability_zones_count = 3
+  name_prefix                       = var.cluster_name
+  availability_zones_count          = 3
+  cleanup_rosa_vpce_security_groups = true
 }

@@ -22,6 +22,7 @@ module "vpc" {
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.4 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 
 ## Providers
@@ -29,6 +30,7 @@ module "vpc" {
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.2.4 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
@@ -54,6 +56,7 @@ No modules.
 | [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
 | [aws_vpc_endpoint.s3](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_vpc_endpoint_route_table_association.private_vpc_endpoint_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint_route_table_association) | resource |
+| [null_resource.vpc_destroy_cleanup](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [time_sleep.vpc_resources_wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
@@ -64,6 +67,7 @@ No modules.
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | A list of availability zones names in the region. This value should not be updated, please create a new resource instead | `list(string)` | `null` | no |
 | <a name="input_availability_zones_count"></a> [availability\_zones\_count](#input\_availability\_zones\_count) | The count of availability zones to use within the specified AWS Region, where pairs of public and private subnets will be generated. Valid only when availability\_zones variable is not provided. This value should not be updated, please create a new resource instead | `number` | `null` | no |
+| <a name="input_cleanup_rosa_vpce_security_groups"></a> [cleanup\_rosa\_vpce\_security\_groups](#input\_cleanup\_rosa\_vpce\_security\_groups) | On destroy, remove orphaned ROSA HCP PrivateLink security groups (name suffix -vpce-private-router) left in this VPC after cluster deletion. Enable for ROSA HCP clusters using this module; requires AWS CLI and EC2 permissions at destroy time. | `bool` | `false` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | User-defined prefix for all generated AWS resources of this VPC. This value should not be updated, please create a new resource instead | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | AWS tags to be applied to generated AWS resources of this VPC. | `map(string)` | `null` | no |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | Cidr block of the desired VPC. This value should not be updated, please create a new resource instead | `string` | `"10.0.0.0/16"` | no |
