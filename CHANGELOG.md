@@ -1,3 +1,29 @@
+## 1.7.4 (16 Jun, 2026)
+
+FEATURES:
+   * Add OCM role submodule with required ROSA CLI tags
+   * Add worder disk size support
+   * Add channel parameter support for ROSA HCP clusters
+ * Machine-pool
+   * Add node_drain_grace_period attribute
+
+ENHANCEMENTS:
+ * Chores
+   * Consolidate checks under make pre-push-checks
+   * Add Vale inclusive-language check
+   * Replace version by sha in github actions
+   * Refine Terraform package rules in renovate.json
+   * Change coderabbit config to use inheritance
+   * Enable gitleaks (secret scanner)
+   * Change terraform-docs to make sure that runs same version as in ci
+   * Add coderabbit configuration file
+ * Documentation
+   * Update CONTRIBUTING.md with DCO and CI info
+   * Clarify versions.tf requirements and Renovate usage
+   * Add LICENSE and automation for checking it
+ * Config
+   * Migrate config renovate.json
+
 ## 1.7.3 (20 Apr, 2026)
 
 FEATURES:
