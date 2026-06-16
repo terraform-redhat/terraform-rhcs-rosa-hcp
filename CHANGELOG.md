@@ -20,10 +20,7 @@ ENHANCEMENTS:
  * Documentation
    * Update CONTRIBUTING.md with DCO and CI info
    * Clarify versions.tf requirements and Renovate usage
-   * Update terraform-docs after deps bump
    * Add LICENSE and automation for checking it
-   * Update terraform-docs after deps bump
-   * Update terraform-docs after deps bump
  * Config
    * Migrate config renovate.json
 
