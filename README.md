@@ -75,16 +75,16 @@ We recommend you install the following CLI tools:
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.44.0 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.4 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.50.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.3.0 |
 | <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.7 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.44.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 3.2.4 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.50.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.3.0 |
 | <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.7 |
 
 ## Modules
