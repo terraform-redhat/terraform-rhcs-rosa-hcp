@@ -9,9 +9,9 @@ ADDLICENSE_VERSION ?= v1.2.0
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs
 TERRAFORM_DOCS_VERSION ?= v0.24.0
 # renovate: datasource=github-releases depName=terraform-linters/tflint
-TFLINT_VERSION ?= v0.62.1
+TFLINT_VERSION ?= v0.63.1
 # renovate: datasource=github-releases depName=vale-cli/vale
-VALE_VERSION ?= v3.14.2
+VALE_VERSION ?= v3.15.1
 # renovate: datasource=github-releases depName=bridgecrewio/checkov
 CHECKOV_VERSION ?= 3.2.529
 # renovate: datasource=github-releases depName=gitleaks/gitleaks
