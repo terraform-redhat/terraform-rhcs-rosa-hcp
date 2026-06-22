@@ -204,9 +204,26 @@ resource "aws_route_table_association" "private_route_table_association" {
 
 # This resource is used in order to add dependencies on all resources 
 # Any resource uses this VPC ID, must wait to all resources creation completion
+# Optional destroy hook: after time_sleep.vpc_resources_wait completes its destroy wait,
+# remove orphaned ROSA HCP VPCE security groups that block VPC deletion (DependencyViolation).
+resource "null_resource" "vpc_destroy_cleanup" {
+  count = var.cleanup_rosa_vpce_security_groups ? 1 : 0
+
+  triggers = {
+    vpc_id = aws_vpc.vpc.id
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "bash ${path.module}/../../scripts/vpc-destroy-cleanup.sh '${self.triggers.vpc_id}'"
+  }
+}
+
 resource "time_sleep" "vpc_resources_wait" {
+  depends_on = [null_resource.vpc_destroy_cleanup]
+
   create_duration  = "20s"
-  destroy_duration = "20s"
+  destroy_duration = "5m"
   triggers = {
     vpc_id                                           = aws_vpc.vpc.id
     cidr_block                                       = aws_vpc.vpc.cidr_block

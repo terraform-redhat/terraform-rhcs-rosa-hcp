@@ -106,8 +106,9 @@ module "vpc" {
     aws = aws.network-owner
   }
 
-  name_prefix              = local.shared_resources_name_prefix
-  availability_zones_count = 1
+  name_prefix                       = local.shared_resources_name_prefix
+  availability_zones_count          = 1
+  cleanup_rosa_vpce_security_groups = true
 }
 
 ############################

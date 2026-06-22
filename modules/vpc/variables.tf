@@ -29,3 +29,9 @@ variable "tags" {
   default     = null
   description = "AWS tags to be applied to generated AWS resources of this VPC."
 }
+
+variable "cleanup_rosa_vpce_security_groups" {
+  type        = bool
+  default     = false
+  description = "On destroy, remove orphaned ROSA HCP PrivateLink security groups (name suffix -vpce-private-router) left in this VPC after cluster deletion. Enable for ROSA HCP clusters using this module; requires AWS CLI and EC2 permissions at destroy time."
+}
