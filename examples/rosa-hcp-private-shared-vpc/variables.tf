@@ -8,7 +8,7 @@ variable "cluster_name" {
 
 variable "openshift_version" {
   type        = string
-  default     = "4.17.15"
+  default     = "4.22.0"
   description = "The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 

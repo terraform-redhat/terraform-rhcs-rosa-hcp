@@ -3,7 +3,7 @@
 
 variable "openshift_version" {
   type        = string
-  default     = "4.19.3"
+  default     = "4.22.0"
   description = "The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
   validation {
     condition     = can(regex("^[0-9]*[0-9]+.[0-9]*[0-9]+.[0-9]*[0-9]+$", var.openshift_version))
