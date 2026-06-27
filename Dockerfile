@@ -7,7 +7,7 @@ RUN yum update -y && yum install -y yum-utils shadow-utils unzip tar make git py
     rm -rf /var/cache/yum
 # Prow / integration client image: newest Terraform (TERRAFORM_VERSION). Module minimum compatibility is checked in GitHub Actions verify-min-terraform.yml.
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=semver
-ARG TERRAFORM_VERSION=1.15.6
+ARG TERRAFORM_VERSION=1.15.7
 RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo && \
     yum -y install "terraform-${TERRAFORM_VERSION}" && \
     yum clean all && \
