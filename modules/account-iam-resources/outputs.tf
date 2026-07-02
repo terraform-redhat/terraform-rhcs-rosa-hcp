@@ -25,3 +25,4 @@ output "trust_policy_external_id" {
   value       = time_sleep.account_iam_resources_wait.triggers["trust_policy_external_id"]
   description = "External ID for trust policy condition in account roles"
 }
+
