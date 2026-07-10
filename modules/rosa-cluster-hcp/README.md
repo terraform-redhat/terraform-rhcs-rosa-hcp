@@ -32,6 +32,12 @@ module "rosa_cluster_hcp" {
 }
 ```
 
+## Bring your own CNI
+
+Setting `no_cni = true` creates the cluster without a Container Network Interface (CNI) plugin so that you can install your own, such as Cilium. Until you install one, the nodes stay in the `NotReady` state and no workload is scheduled. The value cannot be changed after the cluster is created.
+
+Red Hat supports the default OVN-Kubernetes network plugin only. On a cluster that runs a third-party CNI plugin, Red Hat support does not cover CNI-related issues such as pod-to-pod traffic, and responsibility for the plugin rests with you and its vendor. All non-CNI issues remain supported. For more information, see [Red Hat OpenShift Service on AWS clusters without a CNI plugin](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_rosa_with_hcp_clusters/rosa-hcp-cluster-no-cni).
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -106,6 +112,7 @@ No modules.
 | <a name="input_installer_role_arn"></a> [installer\_role\_arn](#input\_installer\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role used by the ROSA installer. | `string` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
 | <a name="input_machine_cidr"></a> [machine\_cidr](#input\_machine\_cidr) | Block of IP addresses used by OpenShift while installing the cluster, for example "10.0.0.0/16". | `string` | `null` | no |
+| <a name="input_no_cni"></a> [no\_cni](#input\_no\_cni) | Disable CNI creation to let users bring their own CNI. After the creation of the resource, it is not possible to update the attribute value. (default: false) | `bool` | `false` | no |
 | <a name="input_no_proxy"></a> [no\_proxy](#input\_no\_proxy) | A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. | `string` | `null` | no |
 | <a name="input_oidc_config_id"></a> [oidc\_config\_id](#input\_oidc\_config\_id) | The unique identifier associated with users authenticated through OpenID Connect (OIDC) within the ROSA cluster. | `string` | n/a | yes |
 | <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | n/a | yes |
