@@ -83,6 +83,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   service_cidr = var.service_cidr
   pod_cidr     = var.pod_cidr
   host_prefix  = var.host_prefix
+  no_cni       = var.no_cni
   proxy = var.http_proxy != null || var.https_proxy != null || var.no_proxy != null || var.additional_trust_bundle != null ? (
     {
       http_proxy              = var.http_proxy

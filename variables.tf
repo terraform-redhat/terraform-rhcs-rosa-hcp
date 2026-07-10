@@ -84,6 +84,12 @@ variable "host_prefix" {
   description = "Subnet prefix length to assign to each individual node. For example, if host prefix is set to \"23\", then each node is assigned a /23 subnet out of the given CIDR."
 }
 
+variable "no_cni" {
+  type        = bool
+  default     = false
+  description = "Disable CNI creation to let users bring their own CNI. (default: false)"
+}
+
 variable "create_admin_user" {
   type        = bool
   default     = null
