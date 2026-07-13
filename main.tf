@@ -113,6 +113,7 @@ module "rosa_cluster_hcp" {
   destroy_timeout                     = var.destroy_timeout
   upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
   external_auth_providers_enabled     = var.external_auth_providers_enabled
+  delete_protection                   = var.delete_protection
 
   #######################
   # Default Machine Pool

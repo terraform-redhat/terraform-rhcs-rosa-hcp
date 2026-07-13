@@ -263,3 +263,60 @@ run "worker_disk_size_explicit" {
     error_message = "worker_disk_size must be 400 when explicitly set to 400."
   }
 }
+
+# delete_protection passthrough: null value (provider defaults to false).
+run "delete_protection_null" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    delete_protection = null
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.delete_protection == false
+    error_message = "delete_protection must be false when unset."
+  }
+}
+
+# delete_protection passthrough: explicit true.
+run "delete_protection_enabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    delete_protection = true
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.delete_protection == true
+    error_message = "delete_protection must be true when explicitly enabled."
+  }
+}
+
+# delete_protection passthrough: explicit false.
+run "delete_protection_disabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    delete_protection = false
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.delete_protection == false
+    error_message = "delete_protection must be false when explicitly disabled."
+  }
+}

@@ -115,7 +115,7 @@ module "bastion_host" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 6.54.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.7 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.8 |
 
 ## Providers
 
