@@ -224,6 +224,12 @@ variable "external_auth_providers_enabled" {
   description = "Enable external auth providers on the cluster."
 }
 
+variable "delete_protection" {
+  type        = bool
+  default     = null
+  description = "When true, prevents cluster deletion via Red Hat OpenShift Cluster Manager (OCM). Set to false and apply before running terraform destroy."
+}
+
 ##############################################################
 # Default Machine Pool Variables
 # These attributes specifically apply to the default Machine Pool and become irrelevant once the resource is created.

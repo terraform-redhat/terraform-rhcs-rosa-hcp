@@ -13,7 +13,7 @@ For more information, see [Understanding OCM role and User role for ROSA](https:
 ```
 module "ocm_role" {
   source  = "terraform-redhat/rosa-hcp/rhcs//modules/ocm-role"
-  version = "1.7.7"
+  version = "1.7.8"
 
   ocm_role_prefix = "ManagedOpenShift"
   profile         = "standard"
@@ -27,14 +27,14 @@ module "ocm_role" {
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.7 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.8 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.7 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.8 |
 
 ## Modules
 

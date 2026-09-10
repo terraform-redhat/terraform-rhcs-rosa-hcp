@@ -7,7 +7,7 @@
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 6.54.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.7 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.8 |
 
 ## Providers
 
@@ -18,7 +18,7 @@
 | <a name="provider_aws.network-owner"></a> [aws.network-owner](#provider\_aws.network-owner) | = 6.54.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.7.7 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | = 1.7.8 |
 
 ## Modules
 
@@ -39,7 +39,7 @@
 | [aws_ec2_tag.tag_private_subnets](https://registry.terraform.io/providers/hashicorp/aws/6.54.0/docs/resources/ec2_tag) | resource |
 | [null_resource.validations](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [rhcs_dns_domain.dns_domain](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.7.7/docs/resources/dns_domain) | resource |
+| [rhcs_dns_domain.dns_domain](https://registry.terraform.io/providers/terraform-redhat/rhcs/1.7.8/docs/resources/dns_domain) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/6.54.0/docs/data-sources/caller_identity) | data source |
 | [aws_caller_identity.shared_vpc](https://registry.terraform.io/providers/hashicorp/aws/6.54.0/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/6.54.0/docs/data-sources/partition) | data source |
