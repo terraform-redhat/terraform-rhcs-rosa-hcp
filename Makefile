@@ -94,11 +94,12 @@ verify:
 		echo "!! Validating $$d (pinned) !!"; \
 		( cd "$$d" && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false -input=false && terraform validate ); \
 		echo "!! Validating $$d (floor $$floor) !!"; \
-		absd=$$(readlink -f "$$d"); \
+		absd=$$(cd "$$d" && pwd -P); \
 		cp "$${d}versions.tf" "$${d}versions.tf.bak"; \
 		( \
 			trap "mv -f \"$${absd}/versions.tf.bak\" \"$${absd}/versions.tf\" 2>/dev/null || true" EXIT; \
-			sed -i '/source[[:space:]]*=[[:space:]]*"hashicorp\/aws"/{n;s/version[[:space:]]*=[[:space:]]*"[^"]*"/version = "= '"$$floor"'"/;}' "$${d}versions.tf"; \
+			sed '/source[[:space:]]*=[[:space:]]*"hashicorp\/aws"/{n;s/version[[:space:]]*=[[:space:]]*"[^"]*"/version = "= '"$$floor"'"/;}' "$${d}versions.tf" > "$${d}versions.tf.floor"; \
+			mv "$${d}versions.tf.floor" "$${d}versions.tf"; \
 			cd "$$d" && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false -input=false && terraform validate; \
 		); \
 	done
@@ -194,17 +195,32 @@ run-example:
 # Maintainer utilities (not part of pre-push-checks).
 .PHONY: dev-environment registry-environment change-ocp-version change-module-version
 dev-environment:
-	find . -type f -name "versions.tf" -exec sed -i -e "s/terraform-redhat\/rhcs/terraform.local\/local\/rhcs/g" -- {} +
+	@set -e; for f in $$(find . -type f -name "versions.tf"); do \
+		sed "s/terraform-redhat\/rhcs/terraform.local\/local\/rhcs/g" "$$f" > "$$f.tmp"; \
+		mv "$$f.tmp" "$$f"; \
+	done
 
 registry-environment:
-	find . -type f -name "versions.tf" -exec sed -i -e "s/terraform.local\/local\/rhcs/terraform-redhat\/rhcs/g" -- {} +
+	@set -e; for f in $$(find . -type f -name "versions.tf"); do \
+		sed "s/terraform.local\/local\/rhcs/terraform-redhat\/rhcs/g" "$$f" > "$$f.tmp"; \
+		mv "$$f.tmp" "$$f"; \
+	done
 
 change-ocp-version:
-	find . -type f -name "variables.tf" -exec sed -i -e 's/default = "$(OLD_VER)"/default = "$(NEW_VER)"/g' -- {} +
+	@set -e; for f in $$(find . -type f -name "variables.tf"); do \
+		sed 's/default = "$(OLD_VER)"/default = "$(NEW_VER)"/g' "$$f" > "$$f.tmp"; \
+		mv "$$f.tmp" "$$f"; \
+	done
 
 change-module-version:
-	find ./examples -type f -name '*.tf' -exec sed -i 's^source\s*= "\.\./\.\./"^source = "$(MODULE_REGISTRY)"\n  version = "$(MODULE_VERSION)"^g' -- {} +
-	find ./examples -type f -name '*.tf' -exec sed -E -i 's^source\s*= "\.\./\.\./modules/([^"]+)"^source = "$(MODULE_REGISTRY)//modules/\1"\n  version = "$(MODULE_VERSION)"^g' -- {} +
+	@set -e; for f in $$(find ./examples -type f -name '*.tf'); do \
+		sed 's^source[[:space:]]*=[[:space:]]*"\.\./\.\./"^source = "$(MODULE_REGISTRY)"\n  version = "$(MODULE_VERSION)"^g' "$$f" > "$$f.tmp"; \
+		mv "$$f.tmp" "$$f"; \
+	done
+	@set -e; for f in $$(find ./examples -type f -name '*.tf'); do \
+		sed -E 's^source[[:space:]]*=[[:space:]]*"\.\./\.\./modules/([^"]+)"^source = "$(MODULE_REGISTRY)//modules/\1"\n  version = "$(MODULE_VERSION)"^g' "$$f" > "$$f.tmp"; \
+		mv "$$f.tmp" "$$f"; \
+	done
 
 .PHONY: tests
 tests:
