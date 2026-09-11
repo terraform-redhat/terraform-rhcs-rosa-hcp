@@ -11,7 +11,7 @@ TERRAFORM_DOCS_VERSION ?= v0.24.0
 # renovate: datasource=github-releases depName=terraform-linters/tflint
 TFLINT_VERSION ?= v0.64.0
 # renovate: datasource=github-releases depName=vale-cli/vale
-VALE_VERSION ?= v3.18.0
+VALE_VERSION ?= v3.20.0
 # renovate: datasource=github-releases depName=bridgecrewio/checkov
 CHECKOV_VERSION ?= 3.2.529
 # renovate: datasource=github-releases depName=gitleaks/gitleaks
