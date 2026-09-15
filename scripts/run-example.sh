@@ -77,11 +77,27 @@ declare -a undefined_env_arr=()
 ## User must define the token for OCM
 env_arr+=("RHCS_TOKEN" "TF_VAR_cluster_name")
 
-## For shared VPC scenario, user must provide the shared VPC AWS account details
+## For shared VPC scenario, user must provide both AWS account details.
 ## Make sure that all shared VPC examples names include "shared-vpc" substring
 if [[ "${example_name}" == *"shared-vpc"* ]]; then
   echo "Running example with \"shared-vpc\""
-  env_arr+=("TF_VAR_shared_vpc_aws_access_key_id" "TF_VAR_shared_vpc_aws_secret_access_key" "TF_VAR_shared_vpc_aws_region")
+
+  network_owner_credentials=false
+  if [[ -n "${TF_VAR_network_owner_aws_access_key_id:-}" && -n "${TF_VAR_network_owner_aws_secret_access_key:-}" ]] || [[ -n "${TF_VAR_network_owner_aws_profile:-}" ]]; then
+    network_owner_credentials=true
+  elif [[ -n "${TF_VAR_shared_vpc_aws_access_key_id:-}" && -n "${TF_VAR_shared_vpc_aws_secret_access_key:-}" ]]; then
+    network_owner_credentials=true
+    export TF_VAR_network_owner_aws_access_key_id="${TF_VAR_shared_vpc_aws_access_key_id}"
+    export TF_VAR_network_owner_aws_secret_access_key="${TF_VAR_shared_vpc_aws_secret_access_key}"
+  fi
+
+  if [[ "$network_owner_credentials" == false ]]; then
+    undefined_env_arr+=("network-owner AWS credentials")
+  fi
+
+  if [[ ! ( -n "${TF_VAR_cluster_owner_aws_access_key_id:-}" && -n "${TF_VAR_cluster_owner_aws_secret_access_key:-}" ) && -z "${TF_VAR_cluster_owner_aws_profile:-}" ]]; then
+    undefined_env_arr+=("cluster-owner AWS credentials")
+  fi
 fi
 
 ## now loop through the above array
