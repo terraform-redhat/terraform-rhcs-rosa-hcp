@@ -94,4 +94,39 @@ For internal Red Hat contributors: post your PR link and Jira story in `#forum-r
 
 ## Feature process
 
-For all new features and changes, the provider serves as our source of truth, meaning any corresponding module PRs will be placed on hold until the provider change is released. Use the existing `/hold` mechanism on your PR and reference the upstream provider PR or release it depends on.
+### Overview
+
+The RHCS provider and these Terraform modules are released independently. When a module feature depends on a new provider capability, the provider is the source of truth. Make the provider capability available to module consumers before releasing the module feature that uses it.
+
+### The Dependency Constraint
+
+The module dependency path must require the provider release that supplies the feature. Update every relevant `rhcs` `required_providers` constraint, including the root module and any feature-owning submodule, to require at least that release. A GitHub tag alone is not sufficient: the provider version must be published on the public Terraform Registry before module validation or consumers can resolve it. Publishing the provider and module simultaneously fails CI because `terraform init` resolves the module's provider dependency from the public Registry; until the provider is available there, the required version cannot be installed. Renovate also cannot propose the module constraint update until it discovers the published Registry version.
+
+### Standard Release Workflow (Step-by-Step)
+
+```text
+Provider repository                                      Module repository
+1. Implement and merge the provider feature.
+2. Release the provider version.
+3. Publish the release to the public Terraform Registry.
+   ---------------------------------------------------->  4. Open the module feature PR, reference the
+                                                             provider PR or release, and apply `/hold`.
+                                                          5. Wait for Registry publication, then allow
+                                                             Renovate to detect and update the module's
+                                                             provider constraint.
+                                                          6. Update every relevant module constraint for
+                                                             the feature dependency path.
+                                                          7. Run CI after the provider version resolves.
+                                                          8. Remove `/hold`, merge the module PR, and
+                                                             release the module.
+```
+
+1. Keep the module PR on hold while the provider change is implemented, reviewed, and released.
+2. Confirm that the released provider version is publicly available on the Terraform Registry.
+3. Allow Renovate to create or update the module provider-constraint change, then ensure all relevant constraints require the provider release.
+4. Run the required module CI only after Terraform can resolve the provider release from the Registry.
+5. Remove the hold after CI passes, then merge and release the module.
+
+### Real-World Example
+
+[HCP PR #178](https://github.com/terraform-redhat/terraform-rhcs-rosa-hcp/pull/178) wired the optional `delete_protection` setting through the ROSA HCP module. It raised the root and `rosa-cluster-hcp` module `rhcs` provider requirements from `>= 1.7.7` to `>= 1.7.8`, the provider release that supplied the capability. The PR demonstrates the required dependency ordering; it does not establish whether Renovate authored the historical version-constraint update.
