@@ -22,6 +22,14 @@ These are **illustrative** reasons floors diverge — not a complete list of eve
 - MUST: Confirm new AWS resources/data sources exist in the **aws** provider range declared in the relevant `versions.tf`.
 - Provider floor changes are **minor** semver events for the module (see release notes).
 
+### RHCS feature floors
+
+WHEN adding an `rhcs` resource or argument introduced in provider release `X`:
+
+- MUST: Update `required_providers.rhcs` to `>= X` in the root module and every feature-owning submodule.
+- MUST NOT: Rely on the root constraint for a public submodule; direct submodule consumers resolve that submodule's own constraint.
+- MUST: Regenerate the README for each submodule whose provider constraint changes.
+
 Registry module pins under `modules/**` are **exact versions**, bumped **manually**, so upstream module releases do not force customer AWS provider upgrades unrelated to this module.
 
 ## Renovate

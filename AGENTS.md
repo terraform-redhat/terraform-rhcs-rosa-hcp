@@ -29,8 +29,8 @@ Entrypoints [`CLAUDE.md`](CLAUDE.md) and [`GEMINI.md`](GEMINI.md) point here.
 
 ## Workflow
 
-1. Check **rhcs** provider schema for root `versions.tf` range.
-2. Provider bump? Update root `versions.tf` first — [`developer-docs/providers-and-versions.md`](developer-docs/providers-and-versions.md).
+1. Check the **rhcs** provider schema and the root plus relevant submodule `versions.tf` constraints.
+2. Provider feature? Update root and every feature-owning submodule; direct submodule consumers do not inherit the root floor — [`developer-docs/providers-and-versions.md`](developer-docs/providers-and-versions.md).
 3. AWS-only submodule? — read in order: [`developer-docs/submodules.md`](developer-docs/submodules.md), [`developer-docs/variables.md`](developer-docs/variables.md), [`developer-docs/providers-and-versions.md`](developer-docs/providers-and-versions.md), [`developer-docs/architecture.md`](developer-docs/architecture.md). Then check the ROSA CLI source for any field the module validates. For each AWS resource created, fetch the provider documentation and apply all notes and warnings before implementing.
 4. Variables? — read [`developer-docs/variables.md`](developer-docs/variables.md). For each variable that maps to a ROSA CLI-validated field (name, path, prefix, enum), verify the validation block against the CLI source before finishing.
 5. Docs/tests/commands — [`CONTRIBUTING.md`](CONTRIBUTING.md).

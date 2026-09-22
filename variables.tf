@@ -230,6 +230,18 @@ variable "delete_protection" {
   description = "When true, prevents cluster deletion via Red Hat OpenShift Cluster Manager (OCM). Set to false and apply before running terraform destroy."
 }
 
+variable "no_cni" {
+  type        = bool
+  default     = false
+  description = "Disable CNI creation to let users bring their own CNI. Set wait_for_std_compute_nodes_complete to false when enabled. This value cannot be changed after cluster creation."
+}
+
+variable "spot_termination_queue_url" {
+  type        = string
+  default     = null
+  description = "URL of the Amazon SQS queue used for Spot Instance interruption notifications."
+}
+
 ##############################################################
 # Default Machine Pool Variables
 # These attributes specifically apply to the default Machine Pool and become irrelevant once the resource is created.
@@ -321,6 +333,15 @@ variable "default_ingress_listening_method" {
   default     = ""
   description = "Listening Method for ingress. Options are [\"internal\", \"external\"]. Default is \"external\". When empty is set based on private variable."
 }
+
+variable "default_ingress_component_routes" {
+  type = map(object({
+    hostname       = optional(string)
+    tls_secret_ref = optional(string)
+  }))
+  default     = null
+  description = "Component routes for the default ingress. Keys are component names (e.g., 'console', 'downloads')."
+}
 ##############################################################
 # General variables
 # Relevant to "account roles", "operator roles" and "OIDC"
@@ -410,6 +431,8 @@ variable "machine_pools" {
       capacity_reservation_id         = optional(string)
       capacity_reservation_preference = optional(string)
       node_drain_grace_period         = optional(number)
+      use_spot_instances              = optional(bool)
+      max_spot_price                  = optional(number)
     })
     autoscaling = optional(object({
       enabled      = bool
