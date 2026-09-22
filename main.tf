@@ -114,6 +114,8 @@ module "rosa_cluster_hcp" {
   upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
   external_auth_providers_enabled     = var.external_auth_providers_enabled
   delete_protection                   = var.delete_protection
+  no_cni                              = var.no_cni
+  spot_termination_queue_url          = var.spot_termination_queue_url
 
   #######################
   # Default Machine Pool
@@ -149,7 +151,8 @@ module "rosa_cluster_hcp" {
     var.default_ingress_listening_method) : (
     var.private ? "internal" : "external"
   )
-  registry_config = var.registry_config
+  default_ingress_component_routes = var.default_ingress_component_routes
+  registry_config                  = var.registry_config
 }
 
 ######################################

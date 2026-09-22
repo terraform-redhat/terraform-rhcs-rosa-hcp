@@ -234,3 +234,86 @@ run "node_drain_grace_period_null_plan" {
     error_message = "Expected null node_drain_grace_period to be wired through to rhcs_hcp_machine_pool as null."
   }
 }
+
+run "spot_instances_with_max_price_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type      = "m5.xlarge"
+      tags               = {}
+      use_spot_instances = true
+      max_spot_price     = 0.50
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.use_spot_instances == true
+    error_message = "use_spot_instances must be wired through to rhcs_hcp_machine_pool."
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.max_spot_price == 0.50
+    error_message = "max_spot_price must be wired through to rhcs_hcp_machine_pool."
+  }
+}
+
+run "spot_instance_settings_unset_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.use_spot_instances == null && rhcs_hcp_machine_pool.machine_pool.aws_node_pool.max_spot_price == null
+    error_message = "Spot instance settings must remain unset on rhcs_hcp_machine_pool."
+  }
+}
+
+run "spot_instances_disabled_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type      = "m5.xlarge"
+      tags               = {}
+      use_spot_instances = false
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.use_spot_instances == false
+    error_message = "use_spot_instances must preserve false when passed to rhcs_hcp_machine_pool."
+  }
+}
