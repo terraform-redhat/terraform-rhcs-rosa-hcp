@@ -9,3 +9,8 @@ approvers:
 - davidleerh
 - willkutler
 - red-hat-konflux[bot]
+reviewers:
+- olucasfreitas
+- jerichokeyne
+- amandahla
+- markirish
