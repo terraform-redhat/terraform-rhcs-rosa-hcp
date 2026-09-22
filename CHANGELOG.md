@@ -1,3 +1,16 @@
+## 1.7.5 (16 Sep, 2026)
+
+FEATURES:
+   * Wire delete_protection through ROSA HCP module
+
+ENHANCEMENTS:
+ * Bug fixes
+   * Replace non-portable sed -i with redirect-and-move
+   * Apply trust_policy_external_id to support role trust policy
+ * Documentation
+   * Add communication channels and feature process to CONTRIBUTING
+   * Add agent agnostic documentation
+
 ## 1.7.4 (16 Jun, 2026)
 
 FEATURES:
