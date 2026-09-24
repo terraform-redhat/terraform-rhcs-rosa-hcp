@@ -64,6 +64,8 @@ variable "aws_node_pool" {
     capacity_reservation_id         = optional(string)
     capacity_reservation_preference = optional(string)
     node_drain_grace_period         = optional(number)
+    use_spot_instances              = optional(bool)
+    max_spot_price                  = optional(number)
   })
   nullable    = false
   description = "Configures aws settings for the pool."

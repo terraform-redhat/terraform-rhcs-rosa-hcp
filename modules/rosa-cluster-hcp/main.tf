@@ -79,6 +79,8 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   ec2_metadata_http_tokens                  = var.ec2_metadata_http_tokens
   external_auth_providers_enabled           = var.external_auth_providers_enabled
   delete_protection                         = var.delete_protection
+  no_cni                                    = var.no_cni
+  spot_termination_queue_url                = var.spot_termination_queue_url
 
   machine_cidr = var.machine_cidr
   service_cidr = var.service_cidr
@@ -140,6 +142,10 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
       condition     = var.channel == null || var.version_channel_group == null
       error_message = "The 'channel' and 'version_channel_group' parameters cannot be used together. Please specify only one."
     }
+    precondition {
+      condition     = !var.no_cni || !var.wait_for_std_compute_nodes_complete
+      error_message = "When no_cni is true, set wait_for_std_compute_nodes_complete to false because standard compute nodes cannot become Ready until a CNI is installed."
+    }
   }
 }
 
@@ -165,6 +171,7 @@ resource "rhcs_hcp_default_ingress" "default_ingress" {
     var.default_ingress_listening_method) : (
     var.private ? "internal" : "external"
   )
+  component_routes = var.default_ingress_component_routes
 }
 
 data "aws_caller_identity" "current" {
