@@ -320,3 +320,37 @@ run "delete_protection_disabled" {
     error_message = "delete_protection must be false when explicitly disabled."
   }
 }
+
+# no_cni passthrough: default (CNI created by the platform).
+run "no_cni_default" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == false
+    error_message = "no_cni must be false by default."
+  }
+}
+
+# no_cni passthrough: explicit true (bring your own CNI).
+run "no_cni_enabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni = true
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == true
+    error_message = "no_cni must be true when explicitly enabled."
+  }
+}
