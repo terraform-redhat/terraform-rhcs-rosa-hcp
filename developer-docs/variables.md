@@ -7,6 +7,10 @@
 - MUST: Root `validation` for cross-field rules; child modules may use `lifecycle` precondition.
 - MUST NOT: Rename or retype variables without a migration plan.
 
+WHEN exposing a new provider argument:
+- MUST: Review interactions with existing module inputs and defaults, including waiters and lifecycle behavior.
+- MUST: Document and plan-test dependent or incompatible combinations; enforce simple module-level rules with validation or a lifecycle precondition.
+
 WHEN adding `validation` or `lifecycle` precondition:
 - MUST: only for simple checks (e.g. null/empty, enum membership, format, range).
 DEFAULT: Let the **rhcs** provider enforce complex cross-field and business rules; do not duplicate or tighten them.

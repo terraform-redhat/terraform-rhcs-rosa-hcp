@@ -90,6 +90,139 @@ run "plan_default_ingress_count_when_wait_for_create_complete_false" {
   }
 }
 
+run "cluster_no_cni_with_default_standard_compute_waiter_fails" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni = true
+  }
+
+  expect_failures = [
+    rhcs_cluster_rosa_hcp.rosa_hcp_cluster,
+  ]
+}
+
+run "cluster_no_cni_without_standard_compute_waiter_is_wired" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni                              = true
+    wait_for_std_compute_nodes_complete = false
+    spot_termination_queue_url          = "https://sqs.us-east-1.amazonaws.com/123456789012/spot-termination"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == true
+    error_message = "no_cni must be wired through to rhcs_cluster_rosa_hcp."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_std_compute_nodes_complete == false
+    error_message = "no-CNI clusters must disable the standard compute node waiter."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.spot_termination_queue_url == "https://sqs.us-east-1.amazonaws.com/123456789012/spot-termination"
+    error_message = "spot_termination_queue_url must be wired through to rhcs_cluster_rosa_hcp."
+  }
+}
+
+run "cluster_no_cni_false_is_wired" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni = false
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == false
+    error_message = "no_cni must preserve false when passed to rhcs_cluster_rosa_hcp."
+  }
+}
+
+run "default_ingress_component_routes_populated" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    default_ingress_component_routes = {
+      console = {
+        hostname       = "console.apps.example.com"
+        tls_secret_ref = "console-tls"
+      }
+      downloads = {
+        hostname       = "downloads.apps.example.com"
+        tls_secret_ref = "downloads-tls"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_default_ingress.default_ingress[0].component_routes == var.default_ingress_component_routes
+    error_message = "component_routes must be wired through to rhcs_hcp_default_ingress."
+  }
+}
+
+run "default_ingress_component_routes_partial" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    default_ingress_component_routes = {
+      console = {
+        hostname       = "console.apps.example.com"
+        tls_secret_ref = "console-tls"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_default_ingress.default_ingress[0].component_routes == var.default_ingress_component_routes
+    error_message = "component_routes must allow configuring only selected ingress components."
+  }
+}
+
+run "default_ingress_component_routes_omitted" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    default_ingress_component_routes = null
+  }
+
+  assert {
+    condition     = rhcs_hcp_default_ingress.default_ingress[0].component_routes == null
+    error_message = "component_routes must remain unset when omitted."
+  }
+}
+
 # channel variable validation: cannot be used together with version_channel_group.
 run "both_channel_and_version_channel_group_fails" {
   command = plan
