@@ -320,3 +320,97 @@ run "delete_protection_disabled" {
     error_message = "delete_protection must be false when explicitly disabled."
   }
 }
+
+# no_cni passthrough: default (CNI created by the platform).
+run "no_cni_default" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == false
+    error_message = "no_cni must be false by default."
+  }
+}
+
+# no_cni passthrough: explicit true (bring your own CNI).
+run "no_cni_enabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni = true
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == true
+    error_message = "no_cni must be true when explicitly enabled."
+  }
+}
+
+# no_cni is non-nullable: explicit null falls back to the default (false), so the
+# waiter conditional never receives a null condition.
+run "no_cni_null_uses_default" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni = null
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.no_cni == false
+    error_message = "no_cni must fall back to false when explicitly set to null."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_std_compute_nodes_complete == true
+    error_message = "wait_for_std_compute_nodes_complete must follow its default (true) when no_cni is null."
+  }
+}
+
+# no_cni forces the standard compute nodes waiter off: BYO-CNI nodes stay NotReady
+# until the CNI is installed, so waiting would time out.
+run "no_cni_default_keeps_std_compute_nodes_waiter" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_std_compute_nodes_complete == true
+    error_message = "wait_for_std_compute_nodes_complete must follow its default (true) when no_cni is false."
+  }
+}
+
+run "no_cni_enabled_disables_std_compute_nodes_waiter" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    no_cni                              = true
+    wait_for_std_compute_nodes_complete = true
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_std_compute_nodes_complete == false
+    error_message = "wait_for_std_compute_nodes_complete must be false when no_cni is true, even if explicitly enabled."
+  }
+}
