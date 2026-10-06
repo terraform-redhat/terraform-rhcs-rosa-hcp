@@ -146,6 +146,13 @@ variable "host_prefix" {
   description = "Subnet prefix length to assign to each individual node. For example, if host prefix is set to \"23\", then each node is assigned a /23 subnet out of the given CIDR."
 }
 
+variable "no_cni" {
+  type        = bool
+  default     = false
+  nullable    = false
+  description = "Disable CNI creation to let users bring their own CNI. When true, wait_for_std_compute_nodes_complete is forced to false. After the creation of the resource, it is not possible to update the attribute value. (default: false)"
+}
+
 variable "create_admin_user" {
   type        = bool
   default     = null
@@ -257,7 +264,7 @@ variable "wait_for_create_complete" {
 variable "wait_for_std_compute_nodes_complete" {
   type        = bool
   default     = true
-  description = "Wait until the cluster standard compute nodes are available. The waiter has a timeout of 60 minutes. (default: true)"
+  description = "Wait until the cluster standard compute nodes are available. The waiter has a timeout of 60 minutes. Ignored and treated as false when no_cni is true, because compute nodes stay NotReady until a CNI is installed. (default: true)"
 }
 
 variable "etcd_encryption" {
