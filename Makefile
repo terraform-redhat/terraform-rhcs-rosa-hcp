@@ -131,7 +131,7 @@ unit-tests:
 	  echo "== $$submodule =="; \
 	  cd "$$submodule/tests" 2>/dev/null || continue; \
 	  echo "== running tests for $$submodule =="; \
-	  (cd .. && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false -input=false && terraform test); \
+	  (cd .. && rm -rf .terraform .terraform.lock.hcl && terraform init -backend=false -input=false && terraform test && for test_script in tests/*_test.sh; do [ ! -e "$$test_script" ] || bash "$$test_script"; done); \
 	  cd ../../..; \
 	done
 
