@@ -320,3 +320,85 @@ run "delete_protection_disabled" {
     error_message = "delete_protection must be false when explicitly disabled."
   }
 }
+
+# auto_node: valid when wait_for_create_complete is true (default).
+run "valid_plan_with_auto_node" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      role_arn = "arn:aws:iam::123456789012:role/test-karpenter"
+    }
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node.mode == "enabled"
+    error_message = "The cluster resource auto_node.mode must default to 'enabled'."
+  }
+}
+
+# auto_node: mode validation.
+run "auto_node_invalid_mode" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      mode     = "disabled"
+      role_arn = "arn:aws:iam::123456789012:role/test-karpenter"
+    }
+  }
+
+  expect_failures = [
+    var.auto_node,
+  ]
+}
+
+# auto_node: role_arn format validation.
+run "auto_node_invalid_role_arn" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      role_arn = "not-an-arn"
+    }
+  }
+
+  expect_failures = [
+    var.auto_node,
+  ]
+}
+
+# auto_node: null role_arn is rejected by the format validation.
+run "auto_node_null_role_arn" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      role_arn = null
+    }
+  }
+
+  expect_failures = [
+    var.auto_node,
+  ]
+}

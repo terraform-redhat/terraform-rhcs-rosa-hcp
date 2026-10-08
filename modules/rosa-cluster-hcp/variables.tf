@@ -426,3 +426,22 @@ variable "registry_config" {
     error_message = "Registry config cannot specify both allowed_registries and blocked_registries - they are mutually exclusive."
   }
 }
+
+variable "auto_node" {
+  type = object({
+    mode     = optional(string, "enabled")
+    role_arn = string
+  })
+  default     = null
+  description = "AutoNode (Karpenter) configuration. Requires OpenShift 4.22 or later. The rhcs provider also requires `wait_for_create_complete = true`. `role_arn` must be a valid IAM role ARN used by the Karpenter controller. AutoNode cannot be disabled once enabled: keep the block configured."
+
+  validation {
+    condition     = var.auto_node == null ? true : var.auto_node.mode == "enabled"
+    error_message = "auto_node.mode must be \"enabled\"; no other mode is currently supported."
+  }
+
+  validation {
+    condition     = var.auto_node == null ? true : can(regex("^arn:aws[\\w-]*:iam::\\d{12}:role(?:/+[\\w+=,.@-]+)+$", var.auto_node.role_arn))
+    error_message = "auto_node.role_arn must be a valid IAM role ARN, for example arn:aws:iam::123456789012:role/<role-name>."
+  }
+}
