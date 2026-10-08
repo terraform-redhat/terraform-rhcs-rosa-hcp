@@ -107,6 +107,7 @@ resource "rhcs_cluster_rosa_hcp" "rosa_hcp_cluster" {
   disable_waiting_in_destroy          = var.disable_waiting_in_destroy
   destroy_timeout                     = var.destroy_timeout
   registry_config                     = var.registry_config
+  auto_node                           = var.auto_node
 
   lifecycle {
     precondition {

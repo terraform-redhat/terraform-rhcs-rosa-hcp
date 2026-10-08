@@ -57,6 +57,8 @@ module "operator_roles" {
   oidc_endpoint_url    = var.create_oidc ? module.oidc_config_and_provider[0].oidc_endpoint_url : var.oidc_endpoint_url
   tags                 = var.tags
   permissions_boundary = var.permissions_boundary
+
+  create_karpenter_role = var.auto_node != null && try(var.auto_node.role_arn, null) == null
 }
 
 ############################
@@ -150,6 +152,11 @@ module "rosa_cluster_hcp" {
     var.private ? "internal" : "external"
   )
   registry_config = var.registry_config
+
+  auto_node = var.auto_node == null ? null : {
+    mode     = var.auto_node.mode
+    role_arn = var.auto_node.role_arn != null ? var.auto_node.role_arn : try(module.operator_roles[0].karpenter_role_arn, null)
+  }
 }
 
 ######################################
@@ -283,6 +290,10 @@ resource "null_resource" "validations" {
     precondition {
       condition     = (var.create_oidc != true && var.oidc_config_id == null) == false
       error_message = "\"oidc_config_id\" mustn't be empty when oidc is pre-created (create_oidc != true)."
+    }
+    precondition {
+      condition     = var.auto_node == null || try(var.auto_node.role_arn, null) != null || var.create_operator_roles == true
+      error_message = "\"auto_node.role_arn\" must be provided when \"create_operator_roles\" is false."
     }
     precondition {
       condition = (
