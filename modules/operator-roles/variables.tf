@@ -43,3 +43,9 @@ variable "create_shared_vpc_policies" {
   type        = bool
   default     = false
 }
+
+variable "create_karpenter_role" {
+  description = "Create the IAM role used by the Karpenter controller when AutoNode is enabled (ROSAKarpenterControllerPolicy)."
+  type        = bool
+  default     = false
+}
