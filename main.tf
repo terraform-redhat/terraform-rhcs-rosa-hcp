@@ -4,9 +4,11 @@
 data "aws_partition" "current" {}
 
 locals {
-  path                 = coalesce(var.path, "/")
-  account_role_prefix  = coalesce(var.account_role_prefix, "${var.cluster_name}-account")
-  operator_role_prefix = coalesce(var.operator_role_prefix, "${var.cluster_name}-operator")
+  path                           = coalesce(var.path, "/")
+  account_role_prefix            = coalesce(var.account_role_prefix, "${var.cluster_name}-account")
+  operator_role_prefix           = coalesce(var.operator_role_prefix, "${var.cluster_name}-operator")
+  inferred_compute_machine_type  = try(values(var.machine_pools)[0].aws_node_pool.instance_type, null)
+  effective_compute_machine_type = var.compute_machine_type != null ? var.compute_machine_type : local.inferred_compute_machine_type
   sts_roles = {
     installer_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role${local.path}${local.account_role_prefix}-HCP-ROSA-Installer-Role",
     support_role_arn   = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role${local.path}${local.account_role_prefix}-HCP-ROSA-Support-Role",
@@ -122,7 +124,7 @@ module "rosa_cluster_hcp" {
   #######################
 
   replicas                                  = var.replicas
-  compute_machine_type                      = var.compute_machine_type
+  compute_machine_type                      = local.effective_compute_machine_type
   aws_availability_zones                    = var.aws_availability_zones
   worker_disk_size                          = var.worker_disk_size
   aws_additional_compute_security_group_ids = var.aws_additional_compute_security_group_ids

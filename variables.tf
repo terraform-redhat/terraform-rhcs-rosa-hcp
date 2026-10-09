@@ -256,7 +256,7 @@ variable "replicas" {
 variable "compute_machine_type" {
   type        = string
   default     = null
-  description = "Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values."
+  description = "Identifies the instance type used by the default worker machine pool, for example `m5.xlarge`. An explicit value always takes precedence. When null, the root module uses the `aws_node_pool.instance_type` from the `machine_pools` entry with the first lexicographically sorted key; an empty map leaves the value null for the API default. This fallback assumes all declared machine pools use the same instance type. Set this variable explicitly when machine pool instance types differ. Use the `rhcs_machine_types` data source to find the possible values."
 }
 
 variable "aws_availability_zones" {

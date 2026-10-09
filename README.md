@@ -45,6 +45,12 @@ Sub-modules included in this module:
 
 The primary sub-modules responsible for ROSA HCP cluster creation includes optional configurations for setting up account roles, operator roles and OIDC config/provider. This comprehensive module handles the entire process of provisioning and configuring ROSA HCP clusters in your AWS environment.
 
+## Temporary compute machine type fallback
+
+The root module passes an explicit `compute_machine_type` through unchanged. When that variable is null, it temporarily falls back to the `aws_node_pool.instance_type` of the `machine_pools` entry with the first lexicographically sorted map key. An empty map leaves the value null for the API default. This fallback is scoped to configurations where every declared machine pool uses the same instance type. Set `compute_machine_type` explicitly for mixed-type machine pools; the fallback doesn't reconcile differing types.
+
+For a scoped adoption before a module release is selected, pin the module source to an approved full commit SHA, for example `git::https://github.com/terraform-redhat/terraform-rhcs-rosa-hcp.git?ref=<approved-commit-sha>`, and use RHCS provider 1.7.9 or a later version confirmed compatible with this module. Provider 1.7.9 includes a [state population fix](https://github.com/terraform-redhat/terraform-provider-rhcs/commit/6cb22bbbc74304fa21bf498356af5668e0b6ff0d) that can populate legacy null `compute_machine_type` state during refresh only when the cluster API returns that field. For an existing cluster whose actual default workers are `m5.xlarge`, first run and apply a refresh-only plan and verify that state reports `m5.xlarge`. Then review a normal plan and confirm that it doesn't propose a default worker type change before applying this module change. New cluster plans should use matching default and additional machine pool instance types. This fallback doesn't repair an existing cluster whose default worker type differs from the declared additional pools. A broader release or tag decision is separate from this scoped adoption.
+
 ## Testing
 
 Contributors are encouraged to add Terraform tests when introducing or substantially changing a submodule, so configuration stays aligned with provider behavior before changes merge.
@@ -88,7 +94,7 @@ We recommend you install the following CLI tools:
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.51.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.3.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.8 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.9 |
 
 ## Providers
 
@@ -96,7 +102,7 @@ We recommend you install the following CLI tools:
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.51.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.3.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.8 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.9 |
 
 ## Modules
 
@@ -144,7 +150,7 @@ We recommend you install the following CLI tools:
 | <a name="input_channel"></a> [channel](#input\_channel) | Y-stream specific channel for the cluster version (e.g., 'stable-4.16'). This parameter specifies the upgrade path for the cluster. Cannot be used together with 'version\_channel\_group'. | `string` | `null` | no |
 | <a name="input_cluster_autoscaler_enabled"></a> [cluster\_autoscaler\_enabled](#input\_cluster\_autoscaler\_enabled) | Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available' | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
-| <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
+| <a name="input_compute_machine_type"></a> [compute\_machine\_type](#input\_compute\_machine\_type) | Identifies the instance type used by the default worker machine pool, for example `m5.xlarge`. An explicit value always takes precedence. When null, the root module uses the `aws_node_pool.instance_type` from the `machine_pools` entry with the first lexicographically sorted key; an empty map leaves the value null for the API default. This fallback assumes all declared machine pools use the same instance type. Set this variable explicitly when machine pool instance types differ. Use the `rhcs_machine_types` data source to find the possible values. | `string` | `null` | no |
 | <a name="input_create_account_roles"></a> [create\_account\_roles](#input\_create\_account\_roles) | Create the aws account roles for rosa | `bool` | `false` | no |
 | <a name="input_create_admin_user"></a> [create\_admin\_user](#input\_create\_admin\_user) | To create cluster admin user with default username `cluster-admin` and generated password. It will be ignored if `admin_credentials_username` or `admin_credentials_password` is set. (default: false) | `bool` | `null` | no |
 | <a name="input_create_dns_domain_reservation"></a> [create\_dns\_domain\_reservation](#input\_create\_dns\_domain\_reservation) | Creates reserves a dns domain domain for the cluster. This value will be created by the install step if not pre created via this configuration. | `bool` | `false` | no |

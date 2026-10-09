@@ -10,7 +10,7 @@ terraform {
       version = "= 6.54.0"
     }
     rhcs = {
-      version = "= 1.7.8"
+      version = "= 1.7.9"
       source  = "terraform-redhat/rhcs"
     }
     random = {
