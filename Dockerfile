@@ -21,7 +21,7 @@ RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_V
     rm -rf awscliv2.zip aws/ && \
     aws --version
 # renovate: datasource=github-releases depName=openshift/rosa versioning=semver
-ARG ROSA_VERSION=1.2.65
+ARG ROSA_VERSION=1.2.66
 RUN curl -fsSL "https://mirror.openshift.com/pub/cgw/rosa/${ROSA_VERSION}/rosa-linux.tar.gz" -o rosa-linux.tar.gz && \
     tar -xzf rosa-linux.tar.gz --no-same-owner && mv rosa /usr/local/bin/rosa && \
     rm -f rosa-linux.tar.gz && \
