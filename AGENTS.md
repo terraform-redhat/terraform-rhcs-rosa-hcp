@@ -13,6 +13,7 @@ ROSA HCP only — not [`terraform-rhcs-rosa-classic`](https://github.com/terrafo
 | Submodules | Adding or editing `modules/**` | [`developer-docs/submodules.md`](developer-docs/submodules.md) |
 | Security | Secrets, `sensitive`, outputs | [`developer-docs/security.md`](developer-docs/security.md) |
 | Variables | Adding or changing `variable` blocks | [`developer-docs/variables.md`](developer-docs/variables.md) |
+| Terraform module roles | Plan, implement, or review a module change | [`agents/`](agents/README.md) |
 | Commands and PR checks | Before opening a PR | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 Entrypoints [`CLAUDE.md`](CLAUDE.md) and [`GEMINI.md`](GEMINI.md) point here.
