@@ -1,3 +1,15 @@
+## 1.7.6 (13 Oct, 2026)
+
+FEATURES:
+   * Add  custom ingress routes, no-CNI clusters, Spot interruption queues, and Spot machine pools
+
+ENHANCEMENTS:
+ * Chores
+   * Add reviewers to OWNERS file
+ * Documentation
+   * Clarify provider-module release ordering
+   * Explain provider-module release ordering
+
 ## 1.7.5 (16 Sep, 2026)
 
 FEATURES:
