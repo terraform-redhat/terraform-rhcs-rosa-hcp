@@ -63,12 +63,13 @@ variable "aws_node_pool" {
     additional_security_group_ids   = optional(list(string))
     capacity_reservation_id         = optional(string)
     capacity_reservation_preference = optional(string)
+    ec2_metadata_http_tokens        = optional(string)
     node_drain_grace_period         = optional(number)
     use_spot_instances              = optional(bool)
     max_spot_price                  = optional(number)
   })
   nullable    = false
-  description = "Configures aws settings for the pool."
+  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation."
 
   validation {
     condition = var.aws_node_pool.capacity_reservation_preference == null ? true : contains(
@@ -76,6 +77,14 @@ variable "aws_node_pool" {
       var.aws_node_pool.capacity_reservation_preference
     )
     error_message = "capacity_reservation_preference must be one of: none, open, capacity-reservations-only."
+  }
+
+  validation {
+    condition = var.aws_node_pool.ec2_metadata_http_tokens == null ? true : contains(
+      ["required", "optional"],
+      var.aws_node_pool.ec2_metadata_http_tokens
+    )
+    error_message = "ec2_metadata_http_tokens must be one of: required, optional."
   }
 
   validation {

@@ -14,6 +14,8 @@ mock_provider "rhcs" {
       aws_node_pool = {
         capacity_reservation_preference = "defined_by_provider"
         node_drain_grace_period         = null
+        # Stands in for the API default applied when the module omits the field.
+        ec2_metadata_http_tokens = "required"
       }
     }
   }
@@ -315,5 +317,116 @@ run "spot_instances_disabled_plan" {
   assert {
     condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.use_spot_instances == false
     error_message = "use_spot_instances must preserve false when passed to rhcs_hcp_machine_pool."
+  }
+}
+
+# Test that an invalid ec2_metadata_http_tokens fails validation
+run "invalid_ec2_metadata_http_tokens_fails" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type            = "m5.xlarge"
+      tags                     = {}
+      ec2_metadata_http_tokens = "wrong"
+    }
+  }
+
+  # We expect validation to fail because ec2_metadata_http_tokens
+  # must be one of: required, optional.
+  expect_failures = [
+    var.aws_node_pool,
+  ]
+}
+
+# The module must not force a value: when unset, the API-computed value stands.
+run "ec2_metadata_http_tokens_unset_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.with_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+  }
+
+  assert {
+    condition     = var.aws_node_pool.ec2_metadata_http_tokens == null
+    error_message = "Omitting ec2_metadata_http_tokens must leave the input null so the module sends nothing."
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.ec2_metadata_http_tokens == "required"
+    error_message = "Unset ec2_metadata_http_tokens must take the API-computed value, not a module-forced 'optional'."
+  }
+}
+
+run "ec2_metadata_http_tokens_optional_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type            = "m5.xlarge"
+      tags                     = {}
+      ec2_metadata_http_tokens = "optional"
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.ec2_metadata_http_tokens == "optional"
+    error_message = "Explicit ec2_metadata_http_tokens = 'optional' must be wired through to rhcs_hcp_machine_pool."
+  }
+}
+
+run "ec2_metadata_http_tokens_required_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type            = "m5.xlarge"
+      tags                     = {}
+      ec2_metadata_http_tokens = "required"
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.ec2_metadata_http_tokens == "required"
+    error_message = "Explicit ec2_metadata_http_tokens = 'required' must be wired through to rhcs_hcp_machine_pool."
   }
 }

@@ -21,7 +21,6 @@ module "hcp" {
   create_admin_user          = true
   admin_credentials_username = "admin"
   admin_credentials_password = random_password.password.result
-  ec2_metadata_http_tokens   = "required"
 
   // STS configuration
   create_account_roles  = true

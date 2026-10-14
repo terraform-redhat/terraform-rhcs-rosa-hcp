@@ -66,7 +66,6 @@ module "hcp" {
   create_admin_user                               = true
   admin_credentials_username                      = "admin"
   admin_credentials_password                      = random_password.password.result
-  ec2_metadata_http_tokens                        = "required"
   aws_additional_control_plane_security_group_ids = [aws_security_group.sg1.id, aws_security_group.sg2.id]
 
   // STS configuration
@@ -115,7 +114,7 @@ module "bastion_host" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 6.54.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.8 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.10 |
 
 ## Providers
 

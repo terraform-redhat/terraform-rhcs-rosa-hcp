@@ -37,6 +37,8 @@ mock_provider "rhcs" {
       wait_for_create_complete = null
       channel                  = "stable-4.21"
       channel_group            = "stable"
+      # Stands in for the API default applied when the module omits the field.
+      ec2_metadata_http_tokens = "required"
     }
   }
 
@@ -452,4 +454,80 @@ run "delete_protection_disabled" {
     condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.delete_protection == false
     error_message = "delete_protection must be false when explicitly disabled."
   }
+}
+
+# ec2_metadata_http_tokens passthrough: unset must leave the value to the API, not force 'optional'.
+run "ec2_metadata_http_tokens_unset" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = var.ec2_metadata_http_tokens == null
+    error_message = "ec2_metadata_http_tokens must default to null so the module sends nothing."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.ec2_metadata_http_tokens == "required"
+    error_message = "Unset ec2_metadata_http_tokens must take the API-computed value, not a module-forced 'optional'."
+  }
+}
+
+# ec2_metadata_http_tokens passthrough: explicit optional (IMDS v1 or v2).
+run "ec2_metadata_http_tokens_optional" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    ec2_metadata_http_tokens = "optional"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.ec2_metadata_http_tokens == "optional"
+    error_message = "ec2_metadata_http_tokens must be 'optional' when explicitly set to 'optional'."
+  }
+}
+
+# ec2_metadata_http_tokens passthrough: explicit required (IMDSv2 only).
+run "ec2_metadata_http_tokens_required" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    ec2_metadata_http_tokens = "required"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.ec2_metadata_http_tokens == "required"
+    error_message = "ec2_metadata_http_tokens must be 'required' when explicitly set to 'required'."
+  }
+}
+
+# ec2_metadata_http_tokens enum validation: value outside required/optional.
+run "invalid_ec2_metadata_http_tokens" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    ec2_metadata_http_tokens = "wrong"
+  }
+
+  expect_failures = [
+    var.ec2_metadata_http_tokens,
+  ]
 }
