@@ -453,3 +453,200 @@ run "delete_protection_disabled" {
     error_message = "delete_protection must be false when explicitly disabled."
   }
 }
+
+##############################################################
+# H1 — max wait timeouts (max_hcp_cluster_wait_timeout_in_minutes,
+# max_machinepool_wait_timeout_in_minutes). Both are provider Int64
+# Optional (non-computed) attributes, so the configured value plans
+# deterministically. Covers null/unset and set passthrough across the
+# wait_for_create_complete / wait_for_std_compute_nodes_complete branches.
+##############################################################
+
+# Both timeouts unset: provider defaults (45 / 60) apply; attributes plan as null.
+run "max_wait_timeouts_unset_passthrough" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_hcp_cluster_wait_timeout_in_minutes == null
+    error_message = "max_hcp_cluster_wait_timeout_in_minutes must remain null when unset (provider default of 45 minutes applies)."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_machinepool_wait_timeout_in_minutes == null
+    error_message = "max_machinepool_wait_timeout_in_minutes must remain null when unset (provider default of 60 minutes applies)."
+  }
+}
+
+# Both timeouts set with both waiters at their defaults (true): values wire through.
+run "max_wait_timeouts_set_passthrough" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    max_hcp_cluster_wait_timeout_in_minutes = 90
+    max_machinepool_wait_timeout_in_minutes = 90
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_hcp_cluster_wait_timeout_in_minutes == 90
+    error_message = "max_hcp_cluster_wait_timeout_in_minutes must be wired through to rhcs_cluster_rosa_hcp as 90."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_machinepool_wait_timeout_in_minutes == 90
+    error_message = "max_machinepool_wait_timeout_in_minutes must be wired through to rhcs_cluster_rosa_hcp as 90."
+  }
+}
+
+# wait_for_create_complete=false branch: timeout is still accepted and wired through.
+run "max_wait_timeouts_with_create_waiter_disabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    wait_for_create_complete                = false
+    wait_for_std_compute_nodes_complete     = false
+    max_hcp_cluster_wait_timeout_in_minutes = 90
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_create_complete == false
+    error_message = "wait_for_create_complete must be false in this branch."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_hcp_cluster_wait_timeout_in_minutes == 90
+    error_message = "max_hcp_cluster_wait_timeout_in_minutes must still wire through when wait_for_create_complete is false."
+  }
+}
+
+# wait_for_std_compute_nodes_complete=false while wait_for_create_complete=true:
+# the machine pool timeout is still accepted and wired through.
+run "max_wait_timeouts_with_std_compute_waiter_disabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    wait_for_create_complete                = true
+    wait_for_std_compute_nodes_complete     = false
+    max_machinepool_wait_timeout_in_minutes = 90
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.wait_for_std_compute_nodes_complete == false
+    error_message = "wait_for_std_compute_nodes_complete must be false in this branch."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_machinepool_wait_timeout_in_minutes == 90
+    error_message = "max_machinepool_wait_timeout_in_minutes must still wire through when wait_for_std_compute_nodes_complete is false."
+  }
+}
+
+# Both waiters true with both timeouts set: full passthrough.
+run "max_wait_timeouts_both_waiters_enabled" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    wait_for_create_complete                = true
+    wait_for_std_compute_nodes_complete     = true
+    max_hcp_cluster_wait_timeout_in_minutes = 90
+    max_machinepool_wait_timeout_in_minutes = 90
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_hcp_cluster_wait_timeout_in_minutes == 90
+    error_message = "max_hcp_cluster_wait_timeout_in_minutes must wire through when both waiters are enabled."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.max_machinepool_wait_timeout_in_minutes == 90
+    error_message = "max_machinepool_wait_timeout_in_minutes must wire through when both waiters are enabled."
+  }
+}
+
+##############################################################
+# H4 — audit_log_arn pass-through. Provider StringAttribute (Optional,
+# non-computed): null leaves forwarding disabled, a set ARN enables it,
+# and an empty string disables it on a day-2 update. All three plan
+# deterministically.
+##############################################################
+
+# Null: forwarding disabled; attribute plans as null.
+run "audit_log_arn_null_passthrough" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    audit_log_arn = null
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.audit_log_arn == null
+    error_message = "audit_log_arn must remain null when unset (forwarding disabled)."
+  }
+}
+
+# Set ARN: wires through to enable forwarding.
+run "audit_log_arn_set_passthrough" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    audit_log_arn = "arn:aws:iam::123456789012:role/audit-exporter"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.audit_log_arn == "arn:aws:iam::123456789012:role/audit-exporter"
+    error_message = "audit_log_arn must be wired through to rhcs_cluster_rosa_hcp."
+  }
+}
+
+# Empty string is a meaningful value (day-2 disable): must remain "" and pass validation.
+run "audit_log_arn_empty_string_passthrough" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    audit_log_arn = ""
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.audit_log_arn == ""
+    error_message = "audit_log_arn must preserve an empty string (day-2 disable) when passed to rhcs_cluster_rosa_hcp."
+  }
+}

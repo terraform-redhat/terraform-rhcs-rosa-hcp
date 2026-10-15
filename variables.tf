@@ -185,13 +185,27 @@ variable "tags" {
 variable "wait_for_create_complete" {
   type        = bool
   default     = true
-  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true)"
+  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 45 minutes. (default: true)"
 }
 
 variable "wait_for_std_compute_nodes_complete" {
   type        = bool
   default     = true
   description = "Wait until the initial set of machine pools to be available. The waiter has a timeout of 60 minutes. (default: true)"
+}
+
+variable "max_hcp_cluster_wait_timeout_in_minutes" {
+  type        = number
+  nullable    = true
+  default     = null
+  description = "Maximum duration in minutes to wait for the cluster to become ready. Only applies when wait_for_create_complete is true. When null, the rhcs provider applies its default of 45 minutes."
+}
+
+variable "max_machinepool_wait_timeout_in_minutes" {
+  type        = number
+  nullable    = true
+  default     = null
+  description = "Maximum duration in minutes to wait for the initial machine pools to become available. Only applies when wait_for_std_compute_nodes_complete is true (which requires wait_for_create_complete = true). When null, the rhcs provider applies its default of 60 minutes."
 }
 
 variable "etcd_encryption" {
@@ -240,6 +254,13 @@ variable "spot_termination_queue_url" {
   type        = string
   default     = null
   description = "URL of a dedicated Amazon SQS queue in the cluster's AWS region for Enhanced Spot interruption handling. The queue must be tagged red-hat=true, receive EventBridge Spot interruption and rebalance events, and have an SQS policy granting EventBridge and the NodePoolManagement role access. See the [official Terraform Spot procedure](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_clusters/creating-a-red-hat-openshift-service-on-aws-cluster-with-terraform)."
+}
+
+variable "audit_log_arn" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This module does not create the IAM role. When null, audit log forwarding is left disabled; an empty string disables forwarding on a day-2 update (the provider applies the change in place). Cross-account forwarding is not supported."
 }
 
 ##############################################################
@@ -451,6 +472,11 @@ variable "machine_pools" {
     upgrade_acknowledgements_for = optional(string)
     kubelet_configs              = optional(string)
     ignore_deletion_error        = optional(bool)
+    management = optional(object({
+      max_surge       = optional(string)
+      max_unavailable = optional(string)
+      type            = optional(string)
+    }))
   }))
   default     = {}
   description = "Provides a typed map to add multiple machine pools after cluster creation. Each key is an arbitrary label; each value aligns with the [machine-pool](./modules/machine-pool) submodule (required: name, subnet_id, openshift_version, aws_node_pool). Optional fields match that module's optional inputs; omit autoscaling to use a fixed replica count with autoscaling disabled."

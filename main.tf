@@ -107,15 +107,18 @@ module "rosa_cluster_hcp" {
   ########
   # Flags
   ########
-  wait_for_create_complete            = var.wait_for_create_complete
-  wait_for_std_compute_nodes_complete = var.wait_for_std_compute_nodes_complete
-  disable_waiting_in_destroy          = var.disable_waiting_in_destroy
-  destroy_timeout                     = var.destroy_timeout
-  upgrade_acknowledgements_for        = var.upgrade_acknowledgements_for
-  external_auth_providers_enabled     = var.external_auth_providers_enabled
-  delete_protection                   = var.delete_protection
-  no_cni                              = var.no_cni
-  spot_termination_queue_url          = var.spot_termination_queue_url
+  wait_for_create_complete                = var.wait_for_create_complete
+  wait_for_std_compute_nodes_complete     = var.wait_for_std_compute_nodes_complete
+  max_hcp_cluster_wait_timeout_in_minutes = var.max_hcp_cluster_wait_timeout_in_minutes
+  max_machinepool_wait_timeout_in_minutes = var.max_machinepool_wait_timeout_in_minutes
+  disable_waiting_in_destroy              = var.disable_waiting_in_destroy
+  destroy_timeout                         = var.destroy_timeout
+  upgrade_acknowledgements_for            = var.upgrade_acknowledgements_for
+  external_auth_providers_enabled         = var.external_auth_providers_enabled
+  delete_protection                       = var.delete_protection
+  no_cni                                  = var.no_cni
+  spot_termination_queue_url              = var.spot_termination_queue_url
+  audit_log_arn                           = var.audit_log_arn
 
   #######################
   # Default Machine Pool
@@ -177,6 +180,7 @@ module "rhcs_hcp_machine_pool" {
   subnet_id                    = each.value.subnet_id
   kubelet_configs              = try(each.value.kubelet_configs, null)
   ignore_deletion_error        = try(each.value.ignore_deletion_error, var.ignore_machine_pools_deletion_error)
+  management                   = try(each.value.management, null)
 }
 
 ###########################################

@@ -27,6 +27,14 @@ module "hcp" {
   create_oidc           = true
   create_operator_roles = true
   operator_role_prefix  = local.operator_role_prefix
+
+  // Optional CloudWatch audit log forwarding. Pass the ARN of an EXISTING
+  // user-created IAM role whose trust policy federates the cluster OIDC
+  // provider for the service account
+  // system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter.
+  // This example does not create that role. Leave null to keep forwarding
+  // disabled; set an empty string to disable it on a day-2 update.
+  audit_log_arn = var.audit_log_arn
 }
 
 ############################
