@@ -430,3 +430,124 @@ run "ec2_metadata_http_tokens_required_plan" {
     error_message = "Explicit ec2_metadata_http_tokens = 'required' must be wired through to rhcs_hcp_machine_pool."
   }
 }
+
+##############################################################
+# H2 — management (rolling upgrade). The provider `management` block is
+# Optional+Computed (UseStateForUnknown), so under an override mock the
+# resource attribute may plan as "known after apply". These runs use the
+# no_override provider so the configured values appear in the plan, and
+# assert on the input variable for the null case.
+##############################################################
+
+# management omitted (null): the input variable is null and the plan succeeds;
+# the provider/OCM defaults apply and existing pools are unaffected.
+run "management_null_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+  }
+
+  assert {
+    condition     = var.management == null
+    error_message = "management must be null when omitted (provider/OCM defaults apply)."
+  }
+}
+
+# management fully specified: all sub-values wire through to the resource.
+run "management_set_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+
+    management = {
+      max_surge       = "2"
+      max_unavailable = "10%"
+      type            = "Replace"
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.management.max_surge == "2"
+    error_message = "management.max_surge must be wired through to rhcs_hcp_machine_pool."
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.management.max_unavailable == "10%"
+    error_message = "management.max_unavailable must be wired through to rhcs_hcp_machine_pool."
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.management.type == "Replace"
+    error_message = "management.type must be wired through to rhcs_hcp_machine_pool."
+  }
+}
+
+# management partial: only max_surge set; the others are omitted (null).
+run "management_partial_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.15.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+
+    management = {
+      max_surge = "1"
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.management.max_surge == "1"
+    error_message = "management.max_surge must wire through when only it is set."
+  }
+
+  # The provider `management` block is Optional+Computed, so sub-attributes
+  # omitted from a partial object plan as "known after apply" rather than
+  # null. Assert on the input variable to prove the partial object is
+  # accepted with the other fields unset.
+  assert {
+    condition     = var.management.max_unavailable == null
+    error_message = "management.max_unavailable must be unset in a partial management object."
+  }
+
+  assert {
+    condition     = var.management.type == null
+    error_message = "management.type must be unset in a partial management object."
+  }
+}

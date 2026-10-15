@@ -16,6 +16,7 @@ resource "rhcs_hcp_machine_pool" "machine_pool" {
   tuning_configs               = var.tuning_configs
   kubelet_configs              = var.kubelet_configs
   ignore_deletion_error        = var.ignore_deletion_error
+  management                   = var.management
 
   lifecycle {
     ignore_changes = [
