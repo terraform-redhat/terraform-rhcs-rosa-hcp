@@ -4,7 +4,7 @@
 data "aws_partition" "current" {}
 
 locals {
-  operator_roles_properties = [
+  base_operator_roles_properties = [
     {
       operator_name      = "installer-cloud-credentials"
       operator_namespace = "openshift-image-registry"
@@ -62,9 +62,20 @@ locals {
       service_accounts   = ["system:serviceaccount:kube-system:kms-provider"]
     },
   ]
-  operator_roles_count = length(local.operator_roles_properties)
-  operator_role_prefix = var.operator_role_prefix
-  path                 = coalesce(var.path, "/")
+  # Appended last so the indexes of the base roles (used by the shared VPC attachments) never change.
+  karpenter_operator_role_properties = var.create_karpenter_role ? [
+    {
+      operator_name      = "karpenter"
+      operator_namespace = "kube-system"
+      role_name          = "kube-system-karpenter"
+      policy_details     = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/ROSAKarpenterControllerPolicy"
+      service_accounts   = ["system:serviceaccount:kube-system:karpenter"]
+    },
+  ] : []
+  operator_roles_properties = concat(local.base_operator_roles_properties, local.karpenter_operator_role_properties)
+  operator_roles_count      = length(local.operator_roles_properties)
+  operator_role_prefix      = var.operator_role_prefix
+  path                      = coalesce(var.path, "/")
 
   route53_shared_role_arn = var.shared_vpc_roles["route53"]
   route53_splits          = split("/", local.route53_shared_role_arn)
