@@ -8,6 +8,10 @@ This example includes:
 - A ROSA cluster with public access.
 - All AWS resources (IAM and networking) that are created as part of the ROSA cluster module execution.
 
+### Optional: CloudWatch audit log forwarding
+
+To forward cluster audit logs to AWS CloudWatch, set `audit_log_arn` to the ARN of an existing, user-created IAM role. This module does not create that role. The role's trust policy must federate the cluster OIDC provider for the service account `system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter`. Leave the value null to keep forwarding disabled; set an empty string to disable it on a day-2 update. Cross-account forwarding is not supported.
+
 ## Example Usage
 
 ```
@@ -31,6 +35,12 @@ module "hcp" {
   create_oidc           = true
   create_operator_roles = true
   operator_role_prefix  = "my-cluster-operator"
+
+  // Optional: forward cluster audit logs to AWS CloudWatch using an EXISTING
+  // user-created IAM role (this module does not create it). The role's trust
+  // policy must federate the cluster OIDC provider for the service account
+  // system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter.
+  // audit_log_arn = "arn:aws:iam::123456789012:role/my-cluster-audit-exporter"
 }
 
 ############################
@@ -72,7 +82,7 @@ module "vpc" {
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 6.54.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.8 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.9 |
 
 ## Providers
 
@@ -98,6 +108,7 @@ module "vpc" {
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_audit_log_arn"></a> [audit\_log\_arn](#input\_audit\_log\_arn) | Optional ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This example does not create the IAM role. Leave null to keep audit log forwarding disabled. | `string` | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
 | <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | `"4.19.3"` | no |
 

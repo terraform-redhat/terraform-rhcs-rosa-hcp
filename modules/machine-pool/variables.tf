@@ -101,6 +101,16 @@ variable "auto_repair" {
   description = "Configures auto repair option for the pool."
 }
 
+variable "management" {
+  type = object({
+    max_surge       = optional(string)
+    max_unavailable = optional(string)
+    type            = optional(string)
+  })
+  default     = null
+  description = "Rolling-upgrade management for the machine pool. max_surge/max_unavailable accept an integer or percentage string (e.g. \"1\" or \"25%\"); type is the upgrade strategy (provider currently supports \"Replace\"). When null, the provider/OCM defaults apply and existing pools are unaffected."
+}
+
 variable "openshift_version" {
   type        = string
   description = "Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled."
