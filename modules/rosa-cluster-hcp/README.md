@@ -39,14 +39,14 @@ module "rosa_cluster_hcp" {
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.8 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.10 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.8 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.10 |
 
 ## Modules
 
@@ -97,7 +97,7 @@ No modules.
 | <a name="input_destroy_timeout"></a> [destroy\_timeout](#input\_destroy\_timeout) | Maximum duration in minutes to allow for destroying resources. (Default: 60 minutes) | `number` | `null` | no |
 | <a name="input_disable_waiting_in_destroy"></a> [disable\_waiting\_in\_destroy](#input\_disable\_waiting\_in\_destroy) | Disable addressing cluster state in the destroy resource. Default value is false, and so a `destroy` will wait for the cluster to be deleted. | `bool` | `null` | no |
 | <a name="input_domain_prefix"></a> [domain\_prefix](#input\_domain\_prefix) | Creates a domain\_prefix for your ROSA cluster. Defaults to a random string if not set | `string` | `null` | no |
-| <a name="input_ec2_metadata_http_tokens"></a> [ec2\_metadata\_http\_tokens](#input\_ec2\_metadata\_http\_tokens) | Should cluster nodes use both v1 and v2 endpoints or just v2 endpoint of EC2 Instance Metadata Service (IMDS). Available since OpenShift 4.11.0. | `string` | `"optional"` | no |
+| <a name="input_ec2_metadata_http_tokens"></a> [ec2\_metadata\_http\_tokens](#input\_ec2\_metadata\_http\_tokens) | Determines which EC2 Instance Metadata Service (IMDS) mode the cluster nodes use. Set to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new clusters. This value applies only to the initial machine pool created with the cluster. Configure additional machine pools separately. Available since OpenShift 4.11.0. Cannot be changed after creation. | `string` | `null` | no |
 | <a name="input_etcd_encryption"></a> [etcd\_encryption](#input\_etcd\_encryption) | Add etcd encryption. By default etcd data is encrypted at rest. This option configures etcd encryption on top of existing storage encryption. | `bool` | `null` | no |
 | <a name="input_etcd_kms_key_arn"></a> [etcd\_kms\_key\_arn](#input\_etcd\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
 | <a name="input_external_auth_providers_enabled"></a> [external\_auth\_providers\_enabled](#input\_external\_auth\_providers\_enabled) | Enable external auth providers on the cluster. | `bool` | `null` | no |

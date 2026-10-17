@@ -168,7 +168,6 @@ module "rosa_cluster_hcp" {
   create_admin_user          = true
   admin_credentials_username = "admin"
   admin_credentials_password = random_password.password.result
-  ec2_metadata_http_tokens   = "required"
   aws_billing_account_id     = var.aws_billing_account_id
 
   // STS configuration

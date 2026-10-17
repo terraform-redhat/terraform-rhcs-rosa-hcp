@@ -105,8 +105,13 @@ variable "admin_credentials_password" {
 
 variable "ec2_metadata_http_tokens" {
   type        = string
-  default     = "optional"
-  description = "Should cluster nodes use both v1 and v2 endpoints or just v2 endpoint of EC2 Instance Metadata Service (IMDS). Available since OpenShift 4.11.0."
+  default     = null
+  description = "Determines which EC2 Instance Metadata Service (IMDS) mode the cluster nodes use. Set to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new clusters. This value applies only to the initial machine pool created with the cluster. Configure additional machine pools separately. Available since OpenShift 4.11.0. Cannot be changed after creation."
+
+  validation {
+    condition     = var.ec2_metadata_http_tokens == null ? true : contains(["required", "optional"], var.ec2_metadata_http_tokens)
+    error_message = "ec2_metadata_http_tokens must be one of: required, optional."
+  }
 }
 
 
@@ -430,6 +435,7 @@ variable "machine_pools" {
       additional_security_group_ids   = optional(list(string))
       capacity_reservation_id         = optional(string)
       capacity_reservation_preference = optional(string)
+      ec2_metadata_http_tokens        = optional(string)
       node_drain_grace_period         = optional(number)
       use_spot_instances              = optional(bool)
       max_spot_price                  = optional(number)
