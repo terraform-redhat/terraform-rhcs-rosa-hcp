@@ -32,7 +32,10 @@ module "hcp" {
   // provider for the service account
   // system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter.
   // This example does not create that role. Leave null to keep forwarding
-  // disabled; set an empty string to disable it on a day-2 update.
+  // disabled on create; set explicit null to disable forwarding on an
+  // already-enabled cluster. Avoid an empty string to disable: with RHCS
+  // provider 1.7.10 a day-2 "" change was observed to fail with
+  // "Provider produced inconsistent result after apply".
   audit_log_arn = var.audit_log_arn
 }
 

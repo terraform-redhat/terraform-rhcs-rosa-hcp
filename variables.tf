@@ -265,7 +265,7 @@ variable "audit_log_arn" {
   type        = string
   nullable    = true
   default     = null
-  description = "ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This module does not create the IAM role. When null, audit log forwarding is left disabled; an empty string disables forwarding on a day-2 update (the provider applies the change in place). Cross-account forwarding is not supported."
+  description = "ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This module does not create the IAM role. The default `null` leaves forwarding disabled on create. To disable forwarding on an already-enabled cluster, set this to explicit `null`. Omitting the variable after it was set falls back to the default `null` and plans removal of the existing ARN (not a remote-preserving no-op). An empty string `\"\"` is passed through unchanged (the module does not normalize it); with RHCS provider 1.7.10 a day-2 `\"\"` change was observed to fail with `Provider produced inconsistent result after apply`, so prefer explicit `null` to disable. Cross-account forwarding is not supported."
 }
 
 ##############################################################

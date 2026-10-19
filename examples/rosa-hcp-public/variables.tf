@@ -19,5 +19,5 @@ variable "cluster_name" {
 variable "audit_log_arn" {
   type        = string
   default     = null
-  description = "Optional ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This example does not create the IAM role. Leave null to keep audit log forwarding disabled."
+  description = "Optional ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This example does not create the IAM role. Leave `null` to keep forwarding disabled on create; set explicit `null` to disable forwarding on an already-enabled cluster."
 }
