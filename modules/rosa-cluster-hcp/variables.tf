@@ -256,13 +256,27 @@ variable "tags" {
 variable "wait_for_create_complete" {
   type        = bool
   default     = true
-  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 20 minutes. (default: true)"
+  description = "Wait until the cluster is either in a ready state or in an error state. The waiter has a timeout of 45 minutes. (default: true)"
 }
 
 variable "wait_for_std_compute_nodes_complete" {
   type        = bool
   default     = true
   description = "Wait until the cluster standard compute nodes are available. The waiter has a timeout of 60 minutes. (default: true)"
+}
+
+variable "max_hcp_cluster_wait_timeout_in_minutes" {
+  type        = number
+  nullable    = true
+  default     = null
+  description = "Maximum duration in minutes to wait for the cluster to become ready. Only applies when wait_for_create_complete is true. When null, the rhcs provider applies its default of 45 minutes."
+}
+
+variable "max_machinepool_wait_timeout_in_minutes" {
+  type        = number
+  nullable    = true
+  default     = null
+  description = "Maximum duration in minutes to wait for the initial machine pools to become available. Only applies when wait_for_std_compute_nodes_complete is true (which requires wait_for_create_complete = true). When null, the rhcs provider applies its default of 60 minutes."
 }
 
 variable "etcd_encryption" {
@@ -311,6 +325,13 @@ variable "spot_termination_queue_url" {
   type        = string
   default     = null
   description = "URL of a dedicated Amazon SQS queue in the cluster's AWS region for Enhanced Spot interruption handling. The queue must be tagged red-hat=true, receive EventBridge Spot interruption and rebalance events, and have an SQS policy granting EventBridge and the NodePoolManagement role access. See the [official Terraform Spot procedure](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_clusters/creating-a-red-hat-openshift-service-on-aws-cluster-with-terraform)."
+}
+
+variable "audit_log_arn" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = "ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This module does not create the IAM role. The default `null` leaves forwarding disabled on create. To disable forwarding on an already-enabled cluster, set this to explicit `null`. Omitting the variable after it was set falls back to the default `null` and plans removal of the existing ARN (not a remote-preserving no-op). An empty string `\"\"` is passed through unchanged (the module does not normalize it); with RHCS provider 1.7.10 a day-2 `\"\"` change was observed to fail with `Provider produced inconsistent result after apply`, so prefer explicit `null` to disable. Cross-account forwarding is not supported."
 }
 
 ##############################################################

@@ -15,3 +15,9 @@ variable "cluster_name" {
   type        = string
   description = "Name of the cluster. After the creation of the resource, it is not possible to update the attribute value."
 }
+
+variable "audit_log_arn" {
+  type        = string
+  default     = null
+  description = "Optional ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This example does not create the IAM role. Leave `null` to keep forwarding disabled on create; set explicit `null` to disable forwarding on an already-enabled cluster."
+}

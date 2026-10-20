@@ -98,6 +98,7 @@ module "vpc" {
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_audit_log_arn"></a> [audit\_log\_arn](#input\_audit\_log\_arn) | Optional ARN of an existing, user-created IAM role that forwards cluster audit logs to AWS CloudWatch. The role's trust policy must federate the cluster OIDC provider for the service account system:serviceaccount:openshift-config-managed:cloudwatch-audit-exporter. This example does not create the IAM role. Leave `null` to keep forwarding disabled on create; set explicit `null` to disable forwarding on an already-enabled cluster. | `string` | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the cluster. After the creation of the resource, it is not possible to update the attribute value. | `string` | n/a | yes |
 | <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | `"4.19.3"` | no |
 
