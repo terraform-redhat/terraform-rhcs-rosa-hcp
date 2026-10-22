@@ -728,3 +728,66 @@ run "audit_log_arn_empty_string_passthrough" {
     error_message = "audit_log_arn must preserve an empty string (day-2 disable) when passed to rhcs_cluster_rosa_hcp."
   }
 }
+
+# auto_node: mode defaults to "enabled" when only role_arn is supplied.
+run "valid_plan_with_auto_node" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      role_arn = "arn:aws:iam::123456789012:role/test-karpenter"
+    }
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node.mode == "enabled"
+    error_message = "The cluster resource auto_node.mode must default to 'enabled'."
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node.role_arn == "arn:aws:iam::123456789012:role/test-karpenter"
+    error_message = "The cluster resource auto_node.role_arn must be the supplied role ARN."
+  }
+}
+
+# auto_node: omitted by default, so the cluster resource must not configure it.
+run "valid_plan_without_auto_node" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node == null
+    error_message = "The cluster resource auto_node must be null when auto_node is not set."
+  }
+}
+
+# auto_node: an explicitly supplied mode is passed through.
+run "valid_plan_with_auto_node_explicit_mode" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    auto_node = {
+      mode     = "enabled"
+      role_arn = "arn:aws:iam::123456789012:role/test-karpenter"
+    }
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node.mode == "enabled"
+    error_message = "The cluster resource auto_node.mode must be the supplied mode."
+  }
+}
