@@ -572,6 +572,24 @@ variable "image_mirrors" {
   description = "Provides a generic approach to add multiple image mirrors after the creation of the cluster. This variable allows users to specify configurations for multiple image mirrors in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables used, refer to the [image-mirrors sub-module](./modules/image-mirrors). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
 }
 
+variable "notification_contacts" {
+  type        = set(string)
+  default     = null
+  description = "Set of OCM account usernames to receive cluster notifications. When non-null, creates an authoritative rhcs_cluster_notification_contacts resource. When null (default), notification contacts are not managed. Requires terraform-redhat/rhcs provider >= 1.7.10."
+
+  validation {
+    condition     = var.notification_contacts == null ? true : length(var.notification_contacts) > 0
+    error_message = "notification_contacts must be null (disabled) or contain at least one contact."
+  }
+
+  validation {
+    condition = var.notification_contacts == null ? true : alltrue([
+      for c in var.notification_contacts : trimspace(c) != ""
+    ])
+    error_message = "Each notification contact must be a non-empty string (not blank or whitespace)."
+  }
+}
+
 variable "ignore_machine_pools_deletion_error" {
   type        = bool
   default     = false

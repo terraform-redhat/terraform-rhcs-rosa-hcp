@@ -38,6 +38,7 @@ Sub-modules included in this module:
 - log-forwarder: Manages [`rhcs_log_forwarder`](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/log_forwarder) resources to forward cluster logs to Amazon S3 or Amazon CloudWatch.
 - image-mirrors: Manages the configuration of image digest mirror sets for ROSA HCP clusters, enabling container image mirroring to redirect image pulls from source registries to mirror registries for zero-egress networking and improved performance.
 - machine-pool: Facilitates the management of machine pools within the ROSA HCP cluster, enabling users to scale resources and adjust specifications based on workload demands.
+- notification-contacts: Manages [`rhcs_cluster_notification_contacts`](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/cluster_notification_contacts) resources to configure OCM account usernames that receive cluster notifications for a cluster's subscription.
 - oidc-config-and-provider: Manages the configuration of OpenID Connect (OIDC) hosted files and providers for ROSA HCP clusters, enabling secure authentication and access control mechanisms for operator roles.
 - operator-roles: Oversees the management of roles assigned to operators within the ROSA HCP cluster, enabling to perform required actions with appropriate permissions on the lifecyle of a cluster.
 - rosa-cluster-hcp: Handles the core configuration and provisioning of the ROSA HCP cluster, including cluster networking, security settings and other essential components.
@@ -110,6 +111,7 @@ We recommend you install the following CLI tools:
 | <a name="module_rhcs_hcp_kubelet_configs"></a> [rhcs\_hcp\_kubelet\_configs](#module\_rhcs\_hcp\_kubelet\_configs) | ./modules/kubelet-configs | n/a |
 | <a name="module_rhcs_hcp_log_forwarder"></a> [rhcs\_hcp\_log\_forwarder](#module\_rhcs\_hcp\_log\_forwarder) | ./modules/log-forwarder | n/a |
 | <a name="module_rhcs_hcp_machine_pool"></a> [rhcs\_hcp\_machine\_pool](#module\_rhcs\_hcp\_machine\_pool) | ./modules/machine-pool | n/a |
+| <a name="module_rhcs_hcp_notification_contacts"></a> [rhcs\_hcp\_notification\_contacts](#module\_rhcs\_hcp\_notification\_contacts) | ./modules/notification-contacts | n/a |
 | <a name="module_rhcs_identity_provider"></a> [rhcs\_identity\_provider](#module\_rhcs\_identity\_provider) | ./modules/idp | n/a |
 | <a name="module_rosa_cluster_hcp"></a> [rosa\_cluster\_hcp](#module\_rosa\_cluster\_hcp) | ./modules/rosa-cluster-hcp | n/a |
 
@@ -177,6 +179,7 @@ We recommend you install the following CLI tools:
 | <a name="input_max_machinepool_wait_timeout_in_minutes"></a> [max\_machinepool\_wait\_timeout\_in\_minutes](#input\_max\_machinepool\_wait\_timeout\_in\_minutes) | Maximum duration in minutes to wait for the initial machine pools to become available. Only applies when wait\_for\_std\_compute\_nodes\_complete is true (which requires wait\_for\_create\_complete = true). When null, the rhcs provider applies its default of 60 minutes. | `number` | `null` | no |
 | <a name="input_no_cni"></a> [no\_cni](#input\_no\_cni) | Disable CNI creation to let users bring their own CNI. Set wait\_for\_std\_compute\_nodes\_complete to false when enabled. This value cannot be changed after cluster creation. | `bool` | `false` | no |
 | <a name="input_no_proxy"></a> [no\_proxy](#input\_no\_proxy) | A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. | `string` | `null` | no |
+| <a name="input_notification_contacts"></a> [notification\_contacts](#input\_notification\_contacts) | Set of OCM account usernames to receive cluster notifications. When non-null, creates an authoritative rhcs\_cluster\_notification\_contacts resource. When null (default), notification contacts are not managed. Requires terraform-redhat/rhcs provider >= 1.7.10. | `set(string)` | `null` | no |
 | <a name="input_oidc_config_id"></a> [oidc\_config\_id](#input\_oidc\_config\_id) | The unique identifier associated with users authenticated through OpenID Connect (OIDC) within the ROSA cluster. If create\_oidc is false this attribute is required. | `string` | `null` | no |
 | <a name="input_oidc_endpoint_url"></a> [oidc\_endpoint\_url](#input\_oidc\_endpoint\_url) | Registered OIDC configuration issuer URL, added as the trusted relationship to the operator roles. Valid only when create\_oidc is false. | `string` | `null` | no |
 | <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | Desired version of OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | n/a | yes |

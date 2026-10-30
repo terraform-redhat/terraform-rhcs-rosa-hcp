@@ -270,6 +270,17 @@ module "rhcs_hcp_log_forwarder" {
 }
 
 ######################################
+# Notification Contacts
+######################################
+module "rhcs_hcp_notification_contacts" {
+  source = "./modules/notification-contacts"
+  count  = var.notification_contacts != null ? 1 : 0
+
+  cluster_id = module.rosa_cluster_hcp.cluster_id
+  contacts   = var.notification_contacts
+}
+
+######################################
 # Additional control plane sec groups
 ######################################
 module "rhcs_hcp_additional_controlplane_sg" {
