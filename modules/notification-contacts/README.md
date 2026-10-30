@@ -4,6 +4,8 @@
 
 This Terraform sub-module manages notification contacts for ROSA HCP clusters. It enables you to configure the set of OCM account usernames that receive cluster notifications for a given cluster's subscription. This resource is authoritative: Terraform manages the full set of notification contacts.
 
+> **Warning:** Destroying this resource (for example, by setting `notification_contacts = null` in the root module) removes **all** notification contacts from the cluster's subscription — including contacts added outside Terraform.
+
 ## Example Usage
 
 ```

@@ -575,7 +575,7 @@ variable "image_mirrors" {
 variable "notification_contacts" {
   type        = set(string)
   default     = null
-  description = "Set of OCM account usernames to receive cluster notifications. When non-null, creates an authoritative rhcs_cluster_notification_contacts resource. When null (default), notification contacts are not managed. Requires terraform-redhat/rhcs provider >= 1.7.10."
+  description = "Set of OCM account usernames to receive cluster notifications. When non-null, creates an authoritative rhcs_cluster_notification_contacts resource. When null (default), notification contacts are not managed. WARNING: Changing from a non-null value to null destroys the authoritative resource, removing ALL notification contacts from the cluster subscription — including contacts added outside Terraform. Requires terraform-redhat/rhcs provider >= 1.7.10."
 
   validation {
     condition     = var.notification_contacts == null ? true : length(var.notification_contacts) > 0

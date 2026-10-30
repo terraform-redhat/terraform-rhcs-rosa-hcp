@@ -107,7 +107,7 @@ module "rosa_cluster_hcp" {
   ########
   # Flags
   ########
-  wait_for_create_complete                = var.wait_for_create_complete
+  wait_for_create_complete                = var.wait_for_create_complete || var.notification_contacts != null
   wait_for_std_compute_nodes_complete     = var.wait_for_std_compute_nodes_complete
   max_hcp_cluster_wait_timeout_in_minutes = var.max_hcp_cluster_wait_timeout_in_minutes
   max_machinepool_wait_timeout_in_minutes = var.max_machinepool_wait_timeout_in_minutes
