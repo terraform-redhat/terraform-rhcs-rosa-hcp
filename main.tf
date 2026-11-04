@@ -107,7 +107,7 @@ module "rosa_cluster_hcp" {
   ########
   # Flags
   ########
-  wait_for_create_complete                = var.wait_for_create_complete
+  wait_for_create_complete                = var.wait_for_create_complete || var.notification_contacts != null
   wait_for_std_compute_nodes_complete     = var.wait_for_std_compute_nodes_complete
   max_hcp_cluster_wait_timeout_in_minutes = var.max_hcp_cluster_wait_timeout_in_minutes
   max_machinepool_wait_timeout_in_minutes = var.max_machinepool_wait_timeout_in_minutes
@@ -267,6 +267,17 @@ module "rhcs_hcp_log_forwarder" {
   cloudwatch   = try(each.value.cloudwatch, null)
   applications = try(each.value.applications, null)
   groups       = try(each.value.groups, null)
+}
+
+######################################
+# Notification Contacts
+######################################
+module "rhcs_hcp_notification_contacts" {
+  source = "./modules/notification-contacts"
+  count  = var.notification_contacts != null ? 1 : 0
+
+  cluster_id = module.rosa_cluster_hcp.cluster_id
+  contacts   = var.notification_contacts
 }
 
 ######################################
