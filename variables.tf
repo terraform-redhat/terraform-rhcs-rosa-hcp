@@ -178,7 +178,7 @@ variable "properties" {
 }
 
 variable "tags" {
-  description = "Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute."
+  description = "Apply user defined tags to all cluster resources created in AWS. Tags can be updated after creation when the cluster is on OpenShift 4.20.0 or later; on earlier versions they cannot be changed after the cluster is created. Machine pools inherit these tags unless the machine pool overrides the same key. In the root module, these tags are also applied to the account roles, operator roles, and OIDC resources the module creates."
   type        = map(string)
   default     = null
 }

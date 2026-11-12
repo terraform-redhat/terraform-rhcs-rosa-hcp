@@ -551,3 +551,65 @@ run "management_partial_plan" {
     error_message = "management.type must be unset in a partial management object."
   }
 }
+
+# Day-2 tag edits (OpenShift 4.20.0+, rhcs >= 1.7.14): the module must pass
+# aws_node_pool.tags changes through rather than ignore them. Mocks skip provider
+# plan modifiers, so these runs prove wiring only, not in-place update versus replacement.
+run "aws_node_pool_tags_create" {
+  command = apply
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        owner = "team-a"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == tomap({ owner = "team-a" })
+    error_message = "aws_node_pool.tags must be wired through to rhcs_hcp_machine_pool on create."
+  }
+}
+
+run "aws_node_pool_tags_day2_change_plans_new_value" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        owner       = "team-b"
+        cost-center = "1234"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == tomap({ owner = "team-b", cost-center = "1234" })
+    error_message = "A day-2 aws_node_pool.tags change must reach rhcs_hcp_machine_pool; the module must not ignore tag changes."
+  }
+}

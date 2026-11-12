@@ -69,7 +69,7 @@ variable "aws_node_pool" {
     max_spot_price                  = optional(number)
   })
   nullable    = false
-  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation."
+  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation. `tags` can be updated after creation when the cluster is on OpenShift 4.20.0 or later; cluster tags are inherited unless a pool tag overrides the same key, and removing an overriding pool tag restores the inherited cluster value."
 
   validation {
     condition = var.aws_node_pool.capacity_reservation_preference == null ? true : contains(
