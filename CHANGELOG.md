@@ -1,3 +1,17 @@
+## 1.7.7 (12 Nov, 2026)
+
+FEATURES:
+   * Add notification contacts submodule and root wiring
+   * Expose HCP wait timeouts, pool management and audit log ARN
+
+ENHANCEMENTS:
+ * Bug fixes
+   * Address review findings for notification contacts
+   * Omit ec2_metadata_http_tokens so the API default applies
+ * Documentation
+   * Clarify audit log ARN disable behavior
+   * Add Terraform module agents
+
 ## 1.7.6 (13 Oct, 2026)
 
 FEATURES:
