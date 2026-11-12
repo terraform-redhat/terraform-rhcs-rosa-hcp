@@ -178,7 +178,7 @@ variable "properties" {
 }
 
 variable "tags" {
-  description = "Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute."
+  description = "Apply user defined tags to all cluster resources created in AWS. Tags can be updated after creation when the cluster is on OpenShift 4.20.0 or later; on earlier versions they cannot be changed after the cluster is created. When tags are set, including to an empty map, Terraform manages the complete set of customer tags: tags removed from the configuration, or added outside Terraform, are removed from AWS. When tags are null (the default), existing cluster tags are left unmanaged, except that on OpenShift 4.20.0 or later, changing tags from a non-null map to null removes the previously managed tags from AWS once; after that, cluster tags are left unmanaged. Machine pools inherit these tags unless the machine pool overrides the same key. A pool tag with the same key and value as a cluster tag is treated as inherited, not stored as an override, so a later change to that cluster tag, including one made outside Terraform, also changes the pool's value. In the root module, these tags are also applied to the account roles, operator roles, and OIDC resources the module creates. The null behavior above applies only to cluster tags. The module merges these tags with fixed tags of its own on the account roles, operator roles, and, for unmanaged OIDC, the S3 bucket, secret, and objects; the OIDC provider receives only these tags, so it has no module-set tags when tags is null."
   type        = map(string)
   default     = null
 }
@@ -485,7 +485,7 @@ variable "machine_pools" {
     }))
   }))
   default     = {}
-  description = "Provides a typed map to add multiple machine pools after cluster creation. Each key is an arbitrary label; each value aligns with the [machine-pool](./modules/machine-pool) submodule (required: name, subnet_id, openshift_version, aws_node_pool). Optional fields match that module's optional inputs; omit autoscaling to use a fixed replica count with autoscaling disabled."
+  description = "Provides a typed map to add multiple machine pools after cluster creation. Each key is an arbitrary label; each value aligns with the [machine-pool](./modules/machine-pool) submodule (required: name, subnet_id, openshift_version, aws_node_pool). Optional fields match that module's optional inputs; omit autoscaling to use a fixed replica count with autoscaling disabled. `aws_node_pool.tags` can be updated after creation when the cluster is on OpenShift 4.20.0 or later; a pool tag overrides the cluster tag with the same key. A pool tag with the same key and value as a cluster tag is treated as inherited, not stored as an override, so a later change to that cluster tag, including one made outside Terraform, also changes the pool's value."
 }
 
 variable "identity_providers" {

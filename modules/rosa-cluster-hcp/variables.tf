@@ -244,7 +244,7 @@ variable "properties" {
 }
 
 variable "tags" {
-  description = "Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute."
+  description = "Apply user defined tags to all cluster resources created in AWS. Tags can be updated after creation when the cluster is on OpenShift 4.20.0 or later; on earlier versions they cannot be changed after the cluster is created. When tags are set, including to an empty map, Terraform manages the complete set of customer tags: tags removed from the configuration, or added outside Terraform, are removed from AWS. When tags are null (the default), existing cluster tags are left unmanaged, except that on OpenShift 4.20.0 or later, changing tags from a non-null map to null removes the previously managed tags from AWS once; after that, cluster tags are left unmanaged. Machine pools inherit these tags unless the machine pool overrides the same key. A pool tag with the same key and value as a cluster tag is treated as inherited, not stored as an override, so a later change to that cluster tag, including one made outside Terraform, also changes the pool's value."
   type        = map(string)
   default     = null
 }
