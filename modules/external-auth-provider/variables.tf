@@ -94,9 +94,11 @@ variable "claim_validation_rule" {
   type        = list(string)
   default     = null
 
+  # (?s) lets the required value span newlines, matching the provider's
+  # strings.SplitN(rule, ":", 2) + TrimSpace check rather than tightening it.
   validation {
-    condition = alltrue([
-      for rule in coalesce(var.claim_validation_rule, []) : can(regex("^(?:[^:]*[^:\\s][^:]*):(?:.*\\S.*)$", rule))
+    condition = var.claim_validation_rule == null ? true : alltrue([
+      for rule in var.claim_validation_rule : can(regex("^(?s:[^:]*[^:\\s][^:]*:.*\\S.*)$", rule))
     ])
     error_message = "Each claim_validation_rule value must follow claim:required_value with both parts non-empty."
   }
@@ -143,7 +145,7 @@ variable "console_extra_scopes" {
 
 // Optional
 variable "create_external_auth_provider" {
-  description = "Create the external authentication provider. Creating a provider that already exists fails, because the API returns a conflict. To let Terraform adopt an existing provider, keep this true and run terraform import <module address>.rhcs_external_auth_provider.this[0] <cluster_id>,<name>. To leave an existing provider unmanaged, set this to false; Terraform then creates nothing. Setting this to false for a provider that is already in state destroys that provider. (default: true)"
+  description = "Create the external authentication provider. Creating a provider that already exists fails, because the API returns a conflict. To let Terraform adopt an existing provider, keep this true and run terraform import '<module address>.rhcs_external_auth_provider.this[0]' <cluster_id>,<name> (quote the address: [0] is a shell glob). To leave an existing provider unmanaged, set this to false; Terraform then creates nothing. Setting this to false for a provider that is already in state destroys that provider. (default: true)"
   type        = bool
   default     = true
 }

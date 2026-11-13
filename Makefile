@@ -124,9 +124,18 @@ lint:
 		--disable-rule=terraform_unused_declarations \
 		--disable-rule=terraform_unused_required_providers
 
+# Runs the root module's tests/ suite first, then every modules/*/tests/ suite.
+# terraform test needs Terraform >= 1.8 (the suites use issensitive()); see CONTRIBUTING.md.
 .PHONY: unit-tests
 unit-tests:
 	@set -e; \
+	if ls tests/*.tftest.hcl >/dev/null 2>&1; then \
+	  echo "== . =="; \
+	  echo "== running tests for the root module =="; \
+	  rm -rf .terraform .terraform.lock.hcl; \
+	  terraform init -backend=false -input=false; \
+	  terraform test; \
+	fi; \
 	for submodule in modules/*; do \
 	  echo "== $$submodule =="; \
 	  cd "$$submodule/tests" 2>/dev/null || continue; \

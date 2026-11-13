@@ -141,6 +141,13 @@ variable "aws_additional_allowed_principals" {
 
 ##############################################################
 # Proxy variables
+#
+# http_proxy, https_proxy and additional_trust_bundle mirror the attributes
+# that terraform-redhat/rhcs marks sensitive (provider/proxy/proxy_resource.go).
+# no_proxy is deliberately left plain, matching the provider. Because the
+# cluster resource builds its proxy block from a conditional over all four
+# inputs, marking three of them sensitive marks the whole block, so no_proxy
+# is redacted in plan output too.
 ##############################################################
 
 variable "http_proxy" {
@@ -160,7 +167,7 @@ variable "https_proxy" {
 variable "no_proxy" {
   type        = string
   default     = null
-  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying."
+  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. This variable is not sensitive, but note that setting any proxy input marks the whole proxy block on the cluster resource sensitive, so no_proxy is also redacted in plan output. No output, count, for_each or map key in this module consumes the proxy inputs, so nothing else changes for consumers."
 }
 
 variable "additional_trust_bundle" {
@@ -610,7 +617,7 @@ variable "external_auth_provider" {
     console_extra_scopes         = optional(set(string))
   })
   default     = null
-  description = "External authentication provider for the cluster. When non-null, creates one rhcs_external_auth_provider resource. When null (default), external authentication providers are not managed. PREREQUISITE: the cluster must be created with external_auth_providers_enabled = true. That attribute cannot be changed after cluster creation, so this variable never enables it. OpenShift Cluster Manager permits one external authentication provider per cluster, and the cluster must be ready before the provider is created. Supply the console client secret through the separate external_auth_provider_console_client_secret variable. issuer_ca takes PEM certificate content, for example file(\"ca.pem\"), not a file path. For additional details regarding the variables used, refer to the [external-auth-provider sub-module](./modules/external-auth-provider). Requires terraform-redhat/rhcs provider >= 1.7.13."
+  description = "External authentication provider for the cluster. When non-null, creates one rhcs_external_auth_provider resource. When null (default), external authentication providers are not managed. PREREQUISITE: the cluster must be created with external_auth_providers_enabled = true. That attribute cannot be changed after cluster creation, so this variable never enables it. OpenShift Cluster Manager permits one external authentication provider per cluster. Setting this variable forces wait_for_create_complete = true, so the cluster reaches the ready state before the provider is created, even if wait_for_create_complete is set to false. Supply the console client secret through the separate external_auth_provider_console_client_secret variable. issuer_ca takes PEM certificate content, for example file(\"ca.pem\"), not a file path. The root module always creates the provider and does not expose the sub-module create_external_auth_provider flag, so adopt a pre-existing provider by importing it: terraform import 'module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]' <cluster_id>,<name>. For additional details regarding the variables used, refer to the [external-auth-provider sub-module](./modules/external-auth-provider). Requires terraform-redhat/rhcs provider >= 1.7.13."
 }
 
 variable "external_auth_provider_console_client_secret" {

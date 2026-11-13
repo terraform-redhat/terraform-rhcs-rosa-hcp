@@ -137,10 +137,16 @@ run "valid_full_console_plan" {
     EOT
     claim_mapping_groups_claim   = "groups"
     claim_mapping_username_claim = "email"
-    claim_validation_rule        = ["sub:system:admin", "  iss  :  https://issuer.example.com  "]
-    console_client_id            = "fake-console-client"
-    console_client_secret        = "fake-console-secret"
-    console_extra_scopes         = ["profile"]
+    # The third rule carries a newline in the required value: the provider's
+    # SplitN check accepts it, so the module validation must accept it too.
+    claim_validation_rule = [
+      "sub:system:admin",
+      "  iss  :  https://issuer.example.com  ",
+      "email:first\nsecond",
+    ]
+    console_client_id     = "fake-console-client"
+    console_client_secret = "fake-console-secret"
+    console_extra_scopes  = ["profile"]
   }
 
   assert {
@@ -159,8 +165,8 @@ run "valid_full_console_plan" {
   }
 
   assert {
-    condition     = length(rhcs_external_auth_provider.this[0].claim_validation_rule) == 2
-    error_message = "Expected two claim validation rules."
+    condition     = length(rhcs_external_auth_provider.this[0].claim_validation_rule) == 3
+    error_message = "Expected three claim validation rules."
   }
 
   # issensitive() reports the sensitivity directly, so removing

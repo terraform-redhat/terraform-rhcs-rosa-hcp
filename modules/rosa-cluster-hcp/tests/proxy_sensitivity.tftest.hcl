@@ -7,6 +7,11 @@
 // rhcs_cluster_rosa_hcp proxy block. issensitive() reports the sensitivity
 // directly, so removing a `sensitive = true` fails this file.
 //
+// The var.no_proxy input itself stays non-sensitive, but main.tf builds the
+// proxy block from a conditional over all four inputs, so the conditional's
+// result — the whole object, no_proxy included — carries the sensitive mark.
+// That is why the planned proxy.no_proxy below needs nonsensitive().
+//
 // Kept separate from rosa_cluster_hcp.tftest.hcl so the runs stand alone.
 
 mock_provider "aws" {
@@ -90,7 +95,9 @@ run "proxy_inputs_are_sensitive_and_propagate" {
     error_message = "Expected additional_trust_bundle to carry the configured value."
   }
 
-  # no_proxy stays non-sensitive, matching provider/proxy/proxy_resource.go.
+  # The no_proxy variable stays non-sensitive, matching
+  # provider/proxy/proxy_resource.go. The planned proxy object is still marked
+  # as a whole, see the file header.
   assert {
     condition     = !issensitive(var.no_proxy) && var.no_proxy == "localhost,.svc"
     error_message = "Expected no_proxy to stay a plain, non-sensitive variable."

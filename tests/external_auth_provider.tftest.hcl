@@ -224,7 +224,10 @@ run "root_proxy_inputs_are_sensitive_and_plan" {
     error_message = "Expected additional_trust_bundle to carry the configured value."
   }
 
-  # no_proxy stays non-sensitive, matching provider/proxy/proxy_resource.go.
+  # The no_proxy variable stays non-sensitive, matching
+  # provider/proxy/proxy_resource.go. Marking the other three inputs sensitive
+  # does mark the whole planned proxy object, no_proxy included; see
+  # modules/rosa-cluster-hcp/tests/proxy_sensitivity.tftest.hcl.
   assert {
     condition     = !issensitive(var.no_proxy) && var.no_proxy == "localhost,.svc"
     error_message = "Expected no_proxy to stay a plain, non-sensitive root variable."
