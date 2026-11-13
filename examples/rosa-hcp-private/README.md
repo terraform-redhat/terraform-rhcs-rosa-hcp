@@ -105,6 +105,8 @@ module "bastion_host" {
 ```
 
 
+> **Note:** The `version` argument in the example selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables below are generated from the Terraform configuration in this directory, not from that release, so the two can list different `rhcs` versions. Here they do: module release `1.6.2` requires `rhcs = 1.6.2` exactly, while the Requirements table below requires a newer `rhcs` version, so no single provider version satisfies both. Follow one or the other, not both. The configuration in this directory consumes the current module source directly with `source = "../../"`.
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -113,7 +115,7 @@ module "bastion_host" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | = 6.54.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.10 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | = 1.7.13 |
 
 ## Providers
 
