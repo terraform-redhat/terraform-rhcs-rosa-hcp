@@ -34,10 +34,11 @@ terraform test
 
 ## Example Usage
 
-> **Note:** This sub-module is not part of any published module release, so
-> `source = "terraform-redhat/rosa-hcp/rhcs//modules/external-auth-provider"` cannot resolve: the newest
-> published release does not contain the `modules/external-auth-provider` directory and `terraform init`
-> fails with `Unreadable module subdirectory`. Use a local path to a checkout of this repository, as below.
+> **Note:** The Registry form `source = "terraform-redhat/rosa-hcp/rhcs//modules/external-auth-provider"`
+> resolves only against a module release that contains the `modules/external-auth-provider` directory.
+> Selected against a release that does not contain it, `terraform init` fails with
+> `Unreadable module subdirectory`. Either select a release that includes this sub-module, or point
+> `source` at a local path into a checkout of this repository, as below.
 
 ```
 variable "console_client_secret" {
