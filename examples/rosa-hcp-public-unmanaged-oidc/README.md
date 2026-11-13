@@ -66,7 +66,7 @@ module "vpc" {
 }
 ```
 
-> **Note:** The `version` argument in the example selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables below are generated from the Terraform configuration in this directory, not from that release, so the two can list different `rhcs` versions. Here they do: module release `1.6.2` requires `rhcs = 1.6.2` exactly, while the configuration in this directory requires `rhcs = 1.7.13`, and no single provider version satisfies both. Follow one or the other, not both. The configuration in this directory consumes the current module source directly with `source = "../../"`.
+> **Note:** The `version` argument in the example selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables below are generated from the Terraform configuration in this directory, not from that release, so the two can list different `rhcs` versions. Here they do: module release `1.6.2` requires `rhcs = 1.6.2` exactly, while the Requirements table below requires a newer `rhcs` version, so no single provider version satisfies both. Follow one or the other, not both. The configuration in this directory consumes the current module source directly with `source = "../../"`.
 
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements

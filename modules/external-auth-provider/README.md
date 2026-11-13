@@ -37,7 +37,8 @@ terraform test
 > **Note:** The Registry form `source = "terraform-redhat/rosa-hcp/rhcs//modules/external-auth-provider"`
 > resolves only against a module release that contains the `modules/external-auth-provider` directory.
 > Selected against a release that does not contain it, `terraform init` fails with
-> `Unreadable module subdirectory`. Either select a release that includes this sub-module, or point
+> `Unreadable module subdirectory`. Either select a release that includes this sub-module (browse the
+> repository at that release tag to confirm the directory is present), or point
 > `source` at a local path into a checkout of this repository, as below.
 
 ```
