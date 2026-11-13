@@ -34,6 +34,7 @@ Sub-modules included in this module:
 
 - account-iam-resource: Handles the provisioning of Identity and Access Management (IAM) resources required for managing access and permissions in the AWS account associated with the ROSA HCP cluster.
 - additional-cp-sg: Allows the association of an existing Virtual Private Cloud (VPC) Security Group to the Control-Plane PrivateLink Endpoint. Requires ROSA version 4.17.2 or later. 
+- external-auth-provider: Manages the [`rhcs_external_auth_provider`](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/external_auth_provider) resource for a ROSA HCP cluster that was created with external authentication enabled.
 - idp: Responsible for configuring Identity Providers (IDPs) within the ROSA HCP cluster, faciliting seamless integration with external authentication system such as Github (GH), GitLab, Google, HTPasswd, LDAP and OpenID Connect (OIDC).
 - log-forwarder: Manages [`rhcs_log_forwarder`](https://registry.terraform.io/providers/terraform-redhat/rhcs/latest/docs/resources/log_forwarder) resources to forward cluster logs to Amazon S3 or Amazon CloudWatch.
 - image-mirrors: Manages the configuration of image digest mirror sets for ROSA HCP clusters, enabling container image mirroring to redirect image pulls from source registries to mirror registries for zero-egress networking and improved performance.
@@ -89,7 +90,7 @@ We recommend you install the following CLI tools:
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.51.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.3.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.10 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.13 |
 
 ## Providers
 
@@ -97,7 +98,7 @@ We recommend you install the following CLI tools:
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.51.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.3.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.10 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.13 |
 
 ## Modules
 
@@ -107,6 +108,7 @@ We recommend you install the following CLI tools:
 | <a name="module_oidc_config_and_provider"></a> [oidc\_config\_and\_provider](#module\_oidc\_config\_and\_provider) | ./modules/oidc-config-and-provider | n/a |
 | <a name="module_operator_roles"></a> [operator\_roles](#module\_operator\_roles) | ./modules/operator-roles | n/a |
 | <a name="module_rhcs_hcp_additional_controlplane_sg"></a> [rhcs\_hcp\_additional\_controlplane\_sg](#module\_rhcs\_hcp\_additional\_controlplane\_sg) | ./modules/additional-cp-sg | n/a |
+| <a name="module_rhcs_hcp_external_auth_provider"></a> [rhcs\_hcp\_external\_auth\_provider](#module\_rhcs\_hcp\_external\_auth\_provider) | ./modules/external-auth-provider | n/a |
 | <a name="module_rhcs_hcp_image_mirrors"></a> [rhcs\_hcp\_image\_mirrors](#module\_rhcs\_hcp\_image\_mirrors) | ./modules/image-mirrors | n/a |
 | <a name="module_rhcs_hcp_kubelet_configs"></a> [rhcs\_hcp\_kubelet\_configs](#module\_rhcs\_hcp\_kubelet\_configs) | ./modules/kubelet-configs | n/a |
 | <a name="module_rhcs_hcp_log_forwarder"></a> [rhcs\_hcp\_log\_forwarder](#module\_rhcs\_hcp\_log\_forwarder) | ./modules/log-forwarder | n/a |
@@ -162,6 +164,8 @@ We recommend you install the following CLI tools:
 | <a name="input_ec2_metadata_http_tokens"></a> [ec2\_metadata\_http\_tokens](#input\_ec2\_metadata\_http\_tokens) | Determines which EC2 Instance Metadata Service (IMDS) mode the cluster nodes use. Set to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new clusters. This value applies only to the initial machine pool created with the cluster. Configure additional machine pools separately. Available since OpenShift 4.11.0. Cannot be changed after creation. | `string` | `null` | no |
 | <a name="input_etcd_encryption"></a> [etcd\_encryption](#input\_etcd\_encryption) | Add etcd encryption. By default etcd data is encrypted at rest. This option configures etcd encryption on top of existing storage encryption. | `bool` | `null` | no |
 | <a name="input_etcd_kms_key_arn"></a> [etcd\_kms\_key\_arn](#input\_etcd\_kms\_key\_arn) | The key ARN is the Amazon Resource Name (ARN) of a CMK. It is a unique, fully qualified identifier for the CMK. A key ARN includes the AWS account, Region, and the key ID. | `string` | `null` | no |
+| <a name="input_external_auth_provider"></a> [external\_auth\_provider](#input\_external\_auth\_provider) | External authentication provider for the cluster. When non-null, creates one rhcs\_external\_auth\_provider resource. When null (default), external authentication providers are not managed. PREREQUISITE: the cluster must be created with external\_auth\_providers\_enabled = true. That attribute cannot be changed after cluster creation, so this variable never enables it. OpenShift Cluster Manager permits one external authentication provider per cluster, and the cluster must be ready before the provider is created. Supply the console client secret through the separate external\_auth\_provider\_console\_client\_secret variable. issuer\_ca takes PEM certificate content, for example file("ca.pem"), not a file path. For additional details regarding the variables used, refer to the [external-auth-provider sub-module](./modules/external-auth-provider). Requires terraform-redhat/rhcs provider >= 1.7.13. | <pre>object({<br/>    name                         = string<br/>    issuer_url                   = string<br/>    issuer_audiences             = set(string)<br/>    issuer_ca                    = optional(string)<br/>    claim_mapping_groups_claim   = optional(string)<br/>    claim_mapping_username_claim = optional(string)<br/>    claim_validation_rule        = optional(list(string))<br/>    console_client_id            = optional(string)<br/>    console_extra_scopes         = optional(set(string))<br/>  })</pre> | `null` | no |
+| <a name="input_external_auth_provider_console_client_secret"></a> [external\_auth\_provider\_console\_client\_secret](#input\_external\_auth\_provider\_console\_client\_secret) | OIDC client secret for the OpenShift console, used together with external\_auth\_provider.console\_client\_id. Both must be set together. The API never returns this value, so an import leaves it null in state and it must be present in the configuration before updating a confidential console client. Ignored when external\_auth\_provider is null. | `string` | `null` | no |
 | <a name="input_external_auth_providers_enabled"></a> [external\_auth\_providers\_enabled](#input\_external\_auth\_providers\_enabled) | Enable external auth providers on the cluster. | `bool` | `null` | no |
 | <a name="input_host_prefix"></a> [host\_prefix](#input\_host\_prefix) | Subnet prefix length to assign to each individual node. For example, if host prefix is set to "23", then each node is assigned a /23 subnet out of the given CIDR. | `number` | `null` | no |
 | <a name="input_http_proxy"></a> [http\_proxy](#input\_http\_proxy) | A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http. | `string` | `null` | no |

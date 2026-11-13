@@ -213,12 +213,14 @@ variable "http_proxy" {
   type        = string
   default     = null
   description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http."
+  sensitive   = true
 }
 
 variable "https_proxy" {
   type        = string
   default     = null
   description = "A proxy URL to use for creating HTTPS connections outside the cluster."
+  sensitive   = true
 }
 
 variable "no_proxy" {
@@ -231,6 +233,7 @@ variable "additional_trust_bundle" {
   type        = string
   default     = null
   description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store."
+  sensitive   = true
 }
 
 ##############################################################

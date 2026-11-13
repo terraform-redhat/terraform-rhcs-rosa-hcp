@@ -147,12 +147,14 @@ variable "http_proxy" {
   type        = string
   default     = null
   description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http."
+  sensitive   = true
 }
 
 variable "https_proxy" {
   type        = string
   default     = null
   description = "A proxy URL to use for creating HTTPS connections outside the cluster."
+  sensitive   = true
 }
 
 variable "no_proxy" {
@@ -165,6 +167,7 @@ variable "additional_trust_bundle" {
   type        = string
   default     = null
   description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store."
+  sensitive   = true
 }
 
 ##############################################################
@@ -588,6 +591,33 @@ variable "notification_contacts" {
     ])
     error_message = "Each notification contact must be a non-empty string (not blank or whitespace)."
   }
+}
+
+##############################################################
+# External Authentication Provider
+##############################################################
+
+variable "external_auth_provider" {
+  type = object({
+    name                         = string
+    issuer_url                   = string
+    issuer_audiences             = set(string)
+    issuer_ca                    = optional(string)
+    claim_mapping_groups_claim   = optional(string)
+    claim_mapping_username_claim = optional(string)
+    claim_validation_rule        = optional(list(string))
+    console_client_id            = optional(string)
+    console_extra_scopes         = optional(set(string))
+  })
+  default     = null
+  description = "External authentication provider for the cluster. When non-null, creates one rhcs_external_auth_provider resource. When null (default), external authentication providers are not managed. PREREQUISITE: the cluster must be created with external_auth_providers_enabled = true. That attribute cannot be changed after cluster creation, so this variable never enables it. OpenShift Cluster Manager permits one external authentication provider per cluster, and the cluster must be ready before the provider is created. Supply the console client secret through the separate external_auth_provider_console_client_secret variable. issuer_ca takes PEM certificate content, for example file(\"ca.pem\"), not a file path. For additional details regarding the variables used, refer to the [external-auth-provider sub-module](./modules/external-auth-provider). Requires terraform-redhat/rhcs provider >= 1.7.13."
+}
+
+variable "external_auth_provider_console_client_secret" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "OIDC client secret for the OpenShift console, used together with external_auth_provider.console_client_id. Both must be set together. The API never returns this value, so an import leaves it null in state and it must be present in the configuration before updating a confidential console client. Ignored when external_auth_provider is null."
 }
 
 variable "ignore_machine_pools_deletion_error" {

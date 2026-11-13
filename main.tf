@@ -107,7 +107,7 @@ module "rosa_cluster_hcp" {
   ########
   # Flags
   ########
-  wait_for_create_complete                = var.wait_for_create_complete || var.notification_contacts != null
+  wait_for_create_complete                = var.wait_for_create_complete || var.notification_contacts != null || var.external_auth_provider != null
   wait_for_std_compute_nodes_complete     = var.wait_for_std_compute_nodes_complete
   max_hcp_cluster_wait_timeout_in_minutes = var.max_hcp_cluster_wait_timeout_in_minutes
   max_machinepool_wait_timeout_in_minutes = var.max_machinepool_wait_timeout_in_minutes
@@ -281,6 +281,26 @@ module "rhcs_hcp_notification_contacts" {
 }
 
 ######################################
+# External Authentication Provider
+######################################
+module "rhcs_hcp_external_auth_provider" {
+  source = "./modules/external-auth-provider"
+  count  = var.external_auth_provider != null ? 1 : 0
+
+  cluster_id                   = module.rosa_cluster_hcp.cluster_id
+  name                         = var.external_auth_provider.name
+  issuer_url                   = var.external_auth_provider.issuer_url
+  issuer_audiences             = var.external_auth_provider.issuer_audiences
+  issuer_ca                    = var.external_auth_provider.issuer_ca
+  claim_mapping_groups_claim   = var.external_auth_provider.claim_mapping_groups_claim
+  claim_mapping_username_claim = var.external_auth_provider.claim_mapping_username_claim
+  claim_validation_rule        = var.external_auth_provider.claim_validation_rule
+  console_client_id            = var.external_auth_provider.console_client_id
+  console_client_secret        = var.external_auth_provider_console_client_secret
+  console_extra_scopes         = var.external_auth_provider.console_extra_scopes
+}
+
+######################################
 # Additional control plane sec groups
 ######################################
 module "rhcs_hcp_additional_controlplane_sg" {
@@ -309,6 +329,10 @@ resource "null_resource" "validations" {
         || tonumber(format("%03d%03d%03d", split(".", var.openshift_version)[0], split(".", var.openshift_version)[1], split(".", var.openshift_version)[2])) >= 4017002
       )
       error_message = "\"openshift_version\" must be 4.17.2 or later to add additional security group to Privatelink endpoint."
+    }
+    precondition {
+      condition     = var.external_auth_provider == null || var.external_auth_providers_enabled == true
+      error_message = "\"external_auth_providers_enabled\" must be true to configure \"external_auth_provider\". External authentication can only be enabled when the cluster is created; it cannot be turned on for an existing cluster."
     }
   }
 }

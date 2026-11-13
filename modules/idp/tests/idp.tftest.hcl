@@ -137,3 +137,68 @@ run "valid_htpasswd_plan" {
     error_message = "Expected one htpasswd user in planned resource."
   }
 }
+
+# terraform-redhat/rhcs 1.7.13 marks the identity provider `ca` attributes
+# sensitive. The matching module inputs are sensitive too, and the value still
+# reaches the resource. issensitive() reports the sensitivity directly, so
+# removing `sensitive = true` from openid_idp_ca fails this run.
+run "openid_idp_ca_is_sensitive_and_propagates" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.default
+  }
+
+  variables {
+    cluster_id               = "fake-cluster-123"
+    name                     = "test-openid-ca"
+    idp_type                 = "openid"
+    openid_idp_client_id     = "fake-openid-client"
+    openid_idp_client_secret = "fake-openid-secret"
+    openid_idp_issuer        = "https://issuer.example.com"
+    openid_idp_claims_email  = ["email"]
+    openid_idp_ca            = "-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----\n"
+  }
+
+  assert {
+    condition     = issensitive(var.openid_idp_ca)
+    error_message = "openid_idp_ca must be a sensitive variable."
+  }
+
+  assert {
+    condition     = nonsensitive(var.openid_idp_ca) == "-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----\n"
+    error_message = "Expected openid_idp_ca to carry the configured value."
+  }
+
+  assert {
+    condition     = nonsensitive(rhcs_identity_provider.openid_identity_provider[0].openid.ca) == "-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----\n"
+    error_message = "Expected openid_idp_ca to reach the openid.ca attribute as a sensitive value."
+  }
+}
+
+# github_idp_ca, gitlab_idp_ca and ldap_idp_ca carry the same sensitivity.
+run "ldap_idp_ca_is_sensitive_and_propagates" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.default
+  }
+
+  variables {
+    cluster_id   = "fake-cluster-123"
+    name         = "test-ldap-ca"
+    idp_type     = "ldap"
+    ldap_idp_url = "ldaps://ldap.example.com/ou=users,dc=example,dc=com?uid"
+    ldap_idp_ca  = "-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----\n"
+  }
+
+  assert {
+    condition     = issensitive(var.ldap_idp_ca)
+    error_message = "ldap_idp_ca must be a sensitive variable."
+  }
+
+  assert {
+    condition     = nonsensitive(rhcs_identity_provider.ldap_identity_provider[0].ldap.ca) == "-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----\n"
+    error_message = "Expected ldap_idp_ca to reach the ldap.ca attribute as a sensitive value."
+  }
+}
