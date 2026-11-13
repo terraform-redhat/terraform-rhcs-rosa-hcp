@@ -75,7 +75,7 @@ The address above is for a direct consumer of this sub-module. Through the root 
 terraform import 'module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]' <cluster_id>,<name>
 ```
 
-Quote the address in both cases: `[0]` is a shell glob.
+Both addresses are relative to the root configuration that declares the module block. If the call is nested inside another module, prepend that module call path, for example `module.hcp.module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]`. Quote the address in every case: `[0]` is a shell glob.
 
 Run `terraform plan` afterwards and reconcile any drift. Because the provider is now in state, the next apply updates it instead of creating it. The console client secret is not returned by the API, so set `console_client_secret` in the configuration before you update a confidential console client.
 
