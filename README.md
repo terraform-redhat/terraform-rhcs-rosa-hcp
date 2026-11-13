@@ -30,7 +30,7 @@ module "hcp" {
 
 > **Note:** The `version` argument above selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables further down are generated from the current module source in this repository, not from that release, so the two can list different `rhcs` versions. Follow one or the other, not both.
 >
-> `external_auth_provider` and `external_auth_provider_console_client_secret` are not part of any published module release. Adding them to the pinned example above fails with an unsupported argument error. They are available only from the current source in this repository: omit the `version` argument and set `source` to a local path to your checkout, the same way every directory under [`examples/`](examples/) does with `source = "../../"`.
+> `external_auth_provider` and `external_auth_provider_console_client_secret` are not part of any published module release. Adding them to the pinned example above fails with an unsupported argument error. They are available only from the current source in this repository: omit the `version` argument and set `source` to a local path to your checkout, the way the root-module examples do. See [`examples/rosa-hcp-public/main.tf`](examples/rosa-hcp-public/main.tf), which uses `source = "../../"`.
 
 ## Sub-modules
 

@@ -34,6 +34,11 @@ terraform test
 
 ## Example Usage
 
+> **Note:** This sub-module is not part of any published module release, so
+> `source = "terraform-redhat/rosa-hcp/rhcs//modules/external-auth-provider"` cannot resolve: the newest
+> published release does not contain the `modules/external-auth-provider` directory and `terraform init`
+> fails with `Unreadable module subdirectory`. Use a local path to a checkout of this repository, as below.
+
 ```
 variable "console_client_secret" {
   type      = string
@@ -41,7 +46,10 @@ variable "console_client_secret" {
 }
 
 module "external_auth_provider" {
-  source = "terraform-redhat/rosa-hcp/rhcs//modules/external-auth-provider"
+  # Local path to this sub-module inside a checkout of this repository. The path
+  # shown here is what a configuration under examples/<name>/ uses; adjust it to
+  # your own layout.
+  source = "../../modules/external-auth-provider"
 
   cluster_id       = module.hcp.cluster_id
   name             = "example-provider"
@@ -75,7 +83,7 @@ The address above is for a direct consumer of this sub-module. Through the root 
 terraform import 'module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]' <cluster_id>,<name>
 ```
 
-Both addresses are relative to the root configuration that declares the module block. If the call is nested inside another module, prepend that module call path, for example `module.hcp.module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]`. Quote the address in every case: `[0]` is a shell glob.
+Both addresses are relative to the root configuration that declares the module block. If you call the module from inside another module, prepend that module call path, for example `module.hcp.module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]`. Quote the address in every case: `[0]` is a shell glob.
 
 Run `terraform plan` afterwards and reconcile any drift. Because the provider is now in state, the next apply updates it instead of creating it. The console client secret is not returned by the API, so set `console_client_secret` in the configuration before you update a confidential console client.
 

@@ -105,7 +105,7 @@ module "bastion_host" {
 ```
 
 
-> **Note:** The `version` argument in the example selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables below are generated from the current module source in this repository, not from that release, so the two can list different `rhcs` versions. Follow one or the other, not both. The Terraform configuration in this directory consumes the current source directly with `source = "../../"`.
+> **Note:** The `version` argument in the example selects a published release of this module from the Terraform Registry, and that release carries its own `rhcs` provider constraint. The Requirements and Inputs tables below are generated from the Terraform configuration in this directory, not from that release, so the two can list different `rhcs` versions. Follow one or the other, not both. The configuration in this directory consumes the current module source directly with `source = "../../"`.
 
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
