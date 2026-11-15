@@ -88,7 +88,7 @@ fi
 echo "Verify environment variable defined:"
 for env_name in "${env_arr[@]}"
 do
-  echo "  # ${env_name}=${!env_name}"
+  echo "  # ${env_name}"
   if [[ -z "${!env_name}" ]]; then
     undefined_env_arr+=("${env_name}")
   fi
