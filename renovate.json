@@ -19,6 +19,10 @@
   "labels": [
     "ok-to-test"
   ],
+  "addLabels": [
+    "allow-automatic-merge"
+  ],
+  "automerge": false,
   "customManagers": [
     {
       "customType": "regex",
