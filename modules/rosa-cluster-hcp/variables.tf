@@ -32,7 +32,7 @@ variable "openshift_version" {
 variable "version_channel_group" {
   type        = string
   default     = null
-  description = "Desired channel group of the version [stable, candidate, fast, nightly]. Cannot be used together with 'channel'. Starting from RHCS Terraform provider version 1.7.7, this attribute no longer has a default value and is computed by the API."
+  description = "Name of the channel group where you select the OpenShift cluster version, for example 'stable'. For ROSA, only 'stable', 'eus', and 'fast' are supported. Cannot be used together with 'channel'. Starting from RHCS Terraform provider version 1.7.7, this attribute no longer has a default value and is computed by the API."
 }
 
 variable "channel" {
@@ -40,6 +40,11 @@ variable "channel" {
   default     = null
   description = "Y-stream specific channel for the cluster version (e.g., 'stable-4.16'). This parameter specifies the upgrade path for the cluster. Cannot be used together with 'version_channel_group'."
 
+  # Mirrors the provider's own validator for rhcs_cluster_rosa_hcp.channel
+  # (^(stable|fast|candidate|eus)-\d+\.\d+$), so the accepted prefixes are
+  # deliberately wider than the channel groups that version_channel_group
+  # documents for ROSA. channel_group itself has no client-side validator: the
+  # API decides which groups it supports.
   validation {
     condition     = var.channel == null || can(regex("^(stable|fast|candidate|eus)-\\d+\\.\\d+$", var.channel))
     error_message = "The 'channel' parameter must follow the format '<channel_group>-<version>' (e.g., 'stable-4.16')"
@@ -207,30 +212,47 @@ variable "aws_additional_allowed_principals" {
 
 ##############################################################
 # Proxy variables
+#
+# http_proxy, https_proxy and additional_trust_bundle mirror the three proxy
+# attributes that the rhcs_cluster_rosa_hcp resource schema marks sensitive at
+# terraform-redhat/rhcs 1.7.13 (see that resource on the Terraform Registry).
+# no_proxy is deliberately left plain, matching the provider, which marks the
+# individual proxy attributes rather than the whole block. Even so, Terraform
+# redacts the whole planned proxy object, no_proxy included, whenever any of
+# the four inputs produces a proxy block, including when only no_proxy is set.
+# The cause is the conditional in main.tf: Terraform adds the sensitivity of
+# a conditional's condition to its result, and that condition
+# reads the three sensitive variables, which keep their sensitivity mark even
+# while null. The object members do not mark the object. No output, count,
+# for_each or map key in this repository consumes the proxy inputs, so nothing
+# else changes.
 ##############################################################
 
 variable "http_proxy" {
   type        = string
   default     = null
-  description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http."
+  description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 variable "https_proxy" {
   type        = string
   default     = null
-  description = "A proxy URL to use for creating HTTPS connections outside the cluster."
+  description = "A proxy URL to use for creating HTTPS connections outside the cluster. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 variable "no_proxy" {
   type        = string
   default     = null
-  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying."
+  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. This value is not sensitive. Terraform still redacts the whole planned proxy object, this value included, whenever any proxy input produces a proxy block, including when you set only no_proxy. main.tf builds that object with a conditional, and Terraform adds the sensitivity of a conditional's condition to its result, while the condition itself reads the three sensitive proxy variables."
 }
 
 variable "additional_trust_bundle" {
   type        = string
   default     = null
-  description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store."
+  description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 ##############################################################

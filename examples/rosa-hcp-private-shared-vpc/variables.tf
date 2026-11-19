@@ -15,7 +15,7 @@ variable "openshift_version" {
 variable "version_channel_group" {
   type        = string
   default     = "stable"
-  description = "Desired channel group of the version [stable, candidate, fast, nightly]."
+  description = "Name of the channel group where you select the OpenShift cluster version, for example 'stable'. For ROSA, only 'stable', 'eus', and 'fast' are supported."
 }
 
 variable "aws_billing_account_id" {
