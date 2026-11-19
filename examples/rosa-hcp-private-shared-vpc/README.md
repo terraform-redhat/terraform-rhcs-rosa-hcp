@@ -60,7 +60,7 @@
 | <a name="input_network_owner_aws_secret_access_key"></a> [network\_owner\_aws\_secret\_access\_key](#input\_network\_owner\_aws\_secret\_access\_key) | The secret key paired with the access key. Together, they provide the necessary credentials for Terraform to authenticate with the shared-vpc AWS account and manage resources securely. | `string` | `""` | no |
 | <a name="input_network_owner_aws_shared_credentials_files"></a> [network\_owner\_aws\_shared\_credentials\_files](#input\_network\_owner\_aws\_shared\_credentials\_files) | List of files path to the AWS shared credentials file. This file typically contains AWS access keys and secret keys and is used when authenticating with AWS using profiles (default file located at ~/.aws/credentials). | `list(string)` | `null` | no |
 | <a name="input_openshift_version"></a> [openshift\_version](#input\_openshift\_version) | The required version of Red Hat OpenShift for the cluster, for example '4.1.0'. If version is greater than the currently running version, an upgrade will be scheduled. | `string` | `"4.17.15"` | no |
-| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Desired channel group of the version [stable, candidate, fast, nightly]. | `string` | `"stable"` | no |
+| <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Name of the channel group where you select the OpenShift cluster version, for example 'stable'. For ROSA, only 'stable', 'eus', and 'fast' are supported. | `string` | `"stable"` | no |
 
 ## Outputs
 

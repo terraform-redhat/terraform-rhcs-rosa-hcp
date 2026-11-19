@@ -282,6 +282,31 @@ run "valid_plan_with_only_version_channel_group" {
   }
 }
 
+# Valid plan for the "fast" channel group listed in the version_channel_group
+# description. The variable declares no validation block, so the value is forwarded
+# verbatim to channel_group in main.tf; this run is the regression test for that.
+#
+# The assertion is discriminating rather than tautological: the rhcs mock above
+# defaults channel_group to "stable", so "fast" can only appear here because the
+# configured variable takes precedence over the mock default.
+run "version_channel_group_fast" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    version_channel_group = "fast"
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group == "fast"
+    error_message = "version_channel_group must accept 'fast' and pass it through to rhcs_cluster_rosa_hcp.rosa_hcp_cluster.channel_group."
+  }
+}
+
 # Valid plan when both channel and version_channel_group are null (API defaults).
 run "valid_plan_with_both_null" {
   command = plan

@@ -47,6 +47,7 @@ variable "github_idp_ca" {
   type        = string
   default     = null
   description = "Path to PEM-encoded certificate file to use when making requests to the server (optional). Valid only to Github Identity Provider (idp_type=github)"
+  sensitive   = true
 }
 
 variable "github_idp_hostname" {
@@ -94,6 +95,7 @@ variable "gitlab_idp_ca" {
   type        = string
   default     = null
   description = "Trusted certificate authority bundle (optional). Valid only to Gitlab Identity Provider (idp_type=gitlab)"
+  sensitive   = true
 }
 
 #########################
@@ -154,6 +156,7 @@ variable "ldap_idp_ca" {
   type        = string
   default     = null
   description = "Trusted certificate authority bundle (optional). Valid only to Ldap Identity Provider (idp_type=ldap)"
+  sensitive   = true
 }
 
 variable "ldap_idp_insecure" {
@@ -200,6 +203,7 @@ variable "openid_idp_ca" {
   type        = string
   default     = null
   description = "Trusted certificate authority bundle (optional). Valid only to OpenID Identity Provider (idp_type=openid)"
+  sensitive   = true
 }
 
 variable "openid_idp_claims_email" {

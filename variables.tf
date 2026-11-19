@@ -20,7 +20,7 @@ variable "openshift_version" {
 variable "version_channel_group" {
   type        = string
   default     = null
-  description = "Desired channel group of the version [stable, candidate, fast, nightly]. Cannot be used together with 'channel'. Starting from RHCS Terraform provider version 1.7.7, this attribute no longer has a default value and is computed by the API."
+  description = "Name of the channel group where you select the OpenShift cluster version, for example 'stable'. For ROSA, only 'stable', 'eus', and 'fast' are supported. Cannot be used together with 'channel'. Starting from RHCS Terraform provider version 1.7.7, this attribute no longer has a default value and is computed by the API."
 }
 
 variable "channel" {
@@ -141,30 +141,47 @@ variable "aws_additional_allowed_principals" {
 
 ##############################################################
 # Proxy variables
+#
+# http_proxy, https_proxy and additional_trust_bundle mirror the three proxy
+# attributes that the rhcs_cluster_rosa_hcp resource schema marks sensitive at
+# terraform-redhat/rhcs 1.7.13 (see that resource on the Terraform Registry).
+# no_proxy is deliberately left plain, matching the provider, which marks the
+# individual proxy attributes rather than the whole block. Even so, Terraform
+# redacts the whole planned proxy object, no_proxy included, whenever any of
+# the four inputs produces a proxy block, including when only no_proxy is set.
+# The cause is the conditional in modules/rosa-cluster-hcp/main.tf: Terraform
+# adds the sensitivity of a conditional's condition to its result, and that
+# condition reads the three sensitive variables, which keep their sensitivity
+# mark even while null. The object members do not mark the object. No output,
+# count, for_each or map key in this repository consumes the proxy inputs, so
+# nothing else changes.
 ##############################################################
 
 variable "http_proxy" {
   type        = string
   default     = null
-  description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http."
+  description = "A proxy URL to use for creating HTTP connections outside the cluster. The URL scheme must be http. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 variable "https_proxy" {
   type        = string
   default     = null
-  description = "A proxy URL to use for creating HTTPS connections outside the cluster."
+  description = "A proxy URL to use for creating HTTPS connections outside the cluster. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 variable "no_proxy" {
   type        = string
   default     = null
-  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying."
+  description = "A comma-separated list of destination domain names, domains, IP addresses or other network CIDRs to exclude proxying. This value is not sensitive. Terraform still redacts the whole planned proxy object, this value included, whenever any proxy input produces a proxy block, including when you set only no_proxy. The cluster submodule builds that object with a conditional, and Terraform adds the sensitivity of a conditional's condition to its result, while the condition itself reads the three sensitive proxy variables."
 }
 
 variable "additional_trust_bundle" {
   type        = string
   default     = null
-  description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store."
+  description = "A string containing a PEM-encoded X.509 certificate bundle that will be added to the nodes' trusted certificate store. This value is sensitive and is redacted in plan output."
+  sensitive   = true
 }
 
 ##############################################################
@@ -588,6 +605,33 @@ variable "notification_contacts" {
     ])
     error_message = "Each notification contact must be a non-empty string (not blank or whitespace)."
   }
+}
+
+##############################################################
+# External Authentication Provider
+##############################################################
+
+variable "external_auth_provider" {
+  type = object({
+    name                         = string
+    issuer_url                   = string
+    issuer_audiences             = set(string)
+    issuer_ca                    = optional(string)
+    claim_mapping_groups_claim   = optional(string)
+    claim_mapping_username_claim = optional(string)
+    claim_validation_rule        = optional(list(string))
+    console_client_id            = optional(string)
+    console_extra_scopes         = optional(set(string))
+  })
+  default     = null
+  description = "External authentication provider for the cluster. When non-null, creates one rhcs_external_auth_provider resource. When null (default), external authentication providers are not managed. PREREQUISITE: the cluster must be created with external_auth_providers_enabled = true. That attribute cannot be changed after cluster creation, so this variable never enables it. OpenShift Cluster Manager permits one external authentication provider per cluster. Setting this variable forces wait_for_create_complete = true, so the cluster reaches the ready state before the provider is created, even if wait_for_create_complete is set to false. That forcing has one further effect: the module manages the cluster default ingress (rhcs_hcp_default_ingress) only while wait_for_create_complete is true, so a configuration that sets wait_for_create_complete = false brings the default ingress under management while this variable is set. Supply the console client secret through the separate external_auth_provider_console_client_secret variable. issuer_ca takes PEM certificate content, for example file(\"ca.pem\"), not a file path. The root module always creates the provider and does not expose the sub-module create_external_auth_provider flag, so adopt a pre-existing provider by importing it. Relative to this repository's own root configuration the command is: terraform import 'module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]' <cluster_id>,<name>. When you call this module from your own configuration, prepend your module call path to that address. For a module block named hcp the address becomes 'module.hcp.module.rhcs_hcp_external_auth_provider[0].rhcs_external_auth_provider.this[0]'. For additional details regarding the variables used, refer to the [external-auth-provider sub-module](./modules/external-auth-provider). Requires terraform-redhat/rhcs provider >= 1.7.13."
+}
+
+variable "external_auth_provider_console_client_secret" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "OIDC client secret for the OpenShift console, used together with external_auth_provider.console_client_id. Both must be set together. The API never returns this value, so an import leaves it null in state and it must be present in the configuration before updating a confidential console client. Ignored when external_auth_provider is null."
 }
 
 variable "ignore_machine_pools_deletion_error" {
