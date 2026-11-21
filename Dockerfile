@@ -7,7 +7,7 @@ RUN yum update -y && yum install -y yum-utils shadow-utils unzip tar make git py
     rm -rf /var/cache/yum
 # Prow / integration client image: newest Terraform (TERRAFORM_VERSION). Module minimum compatibility is checked in GitHub Actions verify-min-terraform.yml.
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=semver
-ARG TERRAFORM_VERSION=1.17.1
+ARG TERRAFORM_VERSION=1.17.2
 RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo && \
     yum -y install "terraform-${TERRAFORM_VERSION}" && \
     yum clean all && \
@@ -21,13 +21,13 @@ RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_V
     rm -rf awscliv2.zip aws/ && \
     aws --version
 # renovate: datasource=github-releases depName=openshift/rosa versioning=semver
-ARG ROSA_VERSION=1.2.67
+ARG ROSA_VERSION=1.2.68
 RUN curl -fsSL "https://mirror.openshift.com/pub/cgw/rosa/${ROSA_VERSION}/rosa-linux.tar.gz" -o rosa-linux.tar.gz && \
     tar -xzf rosa-linux.tar.gz --no-same-owner && mv rosa /usr/local/bin/rosa && \
     rm -f rosa-linux.tar.gz && \
     rosa version
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs versioning=semver
-ARG TERRAFORM_DOCS_VERSION=0.24.0
+ARG TERRAFORM_DOCS_VERSION=0.25.1
 RUN curl -fsSL "https://terraform-docs.io/dl/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64.tar.gz" -o terraform-docs.tar.gz && \
     tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && \
     mv terraform-docs /usr/local/bin/terraform-docs && rm terraform-docs.tar.gz
