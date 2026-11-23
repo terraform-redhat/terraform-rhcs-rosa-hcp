@@ -7,11 +7,11 @@ MODULE_REGISTRY := terraform-redhat/rosa-hcp/rhcs
 # renovate: datasource=github-releases depName=google/addlicense
 ADDLICENSE_VERSION ?= v1.2.0
 # renovate: datasource=github-releases depName=terraform-docs/terraform-docs
-TERRAFORM_DOCS_VERSION ?= v0.24.0
+TERRAFORM_DOCS_VERSION ?= v0.25.1
 # renovate: datasource=github-releases depName=terraform-linters/tflint
 TFLINT_VERSION ?= v0.66.0
 # renovate: datasource=github-releases depName=vale-cli/vale
-VALE_VERSION ?= v3.26.0
+VALE_VERSION ?= v3.28.1
 # renovate: datasource=github-releases depName=bridgecrewio/checkov
 CHECKOV_VERSION ?= 3.2.529
 # renovate: datasource=github-releases depName=gitleaks/gitleaks
