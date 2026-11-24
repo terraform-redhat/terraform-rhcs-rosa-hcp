@@ -753,3 +753,71 @@ run "audit_log_arn_empty_string_passthrough" {
     error_message = "audit_log_arn must preserve an empty string (day-2 disable) when passed to rhcs_cluster_rosa_hcp."
   }
 }
+
+##############################################################
+# tags — in-place cluster tag updates (RHCS >= 1.7.14, OpenShift 4.20+).
+# An unset map leaves existing cluster tags unmanaged; a set map, empty
+# included, is the complete set of customer tags Terraform manages.
+##############################################################
+
+run "cluster_tags_unset_plan" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags == null
+    error_message = "Unset tags must stay null on rhcs_cluster_rosa_hcp so existing cluster tags remain unmanaged."
+  }
+}
+
+run "cluster_tags_empty_map_plan" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    tags = {}
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags != null
+    error_message = "An empty tags map must stay set on rhcs_cluster_rosa_hcp, not collapse to null."
+  }
+
+  assert {
+    condition     = length(rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags) == 0
+    error_message = "An empty tags map must wire through to rhcs_cluster_rosa_hcp as an empty map."
+  }
+}
+
+run "cluster_tags_set_plan" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.import_sim
+  }
+
+  variables {
+    tags = {
+      environment = "staging"
+      team        = "platform"
+    }
+  }
+
+  assert {
+    condition = (
+      rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags["environment"] == "staging" &&
+      rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags["team"] == "platform" &&
+      length(rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags) == 2
+    )
+    error_message = "Cluster tags must wire through to rhcs_cluster_rosa_hcp unchanged."
+  }
+}

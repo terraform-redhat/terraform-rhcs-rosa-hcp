@@ -49,7 +49,6 @@ module "hcp" {
       name = "pool1"
       aws_node_pool = {
         instance_type                 = "r5.xlarge"
-        tags                          = {}
         additional_security_group_ids = [""]
       }
       auto_repair       = true
@@ -62,7 +61,6 @@ module "hcp" {
       name = "pool2"
       aws_node_pool = {
         instance_type                 = "r5.xlarge"
-        tags                          = {}
         additional_security_group_ids = [""]
       }
       auto_repair       = true

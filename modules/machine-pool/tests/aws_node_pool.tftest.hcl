@@ -551,3 +551,172 @@ run "management_partial_plan" {
     error_message = "management.type must be unset in a partial management object."
   }
 }
+
+##############################################################
+# aws_node_pool.tags — in-place tag updates (RHCS >= 1.7.14, OpenShift 4.20+).
+# The provider distinguishes an unset map (tags unmanaged) from a set map
+# (Terraform owns the complete machine-pool-specific set, empty map included),
+# so these runs cover unset, empty, and populated.
+##############################################################
+
+# tags omitted: the module must send no value so the provider leaves existing
+# machine pool tags unmanaged.
+run "aws_node_pool_tags_unset_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+    }
+  }
+
+  assert {
+    condition     = var.aws_node_pool.tags == null
+    error_message = "Omitting tags must leave the input null so the module sends nothing."
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == null
+    error_message = "Unset tags must stay null on rhcs_hcp_machine_pool so existing tags remain unmanaged."
+  }
+}
+
+# tags = {}: an empty map is a managed empty set, not the same as unset.
+run "aws_node_pool_tags_empty_map_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags != null
+    error_message = "An empty tags map must stay set on rhcs_hcp_machine_pool, not collapse to null."
+  }
+
+  assert {
+    condition     = length(rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags) == 0
+    error_message = "An empty tags map must wire through to rhcs_hcp_machine_pool as an empty map."
+  }
+}
+
+# tags set: the machine-pool-specific tags wire through unchanged.
+run "aws_node_pool_tags_set_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        environment = "staging"
+        team        = "platform"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags["environment"] == "staging" &&
+      rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags["team"] == "platform" &&
+      length(rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags) == 2
+    )
+    error_message = "Machine pool tags must wire through to rhcs_hcp_machine_pool unchanged."
+  }
+}
+
+# Day 2: tags are the one map in aws_node_pool that can change after creation
+# (OpenShift 4.20+). Apply one set, then apply a different set against the same
+# state and confirm the module carries the new set to the resource.
+run "apply_with_initial_tags" {
+  command = apply
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "tags_day2"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+    replicas          = 1
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        environment = "staging"
+        owner       = "team-a"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags["owner"] == "team-a"
+    error_message = "Setup run should have created the pool with owner = 'team-a'."
+  }
+}
+
+run "update_tags_in_place" {
+  command = apply
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "tags_day2"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+    replicas          = 1
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        environment = "production"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags["environment"] == "production" &&
+      length(rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags) == 1
+    )
+    error_message = "Changed tags must reach rhcs_hcp_machine_pool, with the removed key dropped from the managed set."
+  }
+}

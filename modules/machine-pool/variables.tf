@@ -59,7 +59,7 @@ variable "autoscaling" {
 variable "aws_node_pool" {
   type = object({
     instance_type                   = string
-    tags                            = map(string)
+    tags                            = optional(map(string))
     additional_security_group_ids   = optional(list(string))
     capacity_reservation_id         = optional(string)
     capacity_reservation_preference = optional(string)
@@ -69,7 +69,7 @@ variable "aws_node_pool" {
     max_spot_price                  = optional(number)
   })
   nullable    = false
-  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation."
+  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. These settings are fixed at creation, except `tags` and `node_drain_grace_period`. `tags` holds only the tags specific to this machine pool and can be updated in place when the cluster control plane runs OpenShift 4.20 or later; on earlier versions it stays fixed at creation. When `tags` is set, including to an empty map, Terraform manages that complete set: tags removed from the configuration or added outside Terraform are removed on the next apply, while tags inherited from the cluster are kept. Omit `tags` to keep existing machine pool tags unmanaged; clearing a previously set value removes those tags once and then stops managing them. A machine pool tag overrides a cluster tag with the same key, and removing the override restores the inherited cluster value; a machine pool tag whose key and value both match a cluster tag is inherited rather than stored, and the provider warns about it. The provider rejects an empty tag value, and a reserved key such as one that starts with `api.openshift.com/`, when it updates tags."
 
   validation {
     condition = var.aws_node_pool.capacity_reservation_preference == null ? true : contains(

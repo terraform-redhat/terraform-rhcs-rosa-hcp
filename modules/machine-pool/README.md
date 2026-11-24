@@ -17,7 +17,6 @@ module "mp" {
 
   aws_node_pool = {
     instance_type = "my-instance"
-    tags = {}
     additional_security_group_ids = [""]
   }
 
@@ -31,19 +30,29 @@ module "mp" {
 }
 ```
 
+## Managing AWS tags after creation
+
+The `aws_node_pool.tags` input holds the tags that are specific to this machine pool. With `rhcs` provider 1.7.14 or later, these tags can be updated in place when the cluster control plane runs OpenShift 4.20 or later. On earlier OpenShift versions they stay fixed at creation.
+
+* Set `aws_node_pool.tags` to let Terraform manage the complete set of machine pool specific tags, an empty map included. A tag added outside Terraform, for example with `rosa edit machinepool --tags`, is removed on the next apply. Tags inherited from the cluster are kept.
+* Omit `aws_node_pool.tags` to leave the existing machine pool tags unmanaged. Removing the input from a configuration that set it removes those tags once, and Terraform stops managing them afterwards.
+* A machine pool tag overrides a cluster tag with the same key. Removing the override restores the inherited cluster value.
+* Before you manage tags on an imported machine pool, list its current tags and declare every machine pool specific tag that you want to keep. Import does not copy tags into Terraform state, so the first apply after an import removes the tags that the configuration does not declare.
+* When another system owns these tags, omit the input. A consumer of this module cannot add `ignore_changes` to a resource that the module declares.
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.10 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.14 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.10 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.14 |
 
 ## Modules
 
@@ -61,7 +70,7 @@ No modules.
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_auto_repair"></a> [auto\_repair](#input\_auto\_repair) | Configures auto repair option for the pool. | `bool` | `true` | no |
 | <a name="input_autoscaling"></a> [autoscaling](#input\_autoscaling) | Configures autoscaling for the pool. | <pre>object({<br/>    enabled      = bool<br/>    min_replicas = number<br/>    max_replicas = number<br/>  })</pre> | <pre>{<br/>  "enabled": false,<br/>  "max_replicas": null,<br/>  "min_replicas": null<br/>}</pre> | no |
-| <a name="input_aws_node_pool"></a> [aws\_node\_pool](#input\_aws\_node\_pool) | Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation. | <pre>object({<br/>    instance_type                   = string<br/>    tags                            = map(string)<br/>    additional_security_group_ids   = optional(list(string))<br/>    capacity_reservation_id         = optional(string)<br/>    capacity_reservation_preference = optional(string)<br/>    ec2_metadata_http_tokens        = optional(string)<br/>    node_drain_grace_period         = optional(number)<br/>    use_spot_instances              = optional(bool)<br/>    max_spot_price                  = optional(number)<br/>  })</pre> | n/a | yes |
+| <a name="input_aws_node_pool"></a> [aws\_node\_pool](#input\_aws\_node\_pool) | Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. These settings are fixed at creation, except `tags` and `node_drain_grace_period`. `tags` holds only the tags specific to this machine pool and can be updated in place when the cluster control plane runs OpenShift 4.20 or later; on earlier versions it stays fixed at creation. When `tags` is set, including to an empty map, Terraform manages that complete set: tags removed from the configuration or added outside Terraform are removed on the next apply, while tags inherited from the cluster are kept. Omit `tags` to keep existing machine pool tags unmanaged; clearing a previously set value removes those tags once and then stops managing them. A machine pool tag overrides a cluster tag with the same key, and removing the override restores the inherited cluster value; a machine pool tag whose key and value both match a cluster tag is inherited rather than stored, and the provider warns about it. The provider rejects an empty tag value, and a reserved key such as one that starts with `api.openshift.com/`, when it updates tags. | <pre>object({<br/>    instance_type                   = string<br/>    tags                            = optional(map(string))<br/>    additional_security_group_ids   = optional(list(string))<br/>    capacity_reservation_id         = optional(string)<br/>    capacity_reservation_preference = optional(string)<br/>    ec2_metadata_http_tokens        = optional(string)<br/>    node_drain_grace_period         = optional(number)<br/>    use_spot_instances              = optional(bool)<br/>    max_spot_price                  = optional(number)<br/>  })</pre> | n/a | yes |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Identifier of the cluster. | `string` | n/a | yes |
 | <a name="input_ignore_deletion_error"></a> [ignore\_deletion\_error](#input\_ignore\_deletion\_error) | Ignore machine pool deletion error. Assists when cluster resource is managed within the same file for the destroy use case | `bool` | `false` | no |
 | <a name="input_kubelet_configs"></a> [kubelet\_configs](#input\_kubelet\_configs) | Name of the kubelet configs to attach to this machine pool. The kubelet configs must already exist | `string` | `null` | no |

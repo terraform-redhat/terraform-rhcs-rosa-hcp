@@ -32,6 +32,16 @@ module "rosa_cluster_hcp" {
 }
 ```
 
+## Managing AWS tags after creation
+
+With `rhcs` provider 1.7.14 or later, the `tags` input can be updated in place when the cluster control plane runs OpenShift 4.20 or later. On earlier OpenShift versions the tags stay fixed at creation.
+
+* Set `tags` to let Terraform manage the complete set of customer tags, an empty map included. A tag added outside Terraform, for example with `rosa edit cluster --tags`, is removed on the next apply.
+* Leave `tags` null to keep the existing cluster tags unmanaged. Clearing a previously set value removes those tags once, and Terraform stops managing them afterwards.
+* Machine pools inherit cluster tags unless a machine pool overrides the same key.
+* Before you manage tags on an imported cluster, list its current customer tags and declare every tag that you want to keep. Import does not copy tags into Terraform state, so the first apply after an import removes the tags that the configuration does not declare.
+* When another system owns these tags, leave the input null. A consumer of this module cannot add `ignore_changes` to a resource that the module declares.
+
 <!-- BEGIN_AUTOMATED_TF_DOCS_BLOCK -->
 ## Requirements
 
@@ -39,14 +49,14 @@ module "rosa_cluster_hcp" {
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0.0 |
-| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.10 |
+| <a name="requirement_rhcs"></a> [rhcs](#requirement\_rhcs) | >= 1.7.14 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
-| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.10 |
+| <a name="provider_rhcs"></a> [rhcs](#provider\_rhcs) | >= 1.7.14 |
 
 ## Modules
 
@@ -125,7 +135,7 @@ No modules.
 | <a name="input_shared_vpc"></a> [shared\_vpc](#input\_shared\_vpc) | Shared VPC settings | <pre>object({<br/>    ingress_private_hosted_zone_id                = string<br/>    internal_communication_private_hosted_zone_id = string<br/>    route53_role_arn                              = string<br/>    vpce_role_arn                                 = string<br/>  })</pre> | `null` | no |
 | <a name="input_spot_termination_queue_url"></a> [spot\_termination\_queue\_url](#input\_spot\_termination\_queue\_url) | URL of a dedicated Amazon SQS queue in the cluster's AWS region for Enhanced Spot interruption handling. The queue must be tagged red-hat=true, receive EventBridge Spot interruption and rebalance events, and have an SQS policy granting EventBridge and the NodePoolManagement role access. See the [official Terraform Spot procedure](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_clusters/creating-a-red-hat-openshift-service-on-aws-cluster-with-terraform). | `string` | `null` | no |
 | <a name="input_support_role_arn"></a> [support\_role\_arn](#input\_support\_role\_arn) | The Amazon Resource Name (ARN) associated with the AWS IAM role used by Red Hat SREs to enable access to the cluster account in order to provide support. | `string` | `null` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Apply user defined tags to all cluster resources created in AWS. After the creation of the cluster is completed, it is not possible to update this attribute. | `map(string)` | `null` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Apply user defined tags to all cluster resources created in AWS. Tags can be updated in place when the cluster control plane runs OpenShift 4.20 or later; on earlier versions they stay fixed at creation. When this variable is set, including to an empty map, Terraform manages the complete set of customer tags: tags removed from the configuration or added outside Terraform are removed on the next apply. Leave it null to keep existing cluster tags unmanaged; clearing a previously set value removes those tags once and then stops managing them. The provider rejects an empty tag value, and a reserved key such as one that starts with `api.openshift.com/`, when it updates tags. Machine pools inherit these tags unless a machine pool overrides the same key. | `map(string)` | `null` | no |
 | <a name="input_trust_policy_external_id"></a> [trust\_policy\_external\_id](#input\_trust\_policy\_external\_id) | External ID for trust policy condition in account roles | `string` | `null` | no |
 | <a name="input_upgrade_acknowledgements_for"></a> [upgrade\_acknowledgements\_for](#input\_upgrade\_acknowledgements\_for) | Indicates acknowledgment of agreements required to upgrade the cluster version between minor versions (e.g. a value of "4.12" indicates acknowledgment of any agreements required to upgrade to OpenShift 4.12.z from 4.11 or before). | `string` | `null` | no |
 | <a name="input_version_channel_group"></a> [version\_channel\_group](#input\_version\_channel\_group) | Name of the channel group where you select the OpenShift cluster version, for example 'stable'. For ROSA, only 'stable', 'eus', and 'fast' are supported. Cannot be used together with 'channel'. Starting from RHCS Terraform provider version 1.7.7, this attribute no longer has a default value and is computed by the API. | `string` | `null` | no |
