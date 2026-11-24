@@ -59,7 +59,7 @@ variable "autoscaling" {
 variable "aws_node_pool" {
   type = object({
     instance_type                   = string
-    tags                            = map(string)
+    tags                            = optional(map(string))
     additional_security_group_ids   = optional(list(string))
     capacity_reservation_id         = optional(string)
     capacity_reservation_preference = optional(string)
@@ -69,7 +69,7 @@ variable "aws_node_pool" {
     max_spot_price                  = optional(number)
   })
   nullable    = false
-  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. Cannot be changed after creation."
+  description = "Configures aws settings for the pool. Set `ec2_metadata_http_tokens` to `required` for IMDSv2 only, or `optional` for IMDS v1 or v2. When omitted, the OpenShift Cluster Manager API determines the value, which is `required` for new machine pools. `instance_type`, `additional_security_group_ids`, `capacity_reservation_id`, `capacity_reservation_preference`, `ec2_metadata_http_tokens`, `use_spot_instances`, and `max_spot_price` cannot be changed after creation; `node_drain_grace_period` and `tags` can. `tags` can be updated after creation when the cluster is on OpenShift 4.20.0 or later; cluster tags are inherited unless a pool tag overrides the same key, and removing an overriding pool tag restores the inherited cluster value. A pool tag with the same key and value as a cluster tag is treated as inherited, not stored as an override, so a later change to that cluster tag, including one made outside Terraform, also changes the pool's value. The next refresh then records the new value for that configured pool key, and applying the resulting plan sets the pool's configured value as an override. To keep inheriting the cluster value, remove the key from the pool's tags. When `tags` is a map, including an empty map, pool tags are managed as a complete set: pool tags removed from the configuration, or added outside Terraform, are removed from AWS. Omit `tags`, or set it to null, to leave pool-specific tags unmanaged. On OpenShift 4.20.0 or later, changing `tags` from a non-null map to null removes the previously managed pool-specific tags once, after which they are unmanaged; on earlier versions the provider rejects the change. Inherited cluster tags are kept. The provider rejects an empty tag value, and a key that starts with `api.openshift.com/`, when it updates tags."
 
   validation {
     condition = var.aws_node_pool.capacity_reservation_preference == null ? true : contains(

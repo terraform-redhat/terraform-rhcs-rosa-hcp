@@ -551,3 +551,146 @@ run "management_partial_plan" {
     error_message = "management.type must be unset in a partial management object."
   }
 }
+
+# Day-2 tag edits (OpenShift 4.20.0+, rhcs >= 1.7.14): the module must pass
+# aws_node_pool.tags changes through rather than ignore them. Mocks skip provider
+# plan modifiers, so these runs prove wiring only, not in-place update versus replacement.
+# They do not show that the provider updates in place or that the next plan is
+# clean; that needs a live run against a 4.20+ cluster.
+run "aws_node_pool_tags_create" {
+  command = apply
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        owner = "team-a"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == tomap({ owner = "team-a" })
+    error_message = "aws_node_pool.tags must be wired through to rhcs_hcp_machine_pool on create."
+  }
+}
+
+run "aws_node_pool_tags_day2_change_plans_new_value" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags = {
+        owner       = "team-b"
+        cost-center = "1234"
+      }
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == tomap({ owner = "team-b", cost-center = "1234" })
+    error_message = "A day-2 aws_node_pool.tags change must reach rhcs_hcp_machine_pool; the module must not ignore tag changes."
+  }
+}
+
+# An explicit tags = null leaves pool-specific tags unmanaged, same as omitting tags;
+# the module must forward that null unchanged.
+run "aws_node_pool_tags_null_passthrough" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = null
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == null
+    error_message = "aws_node_pool.tags = null must reach rhcs_hcp_machine_pool as null so pool-specific tags stay unmanaged."
+  }
+}
+
+# tags omitted: optional in the object type, so it becomes null and pool-specific
+# tags stay unmanaged.
+run "aws_node_pool_tags_omitted_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags == null
+    error_message = "Omitted aws_node_pool.tags must reach rhcs_hcp_machine_pool as null."
+  }
+}
+
+# tags = {}: a managed empty set, distinct from omitted; it must not collapse to null.
+run "aws_node_pool_tags_empty_map_plan" {
+  command = plan
+
+  providers = {
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    cluster_id        = "fake-cluster-123"
+    name              = "test-pool"
+    subnet_id         = "subnet-fake123"
+    openshift_version = "4.20.0"
+
+    aws_node_pool = {
+      instance_type = "m5.xlarge"
+      tags          = {}
+    }
+  }
+
+  assert {
+    condition     = rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags != null && length(rhcs_hcp_machine_pool.machine_pool.aws_node_pool.tags) == 0
+    error_message = "aws_node_pool.tags = {} must reach rhcs_hcp_machine_pool as an empty map, not null."
+  }
+}

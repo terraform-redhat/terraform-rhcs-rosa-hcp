@@ -47,6 +47,11 @@ mock_provider "rhcs" {
   }
 }
 
+# Plain mock (computed values generated at apply only) for apply-then-plan runs.
+mock_provider "rhcs" {
+  alias = "no_override"
+}
+
 variables {
   cluster_name           = "existing-cluster"
   openshift_version      = "4.15.0"
@@ -814,5 +819,77 @@ run "valid_plan_with_auto_node_explicit_mode" {
   assert {
     condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.auto_node.mode == "enabled"
     error_message = "The cluster resource auto_node.mode must be the supplied mode."
+  }
+}
+
+# Day-2 tag edits (OpenShift 4.20.0+, rhcs >= 1.7.14): the module must pass tag
+# changes through rather than ignore them. Mocks skip provider plan modifiers, so
+# these runs prove wiring only, not in-place update versus replacement.
+# They do not show that the provider updates in place or that the next plan is
+# clean; that needs a live run against a 4.20+ cluster.
+run "tags_create" {
+  command = apply
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    openshift_version = "4.20.0"
+    tags = {
+      owner = "team-a"
+    }
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags == tomap({ owner = "team-a" })
+    error_message = "tags must be wired through to rhcs_cluster_rosa_hcp on create."
+  }
+}
+
+run "tags_day2_change_plans_new_value" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.no_override
+  }
+
+  state_key = "day2_tags"
+
+  variables {
+    openshift_version = "4.20.0"
+    tags = {
+      owner       = "team-b"
+      cost-center = "1234"
+    }
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags == tomap({ owner = "team-b", cost-center = "1234" })
+    error_message = "A day-2 tags change must reach rhcs_cluster_rosa_hcp; the module must not ignore tag changes."
+  }
+}
+
+# tags = {}: a managed empty set, distinct from the null default; it must not collapse to null.
+run "tags_empty_map_plan" {
+  command = plan
+
+  providers = {
+    aws  = aws.default
+    rhcs = rhcs.no_override
+  }
+
+  variables {
+    openshift_version = "4.20.0"
+    tags              = {}
+  }
+
+  assert {
+    condition     = rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags != null && length(rhcs_cluster_rosa_hcp.rosa_hcp_cluster.tags) == 0
+    error_message = "tags = {} must reach rhcs_cluster_rosa_hcp as an empty map, not null."
   }
 }
